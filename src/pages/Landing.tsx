@@ -1,14 +1,38 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeToggle } from '../components/ThemeToggle'
 
-export function Landing() {
-  const { t } = useTranslation()
+interface Props {
+  lang?: 'es' | 'en'
+}
+
+export function Landing({ lang }: Props) {
+  const { t, i18n } = useTranslation()
+
+  useEffect(() => {
+    if (lang && i18n.resolvedLanguage !== lang) {
+      void i18n.changeLanguage(lang)
+    }
+  }, [lang, i18n])
+
+  const active = i18n.resolvedLanguage
 
   return (
     <div className="page landing">
       <header className="landing__header">
-        <LanguageSwitcher />
+        <span className="landing__brand">{t('app.name')}</span>
+        <div className="landing__controls">
+          <nav className="lang-links" aria-label={t('nav.language')}>
+            <Link to="/es" className={active === 'es' ? 'lang-links--active' : ''}>
+              ES
+            </Link>
+            <Link to="/en" className={active === 'en' ? 'lang-links--active' : ''}>
+              EN
+            </Link>
+          </nav>
+          <ThemeToggle />
+        </div>
       </header>
 
       <main className="landing__main">
@@ -25,14 +49,23 @@ export function Landing() {
           <h2>{t('landing.benefitsTitle')}</h2>
           <div className="benefit-grid">
             <div className="benefit">
+              <span className="benefit__icon" aria-hidden="true">
+                📍
+              </span>
               <h3>{t('landing.benefit1Title')}</h3>
               <p>{t('landing.benefit1Text')}</p>
             </div>
             <div className="benefit">
+              <span className="benefit__icon" aria-hidden="true">
+                💬
+              </span>
               <h3>{t('landing.benefit2Title')}</h3>
               <p>{t('landing.benefit2Text')}</p>
             </div>
             <div className="benefit">
+              <span className="benefit__icon" aria-hidden="true">
+                🛡️
+              </span>
               <h3>{t('landing.benefit3Title')}</h3>
               <p>{t('landing.benefit3Text')}</p>
             </div>

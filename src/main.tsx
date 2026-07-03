@@ -12,6 +12,8 @@ import { NotFound } from './pages/NotFound'
 
 const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
+  { path: '/es', element: <Landing lang="es" /> },
+  { path: '/en', element: <Landing lang="en" /> },
   { path: '/app', element: <AppPage /> },
   { path: '/admin', element: <Admin /> },
   { path: '/eula', element: <Eula /> },

@@ -86,7 +86,8 @@
     "backHome": "Volver al inicio"
   },
   "nav": {
-    "language": "Idioma"
+    "language": "Idioma",
+    "theme": "Cambiar tema"
   },
   "footer": {
     "eula": "Términos",

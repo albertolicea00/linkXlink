@@ -1,6 +1,6 @@
 # Link x Link
 
-PWA for local users in Cuba: browse people profiles (photos, name, description) with a direct WhatsApp link. Tinder-like horizontal card navigation. Users can report broken/incorrect profiles; profiles auto-disable after a report threshold.
+PWA for local users: browse people profiles (photos, name, description) with a direct WhatsApp link. Tinder-like horizontal card navigation. Users can report broken/incorrect profiles; profiles auto-disable after a report threshold.
 
 ## Stack
 

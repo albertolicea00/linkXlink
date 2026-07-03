@@ -7,6 +7,7 @@ import { SwipeDeck } from '../components/SwipeDeck'
 import { ReportModal } from '../components/ReportModal'
 import { WarningBanner } from '../components/WarningBanner'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeToggle } from '../components/ThemeToggle'
 import type { Profile } from '../types'
 
 export function AppPage() {
@@ -21,7 +22,10 @@ export function AppPage() {
         <Link to="/" className="app-page__logo">
           {t('app.name')}
         </Link>
-        <LanguageSwitcher />
+        <div className="app-page__controls">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </header>
 
       {limitReached && <WarningBanner variant="error" message={t('swaps.limitReached', { max })} />}

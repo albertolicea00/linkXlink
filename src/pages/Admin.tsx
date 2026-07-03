@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { isValidWhatsappNumber, sanitizeWhatsappNumber } from '../lib/whatsapp'
 import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
@@ -22,11 +23,14 @@ export function Admin() {
     <div className="page admin-page">
       <header className="admin-page__header">
         <h1>{t('admin.title')}</h1>
-        {session && (
-          <button type="button" className="btn" onClick={() => void supabase.auth.signOut()}>
-            {t('admin.logout')}
-          </button>
-        )}
+        <div className="admin-page__controls">
+          <ThemeToggle />
+          {session && (
+            <button type="button" className="btn" onClick={() => void supabase.auth.signOut()}>
+              {t('admin.logout')}
+            </button>
+          )}
+        </div>
       </header>
       <main>{session ? <AdminPanel /> : <LoginForm />}</main>
     </div>

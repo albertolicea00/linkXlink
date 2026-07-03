@@ -1,50 +1,60 @@
 # Link x Link
 
-PWA to browse local people profiles and contact them directly through WhatsApp. Tinder-like horizontal card navigation, community reporting, automatic disabling of reported profiles.
+> **Connect with real people. Swipe, discover, and send a WhatsApp instantly.**
 
-Built with Vite + React + TypeScript and Supabase.
+---
 
-## Features
+## ✨ What is Link x Link?
 
-- Profile cards with photos (1-3), name, description
-- Direct WhatsApp link (`wa.me`)
-- Horizontal swipe navigation between profiles
-- Report system: profiles auto-disable after 3 reports (DB trigger)
-- Swap limit with WhatsApp ban-risk warnings (client-side, rolling 24h)
-- i18n: Spanish (default) and English
-- Installable PWA with basic offline support
-- Minimal admin panel (`/admin`) to create and reactivate profiles
+A **PWA** built for users. Browse people profiles with photos, name, and description, and connect with them directly via **WhatsApp** in one click. Tinder-like horizontal card navigation, community reporting system, and profiles that auto-disable after a report threshold.
 
-## Routes
+---
+
+## 🚀 Features
+
+| | |
+|---|---|
+| 🃏 **Profile cards** | 1–3 photos, name, description |
+| 📲 **Direct WhatsApp** | One-tap to `wa.me/<number>` |
+| 👆 **Swipe navigation** | Fluid horizontal card browsing |
+| 🚨 **Community reports** | Profile disables after `report_threshold` reports (DB trigger) |
+| ⚠️ **Swap limit** | Client-side counter (rolling 24h) with WhatsApp ban warning |
+| 🌐 **i18n** | Spanish (default) and English |
+| 📱 **Installable PWA** | Basic offline support |
+| 🔐 **Admin panel** | `/admin` to create and reactivate profiles (Supabase Auth) |
+
+---
+
+## 🗺️ Routes
 
 | Route | Purpose |
 |---|---|
 | `/` | Landing page |
-| `/app` | Main app (profile feed) |
-| `/admin` | Admin panel (Supabase Auth) |
+| `/app` | Profile feed |
+| `/admin` | Admin panel |
 | `/eula` | Terms and conditions |
 | `/privacy` | Privacy policy |
 
-## Development
+---
 
-```bash
-npm install
-cp .env.example .env.local   # fill in Supabase credentials
-npm run dev
-```
+## 📚 Docs
 
-## Supabase setup
+| File | Contents |
+|---|---|
+| [`DESIGN.md`](./DESIGN.md) | Architecture and design decisions |
+| [`CLAUDE.md`](./CLAUDE.md) | Project conventions |
+| [`SETUP.md`](./SETUP.md) | Full Supabase + Netlify setup guide |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to contribute |
+| [`SECURITY.md`](./SECURITY.md) | Vulnerability reporting |
 
-1. Create a Supabase project.
-2. Apply `supabase/migrations/0001_init.sql` (SQL editor or `supabase db push`).
-3. Create an admin user in Auth, then insert its id/email into `public.admins`.
-4. Copy the project URL and anon key into `.env.local`.
+---
 
-## Configuration
+## 🤝 Contributing
 
-System parameters live in `src/config/app-config.json` (swap limits, report threshold, languages). The report threshold is also stored in `app.settings` in the database — the DB value is the authoritative one.
+Contributions welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for development guide and pull request process.
 
-## Docs
+---
 
-- `DESIGN.md` — architecture and design decisions
-- `CLAUDE.md` — project conventions
+## 📄 License
+
+Apache 2.0 — See [LICENSE](./LICENSE).

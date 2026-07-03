@@ -86,7 +86,8 @@
     "backHome": "Back to home"
   },
   "nav": {
-    "language": "Language"
+    "language": "Language",
+    "theme": "Toggle theme"
   },
   "footer": {
     "eula": "Terms",
