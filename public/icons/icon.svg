@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#6c47ff"/>
+  <g fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round">
+    <path d="M198 314 L314 198"/>
+    <path d="M226 170 a56 56 0 0 1 79 0 l37 37 a56 56 0 0 1 0 79 l-22 22"/>
+    <path d="M286 342 a56 56 0 0 1 -79 0 l-37 -37 a56 56 0 0 1 0 -79 l22 -22"/>
+  </g>
+  <text x="256" y="452" font-family="system-ui, sans-serif" font-size="88" font-weight="700" fill="#ffffff" text-anchor="middle">LxL</text>
+</svg>
