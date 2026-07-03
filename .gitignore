@@ -55,3 +55,8 @@ dev-dist/
 
 # Project notes (kept local)
 plan/
+
+# ai stuff
+.claude/
+.continue/
+.agents/
