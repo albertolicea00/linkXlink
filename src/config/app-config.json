@@ -1,8 +1,12 @@
 {
+  "site_url": "https://linksxlinksnetlify.app",
   "max_swaps_per_24h": 100,
   "warning_swap_threshold": 40,
   "report_threshold": 3,
   "default_language": "es",
-  "supported_languages": ["es", "en"],
+  "supported_languages": [
+    "es",
+    "en"
+  ],
   "max_photos_per_profile": 3
 }
