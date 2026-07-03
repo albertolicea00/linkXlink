@@ -1,4 +1,4 @@
-# Link x Link
+# 🩷 Link X Link 🩷
 
 > **Connect with real people. Swipe, discover, and send a WhatsApp instantly.**
 
