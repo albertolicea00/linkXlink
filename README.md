@@ -2,6 +2,14 @@
 
 > **Connect with real people. Swipe, discover, and send a WhatsApp instantly.**
 
+[![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite_8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![PWA](https://img.shields.io/badge/PWA-✔️-success)](#)
+[![react-router](https://img.shields.io/badge/react--router-CA4245?logo=reactrouter&logoColor=white)](https://reactrouter.com)
+[![i18next](https://img.shields.io/badge/i18next-26A69A?logo=i18next&logoColor=white)](https://www.i18next.com)
+
 ---
 
 ## ✨ What is Link x Link?
