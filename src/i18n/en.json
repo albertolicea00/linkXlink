@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Link x Link",
+    "tagline": "Connect with local people through WhatsApp"
+  },
+  "landing": {
+    "description": "Discover profiles of people near you and contact them directly on WhatsApp. No sign-up, no hassle.",
+    "enter": "Enter",
+    "benefitsTitle": "Why Link x Link?",
+    "benefit1Title": "Local profiles",
+    "benefit1Text": "Real people from your area, with photos and description.",
+    "benefit2Title": "Direct contact",
+    "benefit2Text": "One tap opens WhatsApp. No middleman chats.",
+    "benefit3Title": "Trusted community",
+    "benefit3Text": "Reported profiles get disabled automatically.",
+    "howTitle": "How does it work?",
+    "how1": "Enter the app and swipe through profiles.",
+    "how2": "Interested in someone? Tap the WhatsApp button.",
+    "how3": "Something wrong? Report it and help the community."
+  },
+  "profile": {
+    "openWhatsApp": "Open WhatsApp",
+    "report": "Report",
+    "disabled": "Disabled",
+    "photoOf": "Photo {{current}} of {{total}}"
+  },
+  "feed": {
+    "loading": "Loading profiles…",
+    "empty": "No profiles available right now.",
+    "error": "Could not load profiles. Check your connection.",
+    "retry": "Retry",
+    "previous": "Previous",
+    "next": "Next",
+    "counter": "{{current}} of {{total}}"
+  },
+  "swaps": {
+    "warning": "You have made {{count}} interactions today. Opening too many new chats may get your number temporarily blocked by WhatsApp.",
+    "limitReached": "You reached the limit of {{max}} interactions in 24 hours. Come back later.",
+    "remaining": "{{count}} interactions left today"
+  },
+  "report": {
+    "title": "Report profile",
+    "reasonLabel": "Reason",
+    "reason_link_not_found": "Link does not exist",
+    "reason_wrong_number": "Wrong number",
+    "reason_fraudulent": "Fraudulent profile",
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "Tell us more…",
+    "submit": "Send report",
+    "cancel": "Cancel",
+    "success": "Report sent. Thanks for helping the community.",
+    "error": "Could not send the report. Please try again.",
+    "alreadyReported": "You already reported this profile."
+  },
+  "admin": {
+    "title": "Administration",
+    "email": "Email",
+    "password": "Password",
+    "login": "Log in",
+    "logout": "Log out",
+    "loginError": "Invalid credentials.",
+    "newProfile": "New profile",
+    "name": "Name",
+    "description": "Description",
+    "whatsapp": "WhatsApp (with country code, e.g. 5355512345)",
+    "photos": "Photos (1-3)",
+    "create": "Create profile",
+    "created": "Profile created.",
+    "createError": "Error creating profile.",
+    "validationName": "Name is required.",
+    "validationWhatsapp": "Invalid WhatsApp number. Digits only, with country code.",
+    "validationPhotos": "Upload between 1 and 3 photos.",
+    "profilesTitle": "Profiles",
+    "statusActive": "Active",
+    "statusDisabled": "Disabled",
+    "reactivate": "Reactivate",
+    "reports": "reports"
+  },
+  "legal": {
+    "eulaTitle": "Terms and conditions",
+    "privacyTitle": "Privacy policy",
+    "backHome": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backHome": "Back to home"
+  },
+  "nav": {
+    "language": "Language"
+  },
+  "footer": {
+    "eula": "Terms",
+    "privacy": "Privacy"
+  }
+}

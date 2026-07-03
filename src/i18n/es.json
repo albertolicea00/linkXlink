@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Link x Link",
+    "tagline": "Conecta con personas locales por WhatsApp"
+  },
+  "landing": {
+    "description": "Descubre perfiles de personas cercanas y contáctalas directamente por WhatsApp. Sin registros, sin complicaciones.",
+    "enter": "Entrar",
+    "benefitsTitle": "¿Por qué Link x Link?",
+    "benefit1Title": "Perfiles locales",
+    "benefit1Text": "Personas reales de tu zona, con fotos y descripción.",
+    "benefit2Title": "Contacto directo",
+    "benefit2Text": "Un toque y abres WhatsApp. Sin chats intermedios.",
+    "benefit3Title": "Comunidad confiable",
+    "benefit3Text": "Los perfiles reportados se deshabilitan automáticamente.",
+    "howTitle": "¿Cómo funciona?",
+    "how1": "Entra a la app y desliza entre los perfiles.",
+    "how2": "¿Te interesa alguien? Pulsa el botón de WhatsApp.",
+    "how3": "¿Algo no funciona? Repórtalo y ayuda a la comunidad."
+  },
+  "profile": {
+    "openWhatsApp": "Abrir WhatsApp",
+    "report": "Reportar",
+    "disabled": "Deshabilitado",
+    "photoOf": "Foto {{current}} de {{total}}"
+  },
+  "feed": {
+    "loading": "Cargando perfiles…",
+    "empty": "No hay perfiles disponibles por ahora.",
+    "error": "No se pudieron cargar los perfiles. Revisa tu conexión.",
+    "retry": "Reintentar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "counter": "{{current}} de {{total}}"
+  },
+  "swaps": {
+    "warning": "Llevas {{count}} interacciones hoy. Abrir demasiados chats nuevos puede hacer que WhatsApp bloquee tu número temporalmente.",
+    "limitReached": "Alcanzaste el límite de {{max}} interacciones en 24 horas. Vuelve más tarde.",
+    "remaining": "{{count}} interacciones restantes hoy"
+  },
+  "report": {
+    "title": "Reportar perfil",
+    "reasonLabel": "Motivo",
+    "reason_link_not_found": "No existe el link",
+    "reason_wrong_number": "Número incorrecto",
+    "reason_fraudulent": "Perfil fraudulento",
+    "commentLabel": "Comentario (opcional)",
+    "commentPlaceholder": "Cuéntanos más…",
+    "submit": "Enviar reporte",
+    "cancel": "Cancelar",
+    "success": "Reporte enviado. Gracias por ayudar a la comunidad.",
+    "error": "No se pudo enviar el reporte. Inténtalo de nuevo.",
+    "alreadyReported": "Ya reportaste este perfil."
+  },
+  "admin": {
+    "title": "Administración",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "loginError": "Credenciales incorrectas.",
+    "newProfile": "Nuevo perfil",
+    "name": "Nombre",
+    "description": "Descripción",
+    "whatsapp": "WhatsApp (con código de país, ej. 5355512345)",
+    "photos": "Fotos (1-3)",
+    "create": "Crear perfil",
+    "created": "Perfil creado.",
+    "createError": "Error al crear el perfil.",
+    "validationName": "El nombre es obligatorio.",
+    "validationWhatsapp": "Número de WhatsApp inválido. Usa solo dígitos con código de país.",
+    "validationPhotos": "Sube entre 1 y 3 fotos.",
+    "profilesTitle": "Perfiles",
+    "statusActive": "Activo",
+    "statusDisabled": "Deshabilitado",
+    "reactivate": "Reactivar",
+    "reports": "reportes"
+  },
+  "legal": {
+    "eulaTitle": "Términos y condiciones",
+    "privacyTitle": "Política de privacidad",
+    "backHome": "Volver al inicio"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "backHome": "Volver al inicio"
+  },
+  "nav": {
+    "language": "Idioma"
+  },
+  "footer": {
+    "eula": "Términos",
+    "privacy": "Privacidad"
+  }
+}
