@@ -15,8 +15,8 @@ export default defineConfig({
         description: 'Conecta con personas locales por WhatsApp',
         start_url: '/',
         display: 'standalone',
-        background_color: '#f7f7fb',
-        theme_color: '#6c47ff',
+        background_color: '#fdf6f9',
+        theme_color: '#ec4899',
         lang: 'es',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -30,7 +30,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
           {

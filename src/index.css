@@ -1,10 +1,31 @@
+/* Self-hosted variable font — same look for every user, works offline (PWA) */
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/fredoka-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2013-2014, U+2018-201A, U+201C-201E,
+    U+2022, U+2026, U+20AC, U+2212;
+}
+
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/fredoka-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0;
+}
+
 :root {
-  --color-bg: #f7f7fb;
+  --color-bg: #fdf6f9;
   --color-surface: #ffffff;
-  --color-text: #1c1c28;
-  --color-text-muted: #62626e;
-  --color-primary: #6c47ff;
-  --color-primary-dark: #5233cc;
+  --color-text: #271c22;
+  --color-text-muted: #6e6069;
+  --color-primary: #ec4899;
+  --color-primary-dark: #db2777;
   --color-whatsapp: #25d366;
   --color-whatsapp-dark: #1da851;
   --color-danger: #e5484d;
@@ -12,13 +33,13 @@
   --color-warning-text: #8a6100;
   --color-error-bg: #ffe3e3;
   --color-error-text: #9b1c1c;
-  --color-border: #e2e2ea;
+  --color-border: #f0dde7;
   --radius: 16px;
-  --shadow: 0 4px 24px rgba(28, 28, 40, 0.1);
+  --shadow: 0 4px 24px rgba(39, 28, 34, 0.1);
 
-  --color-primary-glow: rgba(108, 71, 255, 0.25);
+  --color-primary-glow: rgba(236, 72, 153, 0.22);
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: fantasy, 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   color: var(--color-text);
   background-color: var(--color-bg);
@@ -27,19 +48,19 @@
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #13131b;
-  --color-surface: #1d1d29;
-  --color-text: #f1f1f6;
-  --color-text-muted: #a0a0b2;
-  --color-primary: #8f6bff;
-  --color-primary-dark: #7550e6;
+  --color-bg: #17121a;
+  --color-surface: #221a24;
+  --color-text: #f6f0f4;
+  --color-text-muted: #b0a2ab;
+  --color-primary: #f472b6;
+  --color-primary-dark: #ec4899;
   --color-warning-bg: #3a2f10;
   --color-warning-text: #ffd97a;
   --color-error-bg: #3d1a1c;
   --color-error-text: #ff9ea1;
-  --color-border: #2e2e3e;
+  --color-border: #3a2d38;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
-  --color-primary-glow: rgba(143, 107, 255, 0.2);
+  --color-primary-glow: rgba(244, 114, 182, 0.18);
   color-scheme: dark;
 }
 
@@ -225,7 +246,7 @@ a {
 .landing__hero h1 {
   font-size: clamp(2.4rem, 9vw, 3.2rem);
   letter-spacing: -0.02em;
-  background: linear-gradient(120deg, var(--color-primary), #c86bff);
+  background: linear-gradient(120deg, var(--color-primary), #fb7185);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
