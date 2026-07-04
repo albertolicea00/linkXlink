@@ -41,7 +41,9 @@
     "retry": "Reintentar",
     "previous": "Anterior",
     "next": "Siguiente",
-    "counter": "{{current}} de {{total}}"
+    "counter": "{{current}} de {{total}}",
+    "end": "Ya viste todos los perfiles por ahora.",
+    "restart": "Volver a empezar"
   },
   "swaps": {
     "warning": "Llevas {{count}} interacciones hoy. Abrir demasiados chats nuevos puede hacer que WhatsApp bloquee tu número temporalmente.",

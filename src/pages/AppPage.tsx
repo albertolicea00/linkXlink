@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
 import { SwipeDeck } from '../components/SwipeDeck'
+import { ProfileCard } from '../components/ProfileCard'
 import { ReportModal } from '../components/ReportModal'
 import { WarningBanner } from '../components/WarningBanner'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { markSeen, orderProfiles } from '../lib/seenProfiles'
+import { trackProfileEvent } from '../lib/metrics'
 import type { Profile } from '../types'
 
 export function AppPage() {
@@ -16,6 +19,9 @@ export function AppPage() {
   const { profiles, loading, error, refetch } = useProfiles()
   const { count, swap, limitReached, nearLimit, max } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
+
+  // Shuffled + least-seen-first, recomputed only when a new list arrives.
+  const orderedProfiles = useMemo(() => orderProfiles(profiles), [profiles])
 
   usePageMeta({
     title: t('meta.appTitle'),
@@ -57,12 +63,33 @@ export function AppPage() {
 
         {!loading && !error && profiles.length > 0 && (
           <SwipeDeck
-            profiles={profiles}
-            onSwap={swap}
-            onWhatsappClick={swap}
-            onReportClick={setReporting}
-            swapBlocked={limitReached}
-            whatsappDisabled={limitReached}
+            profiles={orderedProfiles}
+            swipeDisabled={limitReached}
+            showCounter
+            renderCard={(p) => (
+              <ProfileCard
+                profile={p}
+                whatsappDisabled={limitReached}
+                onWhatsappClick={() => {
+                  swap()
+                  trackProfileEvent(p.id, 'whatsapp_click')
+                }}
+                onReportClick={() => setReporting(p)}
+              />
+            )}
+            onSwipe={() => swap()}
+            onTopChange={(p) => {
+              markSeen(p.id)
+              trackProfileEvent(p.id, 'view')
+            }}
+            emptyState={
+              <div className="app-page__status">
+                <p>{t('feed.end')}</p>
+                <button type="button" className="btn" onClick={() => void refetch()}>
+                  {t('feed.restart')}
+                </button>
+              </div>
+            }
           />
         )}
       </main>
