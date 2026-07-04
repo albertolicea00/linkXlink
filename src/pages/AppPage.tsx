@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
@@ -12,6 +12,8 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
+import { getClickCount, recordClick } from '../lib/clickCounter'
+import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
 
 export function AppPage() {
@@ -19,9 +21,22 @@ export function AppPage() {
   const { profiles, loading, error, refetch } = useProfiles()
   const { count, swap, limitReached, nearLimit, max } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
+  const [clicks, setClicks] = useState(getClickCount)
+  const [searchParams] = useSearchParams()
+
+  // Developer deep link: /app?profile=<uuid> puts that profile on top.
+  // Kill switch: deep_link_profiles_enabled in app-config.json.
+  const targetId = appConfig.deep_link_profiles_enabled ? searchParams.get('profile') : null
 
   // Shuffled + least-seen-first, recomputed only when a new list arrives.
-  const orderedProfiles = useMemo(() => orderProfiles(profiles), [profiles])
+  const orderedProfiles = useMemo(() => {
+    const ordered = orderProfiles(profiles)
+    if (targetId) {
+      const i = ordered.findIndex((p) => p.id === targetId)
+      if (i > 0) ordered.unshift(...ordered.splice(i, 1))
+    }
+    return ordered
+  }, [profiles, targetId])
 
   usePageMeta({
     title: t('meta.appTitle'),
@@ -62,16 +77,21 @@ export function AppPage() {
         )}
 
         {!loading && !error && profiles.length > 0 && (
+          <p className="deck-hint">{t('feed.swipeHint')}</p>
+        )}
+        {!loading && !error && profiles.length > 0 && (
           <SwipeDeck
             profiles={orderedProfiles}
             swipeDisabled={limitReached}
-            showCounter
+            showCounter={appConfig.show_deck_counter}
+            showUndo={appConfig.show_undo_button}
             renderCard={(p) => (
               <ProfileCard
                 profile={p}
                 whatsappDisabled={limitReached}
                 onWhatsappClick={() => {
                   swap()
+                  setClicks(recordClick())
                   trackProfileEvent(p.id, 'whatsapp_click')
                 }}
                 onReportClick={() => setReporting(p)}
@@ -91,6 +111,14 @@ export function AppPage() {
               </div>
             }
           />
+        )}
+
+        {!loading && !error && profiles.length > 0 && appConfig.show_deck_stats && (
+          <p className="deck-stats">
+            <span>{t('feed.statsSwipes', { count, max })}</span>
+            <span aria-hidden>·</span>
+            <span>{t('feed.statsClicks', { count: clicks })}</span>
+          </p>
         )}
       </main>
 
