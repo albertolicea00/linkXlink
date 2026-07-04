@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://linksxlinksnetlify.app/sitemap.xml
+Sitemap: https://linkxlink.vercel.app/sitemap.xml

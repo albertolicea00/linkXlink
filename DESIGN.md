@@ -36,6 +36,7 @@ No custom backend server. Business logic lives in:
 | Landing lang routes | `/es`, `/en` render Landing with forced language | Shareable/indexable language URLs; `/` keeps auto-detect |
 | Theme | Light/dark via CSS variables + `data-theme` on `<html>` | System preference on first visit, manual toggle persisted in localStorage; inline script in `index.html` avoids flash |
 | Typography | Fredoka (variable 300-700), self-hosted woff2 | Same look for every user and offline-capable (PWA); generic `fantasy` keyword rejected — resolves differently per browser |
+| Terms gate | Checkbox on landing; `/app` redirects to `/` without acceptance | localStorage (not sessionStorage — would re-ask every tab), stores `LEGAL_LAST_UPDATED` so changing legal text forces re-acceptance |
 
 ## 3. Data model
 
@@ -135,5 +136,5 @@ SPA, no SSR — metadata is set client-side; Googlebot executes JS and picks it 
 ## 8. Open items / to verify
 
 - Supabase project not yet provisioned — migrations written in `supabase/migrations/`, need MCP or dashboard to apply
-- **Domain check**: SEO files currently use `https://linksxlinksnetlify.app` — verify; Netlify subdomains are `<name>.netlify.app` (dot before `netlify`)
+- Domain: SEO files use `https://linkxlink.vercel.app` (index.html, robots.txt, sitemap.xml, app-config.json) — update all four if the domain changes
 - Rate-limiting report spam: basic client throttle only; server-side needs Edge Function (future)
