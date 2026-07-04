@@ -6,6 +6,7 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { isValidWhatsappNumber, sanitizeWhatsappNumber } from '../lib/whatsapp'
 import appConfig from '../config/app-config.json'
+import { ADMIN_PATH } from '../lib/adminPath'
 import type { Profile } from '../types'
 
 const PHOTOS_BUCKET = 'profile-photos'
@@ -14,7 +15,7 @@ export function Admin() {
   const { t } = useTranslation()
   const [session, setSession] = useState<Session | null>(null)
 
-  usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: '/admin', noindex: true })
+  usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: ADMIN_PATH, noindex: true })
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -40,6 +41,24 @@ export function Admin() {
   )
 }
 
+function LogoIcon() {
+  return (
+    <svg viewBox="0 0 512 512" className="admin-login__logo-icon" aria-hidden>
+      <defs>
+        <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ec4899" />
+          <stop offset="1" stopColor="#fb7185" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill="url(#lg)" />
+      <path
+        d="M256 400 C 214 366 128 300 128 222 C 128 172 166 136 212 136 C 238 136 246 148 256 162 C 266 148 274 136 300 136 C 346 136 384 172 384 222 C 384 300 298 366 256 400 Z"
+        fill="#fff"
+      />
+    </svg>
+  )
+}
+
 function LoginForm() {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
@@ -57,32 +76,40 @@ function LoginForm() {
   }
 
   return (
-    <form className="admin-form" onSubmit={handleSubmit}>
-      <label className="field">
-        {t('admin.email')}
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-        />
-      </label>
-      <label className="field">
-        {t('admin.password')}
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-        />
-      </label>
-      {error && <p className="form-error">{t('admin.loginError')}</p>}
-      <button type="submit" className="btn btn--primary" disabled={busy}>
-        {t('admin.login')}
-      </button>
-    </form>
+    <div className="admin-login">
+      <div className="admin-login__card">
+        <div className="admin-login__brand">
+          <LogoIcon />
+          <span className="admin-login__app-name">Link x Link</span>
+        </div>
+        <form className="admin-form" onSubmit={handleSubmit}>
+          <label className="field">
+            {t('admin.email')}
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+          </label>
+          <label className="field">
+            {t('admin.password')}
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </label>
+          {error && <p className="form-error">{t('admin.loginError')}</p>}
+          <button type="submit" className="btn btn--primary" disabled={busy}>
+            {t('admin.login')}
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }
 
