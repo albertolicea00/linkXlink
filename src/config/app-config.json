@@ -1,6 +1,6 @@
 {
   "site_url": "https://linkxlink.vercel.app",
-  "max_swaps_per_24h": 100,
+  "max_swaps_per_24h": 80,
   "warning_swap_threshold": 40,
   "report_threshold": 3,
   "default_language": "es",
@@ -9,5 +9,6 @@
     "en"
   ],
   "max_photos_per_profile": 1,
+  "max_photo_upload_mb": 5,
   "required_shares_to_register": 3
 }

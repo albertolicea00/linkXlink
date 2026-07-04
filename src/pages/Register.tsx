@@ -1,15 +1,32 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
+import {
+  parsePhoneNumberFromString,
+  validatePhoneNumberLength,
+  type CountryCode,
+} from 'libphonenumber-js/max'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { PhoneInput } from '../components/PhoneInput'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { supabase } from '../lib/supabase'
-import { isValidWhatsappNumber, sanitizeWhatsappNumber } from '../lib/whatsapp'
+import { optimizeImage } from '../lib/imageOptimize'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
 import appConfig from '../config/app-config.json'
 
 const PHOTOS_BUCKET = 'profile-photos'
+const DEFAULT_COUNTRY: CountryCode = 'CU'
+const MAX_PHOTO_BYTES = appConfig.max_photo_upload_mb * 1024 * 1024
+
+/** Latest birthdate that still makes the person 18 today (ISO yyyy-mm-dd). */
+function maxBirthdate(): string {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 18)
+  return d.toISOString().slice(0, 10)
+}
+
+type FieldName = 'name' | 'birthdate' | 'phone' | 'photos'
 
 interface Props {
   lang?: 'es' | 'en'
@@ -20,26 +37,70 @@ export function Register({ lang }: Props) {
   const [alreadyAccepted] = useState(hasAcceptedTerms)
   const [checked, setChecked] = useState(false)
   const [shares, setShares] = useState(getShareCount)
-
-  const active = i18n.resolvedLanguage
-
-  useState(() => {
-    if (lang && i18n.resolvedLanguage !== lang) {
-      void i18n.changeLanguage(lang)
-    }
-  })
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [whatsapp, setWhatsapp] = useState('')
+  const [country, setCountry] = useState<CountryCode>(DEFAULT_COUNTRY)
+  const [national, setNational] = useState('')
+  const [birthdate, setBirthdate] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({})
   const [message, setMessage] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const [busy, setBusy] = useState(false)
 
-  usePageMeta({ title: `${t('register.title')} | Link x Link`, path: '/register' })
+  const active = i18n.resolvedLanguage
+
+  useEffect(() => {
+    if (lang && i18n.resolvedLanguage !== lang) {
+      void i18n.changeLanguage(lang)
+    }
+  }, [lang, i18n])
+
+  usePageMeta({
+    title: `${t('register.title')} | Link x Link`,
+    path: lang ? `/${lang}/register` : '/register',
+  })
 
   const termsOk = alreadyAccepted || checked
   const sharesOk = shares >= REQUIRED_SHARES
+
+  const touch = (field: FieldName) => setTouched((s) => ({ ...s, [field]: true }))
+
+  const phoneError = (): string | null => {
+    if (!national) return t('register.phoneRequired')
+    const length = validatePhoneNumberLength(national, country)
+    if (length === 'TOO_SHORT') return t('register.phoneTooShort')
+    if (length === 'TOO_LONG') return t('register.phoneTooLong')
+    if (length) return t('register.phoneInvalid')
+    const phone = parsePhoneNumberFromString(national, country)
+    if (!phone || !phone.isValid()) return t('register.phoneInvalid')
+    return null
+  }
+
+  const photosError = (): string | null => {
+    if (files.length < 1 || files.length > appConfig.max_photos_per_profile)
+      return t('register.validationPhotos', { max: appConfig.max_photos_per_profile })
+    if (files.some((f) => !f.type.startsWith('image/'))) return t('register.validationPhotoType')
+    if (files.some((f) => f.size > MAX_PHOTO_BYTES))
+      return t('register.validationPhotoSize', { mb: appConfig.max_photo_upload_mb })
+    return null
+  }
+
+  const errors: Record<FieldName, string | null> = {
+    name: name.trim() ? null : t('admin.validationName'),
+    birthdate: birthdate && birthdate <= maxBirthdate() ? null : t('register.validationAge'),
+    phone: phoneError(),
+    photos: photosError(),
+  }
+  const hasErrors = Object.values(errors).some(Boolean)
+  const fieldError = (field: FieldName) => (touched[field] ? errors[field] : null)
+
+  const handleNationalChange = (value: string) => {
+    // Refuse digits beyond the longest valid number for the chosen country.
+    if (value.length > national.length && validatePhoneNumberLength(value, country) === 'TOO_LONG')
+      return
+    setNational(value)
+  }
 
   const handleShare = () => {
     const text = t('register.shareMessage', { url: appConfig.site_url })
@@ -47,39 +108,34 @@ export function Register({ lang }: Props) {
     setShares(incrementShareCount())
   }
 
-  const validate = (): string | null => {
-    if (!name.trim()) return t('admin.validationName')
-    if (!isValidWhatsappNumber(whatsapp)) return t('admin.validationWhatsapp')
-    if (files.length < 1 || files.length > appConfig.max_photos_per_profile)
-      return t('admin.validationPhotos')
-    return null
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const validationError = validate()
-    if (validationError) {
-      setMessage(validationError)
-      return
-    }
+    setTouched({ name: true, birthdate: true, phone: true, photos: true })
+    if (hasErrors) return
     setBusy(true)
     setMessage(null)
     try {
       const photoUrls: string[] = []
       for (const file of files) {
-        const path = `${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-        const { error } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, file)
+        const optimized = await optimizeImage(file)
+        const path = `${crypto.randomUUID()}-${optimized.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        const { error } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, optimized)
         if (error) throw error
         const { data } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path)
         photoUrls.push(data.publicUrl)
       }
 
+      // E.164 without the "+": digits-only with country code, as the DB expects.
+      const whatsapp = parsePhoneNumberFromString(national, country)!.number.slice(1)
+
       // Self-registered profiles start inactive; RLS rejects public inserts
       // with active = true. An admin activates them from the panel.
+      // Birthdate is checked client-side only and deliberately NOT stored:
+      // profile rows are publicly readable.
       const { error } = await supabase.from('profiles').insert({
         name: name.trim(),
         description: description.trim(),
-        whatsapp: sanitizeWhatsappNumber(whatsapp),
+        whatsapp,
         photos: photoUrls,
         active: false,
       })
@@ -87,8 +143,9 @@ export function Register({ lang }: Props) {
 
       if (!alreadyAccepted) acceptTerms()
       setDone(true)
-    } catch {
-      setMessage(t('register.error'))
+    } catch (err) {
+      const code = (err as { code?: string }).code
+      setMessage(code === '23505' ? t('register.duplicate') : t('register.error'))
     } finally {
       setBusy(false)
     }
@@ -102,16 +159,10 @@ export function Register({ lang }: Props) {
         </Link>
         <div className="landing__controls">
           <nav className="lang-links" aria-label={t('nav.language')}>
-            <Link
-              to={lang === 'es' ? '/register' : '/es/register'}
-              className={active === 'es' ? 'lang-links--active' : ''}
-            >
+            <Link to="/es/register" className={active === 'es' ? 'lang-links--active' : ''}>
               ES
             </Link>
-            <Link
-              to={lang === 'en' ? '/register' : '/en/register'}
-              className={active === 'en' ? 'lang-links--active' : ''}
-            >
+            <Link to="/en/register" className={active === 'en' ? 'lang-links--active' : ''}>
               EN
             </Link>
           </nav>
@@ -162,10 +213,17 @@ export function Register({ lang }: Props) {
                 </svg>
                 <span className="register__card-title">{t('register.title')}</span>
               </div>
-              <form className="register__form" onSubmit={handleSubmit}>
+              <form className="register__form" onSubmit={handleSubmit} noValidate>
                 <label className="field">
                   {t('admin.name')}
-                  <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} />
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={() => touch('name')}
+                    maxLength={80}
+                  />
+                  <span className="field-help">{t('register.nameHelp')}</span>
+                  {fieldError('name') && <span className="field-error">{fieldError('name')}</span>}
                 </label>
                 <label className="field">
                   {t('admin.description')}
@@ -175,23 +233,61 @@ export function Register({ lang }: Props) {
                     maxLength={300}
                     rows={3}
                   />
+                  <span className="field-help">{t('register.descriptionHelp')}</span>
                 </label>
                 <label className="field">
-                  {t('admin.whatsapp')}
+                  {t('register.birthdate')}
                   <input
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    inputMode="numeric"
+                    type="date"
+                    value={birthdate}
+                    max={maxBirthdate()}
+                    onChange={(e) => {
+                      setBirthdate(e.target.value)
+                      touch('birthdate')
+                    }}
+                    onBlur={() => touch('birthdate')}
+                    required
                   />
+                  <span className="field-help">{t('register.birthdateHelp')}</span>
+                  {fieldError('birthdate') && (
+                    <span className="field-error">{fieldError('birthdate')}</span>
+                  )}
                 </label>
+                <div className="field">
+                  <span>{t('register.whatsapp')}</span>
+                  <PhoneInput
+                    country={country}
+                    national={national}
+                    onCountryChange={(c) => {
+                      setCountry(c)
+                      if (national) touch('phone')
+                    }}
+                    onNationalChange={(v) => {
+                      handleNationalChange(v)
+                      touch('phone')
+                    }}
+                    onBlur={() => touch('phone')}
+                  />
+                  <span className="field-help">{t('register.whatsappHelp')}</span>
+                  {fieldError('phone') && (
+                    <span className="field-error">{fieldError('phone')}</span>
+                  )}
+                </div>
                 <label className="field">
-                  {t('admin.photos')}
+                  {t('register.photos', { max: appConfig.max_photos_per_profile })}
                   <input
                     type="file"
                     accept="image/*"
-                    multiple
-                    onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
+                    multiple={appConfig.max_photos_per_profile > 1}
+                    onChange={(e) => {
+                      setFiles(Array.from(e.target.files ?? []))
+                      touch('photos')
+                    }}
                   />
+                  <span className="field-help">{t('register.photosHelp')}</span>
+                  {fieldError('photos') && (
+                    <span className="field-error">{fieldError('photos')}</span>
+                  )}
                 </label>
                 {!alreadyAccepted && (
                   <label className="terms-check">
@@ -223,7 +319,7 @@ export function Register({ lang }: Props) {
                   className="btn btn--primary"
                   disabled={busy || !termsOk || !sharesOk}
                 >
-                  {t('register.submit')}
+                  {busy ? t('register.submitting') : t('register.submit')}
                 </button>
               </form>
             </div>

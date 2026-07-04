@@ -6,6 +6,10 @@ create policy "public insert pending profiles"
   on public.profiles for insert
   with check (active = false and report_count = 0 and disabled_at is null);
 
+-- One profile per WhatsApp number (blocks duplicate self-registrations).
+create unique index if not exists profiles_whatsapp_unique
+  on public.profiles (whatsapp);
+
 -- Photos for self-registration: public uploads to the existing bucket.
 create policy "public upload profile photos"
   on storage.objects for insert
