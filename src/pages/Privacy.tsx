@@ -1,14 +1,21 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { usePageMeta } from '../hooks/usePageMeta'
+import { LEGAL_LAST_UPDATED, formatLegalDate } from '../lib/legal'
 
 export function Privacy() {
   const { t, i18n } = useTranslation()
   const es = i18n.resolvedLanguage === 'es'
 
+  usePageMeta({ title: `${t('legal.privacyTitle')} | Link x Link`, path: '/privacy' })
+
   return (
     <div className="page legal-page">
       <main>
         <h1>{t('legal.privacyTitle')}</h1>
+        <p className="legal-page__updated">
+          {t('legal.lastUpdated', { date: formatLegalDate(LEGAL_LAST_UPDATED, i18n.language) })}
+        </p>
         {es ? (
           <>
             <p>

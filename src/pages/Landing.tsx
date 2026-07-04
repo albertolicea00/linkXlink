@@ -1,11 +1,49 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 interface Props {
   lang?: 'es' | 'en'
 }
+
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+} as const
+
+function MapPinIcon() {
+  return (
+    <svg {...iconProps} className="benefit__icon">
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  )
+}
+
+function MessageIcon() {
+  return (
+    <svg {...iconProps} className="benefit__icon">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </svg>
+  )
+}
+
+function ShieldIcon() {
+  return (
+    <svg {...iconProps} className="benefit__icon">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    </svg>
+  )
+}
+
+const WA_COMPONENTS = { wa: <span className="accent" /> }
 
 export function Landing({ lang }: Props) {
   const { t, i18n } = useTranslation()
@@ -15,6 +53,12 @@ export function Landing({ lang }: Props) {
       void i18n.changeLanguage(lang)
     }
   }, [lang, i18n])
+
+  usePageMeta({
+    title: t('meta.homeTitle'),
+    description: t('meta.homeDescription'),
+    path: lang ? `/${lang}` : '/',
+  })
 
   const active = i18n.resolvedLanguage
 
@@ -38,8 +82,12 @@ export function Landing({ lang }: Props) {
       <main className="landing__main">
         <section className="landing__hero">
           <h1>{t('app.name')}</h1>
-          <p className="landing__tagline">{t('app.tagline')}</p>
-          <p className="landing__description">{t('landing.description')}</p>
+          <p className="landing__tagline">
+            <Trans i18nKey="app.tagline" components={WA_COMPONENTS} />
+          </p>
+          <p className="landing__description">
+            <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
+          </p>
           <Link to="/app" className="btn btn--primary btn--large">
             {t('landing.enter')}
           </Link>
@@ -49,23 +97,17 @@ export function Landing({ lang }: Props) {
           <h2>{t('landing.benefitsTitle')}</h2>
           <div className="benefit-grid">
             <div className="benefit">
-              <span className="benefit__icon" aria-hidden="true">
-                📍
-              </span>
+              <MapPinIcon />
               <h3>{t('landing.benefit1Title')}</h3>
               <p>{t('landing.benefit1Text')}</p>
             </div>
             <div className="benefit">
-              <span className="benefit__icon" aria-hidden="true">
-                💬
-              </span>
+              <MessageIcon />
               <h3>{t('landing.benefit2Title')}</h3>
               <p>{t('landing.benefit2Text')}</p>
             </div>
             <div className="benefit">
-              <span className="benefit__icon" aria-hidden="true">
-                🛡️
-              </span>
+              <ShieldIcon />
               <h3>{t('landing.benefit3Title')}</h3>
               <p>{t('landing.benefit3Text')}</p>
             </div>

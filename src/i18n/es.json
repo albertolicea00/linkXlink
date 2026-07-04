@@ -1,10 +1,16 @@
 {
   "app": {
     "name": "Link x Link",
-    "tagline": "Conecta con personas locales por WhatsApp"
+    "tagline": "Conecta con personas locales por <wa>WhatsApp</wa>"
+  },
+  "meta": {
+    "homeTitle": "Link x Link — Conecta por WhatsApp con personas locales",
+    "homeDescription": "Descubre perfiles de personas cercanas y contáctalas directo por WhatsApp. Sin registros, sin complicaciones.",
+    "appTitle": "Perfiles | Link x Link",
+    "appDescription": "Explora perfiles de personas locales y contáctalas directo por WhatsApp."
   },
   "landing": {
-    "description": "Descubre perfiles de personas cercanas y contáctalas directamente por WhatsApp. Sin registros, sin complicaciones.",
+    "description": "Descubre perfiles de personas cercanas y contáctalas directamente por <wa>WhatsApp</wa>. Sin registros, sin complicaciones.",
     "enter": "Entrar",
     "benefitsTitle": "¿Por qué Link x Link?",
     "benefit1Title": "Perfiles locales",
@@ -79,6 +85,7 @@
   "legal": {
     "eulaTitle": "Términos y condiciones",
     "privacyTitle": "Política de privacidad",
+    "lastUpdated": "Última actualización: {{date}}",
     "backHome": "Volver al inicio"
   },
   "notFound": {

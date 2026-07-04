@@ -1,14 +1,21 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { usePageMeta } from '../hooks/usePageMeta'
+import { LEGAL_LAST_UPDATED, formatLegalDate } from '../lib/legal'
 
 export function Eula() {
   const { t, i18n } = useTranslation()
   const es = i18n.resolvedLanguage === 'es'
 
+  usePageMeta({ title: `${t('legal.eulaTitle')} | Link x Link`, path: '/eula' })
+
   return (
     <div className="page legal-page">
       <main>
         <h1>{t('legal.eulaTitle')}</h1>
+        <p className="legal-page__updated">
+          {t('legal.lastUpdated', { date: formatLegalDate(LEGAL_LAST_UPDATED, i18n.language) })}
+        </p>
         {es ? (
           <>
             <p>
