@@ -51,7 +51,7 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 |---|---|
 | [`DESIGN.md`](./DESIGN.md) | Architecture and design decisions |
 | [`CLAUDE.md`](./CLAUDE.md) | Project conventions |
-| [`SETUP.md`](./SETUP.md) | Full Supabase + Netlify setup guide |
+| [`SETUP.md`](./SETUP.md) | Full Supabase + Vercel setup guide |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to contribute |
 | [`SECURITY.md`](./SECURITY.md) | Vulnerability reporting |
 
