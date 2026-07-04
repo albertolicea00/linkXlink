@@ -266,6 +266,25 @@ export function Register({ lang }: Props) {
                   <span className="register__card-subtitle">{t('register.stepAccountTitle')}</span>
                 </div>
                 <AuthPanel />
+                {!alreadyAccepted && (
+                  <label className="terms-check" style={{ padding: '0 0 0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) => setChecked(e.target.checked)}
+                    />
+                    <span>
+                      <Trans
+                        i18nKey="landing.acceptTerms"
+                        components={{
+                          eula: <Link to="/eula" />,
+                          privacy: <Link to="/privacy" />,
+                          data: <Link to="/data" />,
+                        }}
+                      />
+                    </span>
+                  </label>
+                )}
               </div>
             )}
 
