@@ -447,24 +447,99 @@ a {
   color: var(--color-text-muted);
 }
 
-/* Swipe deck */
-.swipe-deck__card {
-  touch-action: pan-y;
-  transition: transform 0.15s ease-out;
+/* Swipe deck (Tinder-style stack) */
+.swipe-deck--empty {
+  text-align: center;
 }
 
-.swipe-deck__nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: 1rem;
+.swipe-deck__stack {
+  position: relative;
+  outline: none;
+}
+
+.swipe-deck__card {
+  touch-action: pan-y;
+}
+
+.swipe-deck__card--top {
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+}
+
+.swipe-deck__card--top:active {
+  cursor: grabbing;
+}
+
+.swipe-deck__card--behind {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease;
+}
+
+.swipe-deck__stamp {
+  position: absolute;
+  top: 1.25rem;
+  padding: 0.25rem 0.8rem;
+  border: 3px solid currentColor;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  opacity: 0;
+  background: var(--color-surface);
+}
+
+.swipe-deck__stamp--left {
+  right: 1.25rem;
+  color: var(--color-danger);
+  transform: rotate(12deg);
+}
+
+.swipe-deck__stamp--right {
+  left: 1.25rem;
+  color: var(--color-whatsapp-dark);
+  transform: rotate(-12deg);
 }
 
 .swipe-deck__counter {
   color: var(--color-text-muted);
   font-size: 0.9rem;
   white-space: nowrap;
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+.deck-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.deck-actions .btn {
+  flex: 1;
+  max-width: 180px;
+}
+
+.admin-moderation {
+  max-width: 420px;
+  margin: 0 auto 2rem;
+  width: 100%;
+}
+
+.admin-moderation__wa {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-whatsapp-dark);
+  text-decoration: none;
+  padding: 0.4rem;
 }
 
 /* Profile card */

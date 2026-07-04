@@ -10,5 +10,10 @@
   ],
   "max_photos_per_profile": 1,
   "max_photo_upload_mb": 5,
-  "required_shares_to_register": 3
+  "required_shares_to_register": 3,
+  "swipe_threshold_px": 90,
+  "preload_profiles_ahead": 3,
+  "rotation_least_seen_first": true,
+  "track_views": true,
+  "track_whatsapp_clicks": true
 }
