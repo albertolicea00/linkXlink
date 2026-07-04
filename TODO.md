@@ -156,6 +156,21 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [ ] Public photo upload can be abused outside the form — rate limit via Edge Function if abused
 - [ ] EULA/privacy texts should state the 18+ requirement explicitly
 
+## 16. Swipe deck v2, rotation & metrics
+
+- [x] Real Tinder-style gestures (pointer drag, rotation, fly-out, card stack, keyboard arrows)
+- [x] Moderation deck in admin: same card, swipe/buttons Skip (left) / Approve (right) with drag stamps
+- [x] Rotation: per-device least-seen-first ordering + shuffle (`rotation_least_seen_first`)
+- [x] Preload photos of next N profiles (`preload_profiles_ahead`, default 3)
+- [x] Swipe threshold parametrizable (`swipe_threshold_px`)
+- [x] Metrics migration `0003_metrics.sql`: `profile_events` (view / whatsapp_click per anonymous device) + `moderation_actions` (who approved/skipped/banned whom)
+- [x] Track views + WhatsApp clicks from the app (flags `track_views`, `track_whatsapp_clicks`)
+- [x] Language toggle (pill style) in app and admin headers
+- [ ] Apply migration 0003 to real Supabase project
+- [ ] Metrics dashboard in admin (views/clicks per profile, actions per moderator)
+- [ ] Server-side rotation (balance exposure across all devices, not just per device)
+- [ ] `profile_events` public insert can be spammed — rate limit / Edge Function if abused
+
 ## Future (out of MVP scope)
 
 - [ ] Referral validation: per-profile referral code in the shared link (`?ref=<code>`), track who joined through whose link, count only verified joins toward the share gate (replaces the localStorage tap counter)
