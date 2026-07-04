@@ -123,7 +123,6 @@ function AdminPanel() {
   const { t } = useTranslation()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
-  const [copied, setCopied] = useState(false)
 
   const loadProfiles = async () => {
     const { data } = await supabase
@@ -152,8 +151,6 @@ function AdminPanel() {
     if (!inputRef.current) return
     inputRef.current.select()
     navigator.clipboard?.writeText(inputRef.current.value)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   const handleShareWA = () => {
@@ -185,10 +182,7 @@ function AdminPanel() {
         <h2>{t('admin.shareTitle')}</h2>
         <p className="admin-share__desc">{t('admin.shareDesc')}</p>
         <div className="admin-share__row">
-          <input ref={inputRef} className="admin-share__input" value={siteUrl} readOnly onClick={(e) => (e.target as HTMLInputElement).select()} />
-          <button type="button" className="btn btn--primary" onClick={handleCopy}>
-            {copied ? t('admin.shareCopied') : t('admin.shareTitle')}
-          </button>
+          <input ref={inputRef} className="admin-share__input" value={siteUrl} readOnly onClick={handleCopy} />
         </div>
         <div className="admin-share__buttons">
           <button type="button" className="btn btn--share btn--share-wa" onClick={handleShareWA}>
@@ -197,7 +191,7 @@ function AdminPanel() {
           </button>
           <button type="button" className="btn btn--share btn--share-native" onClick={handleShareNative}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            {t('admin.shareMore')}
+            {t('admin.shareTitle')}
           </button>
         </div>
       </section>
