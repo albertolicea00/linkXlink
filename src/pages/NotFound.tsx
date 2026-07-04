@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 export function NotFound() {
   const { t } = useTranslation()
+
+  usePageMeta({ title: `404 | Link x Link`, path: '/404', noindex: true })
 
   return (
     <div className="page legal-page">

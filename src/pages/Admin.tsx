@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { usePageMeta } from '../hooks/usePageMeta'
 import { isValidWhatsappNumber, sanitizeWhatsappNumber } from '../lib/whatsapp'
 import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
@@ -12,6 +13,8 @@ const PHOTOS_BUCKET = 'profile-photos'
 export function Admin() {
   const { t } = useTranslation()
   const [session, setSession] = useState<Session | null>(null)
+
+  usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: '/admin', noindex: true })
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => setSession(data.session))

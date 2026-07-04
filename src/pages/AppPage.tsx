@@ -8,6 +8,7 @@ import { ReportModal } from '../components/ReportModal'
 import { WarningBanner } from '../components/WarningBanner'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { usePageMeta } from '../hooks/usePageMeta'
 import type { Profile } from '../types'
 
 export function AppPage() {
@@ -16,8 +17,15 @@ export function AppPage() {
   const { count, swap, limitReached, nearLimit, max } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
 
+  usePageMeta({
+    title: t('meta.appTitle'),
+    description: t('meta.appDescription'),
+    path: '/app',
+  })
+
   return (
     <div className="page app-page">
+      <h1 className="sr-only">{t('meta.appTitle')}</h1>
       <header className="app-page__header">
         <Link to="/" className="app-page__logo">
           {t('app.name')}
