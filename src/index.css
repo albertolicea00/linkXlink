@@ -782,6 +782,36 @@ a {
   color: var(--color-text);
 }
 
+.field-password {
+  position: relative;
+}
+
+.field-password input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.field-password__toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  line-height: 0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field-password__toggle:hover {
+  color: var(--color-text);
+}
+
 .form-error {
   color: var(--color-danger);
 }
@@ -989,6 +1019,14 @@ a {
   color: var(--color-primary);
 }
 
+.admin-login__desc {
+  font-size: 0.825rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.4;
+  margin: 0;
+}
+
 .admin-login .admin-form {
   display: flex;
   flex-direction: column;
@@ -996,6 +1034,14 @@ a {
 
 .admin-login .admin-form .btn {
   margin-top: 0.5rem;
+}
+
+.admin-login__helper {
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.4;
 }
 
 .admin-profile-list {
