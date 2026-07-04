@@ -166,7 +166,11 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [x] Metrics migration `0003_metrics.sql`: `profile_events` (view / whatsapp_click per anonymous device) + `moderation_actions` (who approved/skipped/banned whom)
 - [x] Track views + WhatsApp clicks from the app (flags `track_views`, `track_whatsapp_clicks`)
 - [x] Language toggle (pill style) in app and admin headers
+- [x] Profile deep link `/app?profile=<uuid>` (dev feature; kill switch `deep_link_profiles_enabled`)
+- [x] Deck counter hidden behind `show_deck_counter`; local stats bar (swipes/clicks today) behind `show_deck_stats`
+- [x] Branded fallback images for photo-less profiles (5 gradient variants, TikTok 1080x1920, stable per profile id)
 - [ ] Apply migration 0003 to real Supabase project
+- [ ] Live admin-panel toggles (deep link, tracking) — needs public-readable `app.settings` or an RPC; today they are build-time config
 - [ ] Metrics dashboard in admin (views/clicks per profile, actions per moderator)
 - [ ] Server-side rotation (balance exposure across all devices, not just per device)
 - [ ] `profile_events` public insert can be spammed — rate limit / Edge Function if abused
