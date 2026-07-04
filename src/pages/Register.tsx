@@ -265,25 +265,7 @@ export function Register({ lang }: Props) {
                   <span className="register__card-title">{t('gate.authTitle')}</span>
                   <span className="register__card-subtitle">{t('register.stepAccountTitle')}</span>
                 </div>
-                <AuthPanel termsAccepted={alreadyAccepted || checked} />
-                <label className="terms-check" style={{ padding: '0 0 0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    checked={alreadyAccepted || checked}
-                    onChange={(e) => setChecked(e.target.checked)}
-                    disabled={alreadyAccepted}
-                  />
-                  <span>
-                    <Trans
-                      i18nKey="landing.acceptTerms"
-                      components={{
-                        eula: <Link to="/eula" />,
-                        privacy: <Link to="/privacy" />,
-                        data: <Link to="/data" />,
-                      }}
-                    />
-                  </span>
-                </label>
+                <AuthPanel />
               </div>
             )}
 
@@ -393,7 +375,6 @@ export function Register({ lang }: Props) {
                       type="checkbox"
                       checked={alreadyAccepted || checked}
                       onChange={(e) => setChecked(e.target.checked)}
-                      disabled={alreadyAccepted}
                     />
                     <span>
                       <Trans

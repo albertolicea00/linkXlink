@@ -15,8 +15,9 @@ interface Props {
  */
 export function AuthGateModal({ mode }: Props) {
   const { t } = useTranslation()
-  const [alreadyAccepted] = useState(hasAcceptedTerms)
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(hasAcceptedTerms)
+
+  const termsOk = checked
 
   return (
     <div className="modal-backdrop modal-backdrop--gate" role="presentation">
@@ -37,13 +38,12 @@ export function AuthGateModal({ mode }: Props) {
         <p className="auth-gate__text">{t(`gate.${mode}Text`)}</p>
         {mode === 'auth' ? (
           <>
-            <AuthPanel termsAccepted={alreadyAccepted || checked} />
+            <AuthPanel termsAccepted={termsOk} />
             <label className="terms-check" style={{ padding: '0.5rem 0 0' }}>
               <input
                 type="checkbox"
-                checked={alreadyAccepted || checked}
+                checked={checked}
                 onChange={(e) => setChecked(e.target.checked)}
-                disabled={alreadyAccepted}
               />
               <span>
                 <Link to="/eula">{t('footer.eula')}</Link>

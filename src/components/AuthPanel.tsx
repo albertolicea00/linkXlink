@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import appConfig from '../config/app-config.json'
 
 type Provider = 'google' | 'apple' | 'facebook'
@@ -61,7 +63,7 @@ const PROVIDER_NAMES: Record<Provider, string> = {
  * (`auth_providers`) plus email+password. OAuth redirects back to the
  * current page, where the session is picked up automatically.
  */
-export function AuthPanel({ termsAccepted = true }: { termsAccepted?: boolean }) {
+export function AuthPanel() {
   const { t } = useTranslation()
   const [mode, setMode] = useState<'signup' | 'login'>('signup')
   const [email, setEmail] = useState('')
@@ -69,6 +71,7 @@ export function AuthPanel({ termsAccepted = true }: { termsAccepted?: boolean })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
   const [notice, setNotice] = useState(false)
+  const [checked, setChecked] = useState(hasAcceptedTerms)
 
   const providers = appConfig.auth_providers as Provider[]
 
@@ -81,6 +84,8 @@ export function AuthPanel({ termsAccepted = true }: { termsAccepted?: boolean })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!checked) return
+    if (!hasAcceptedTerms()) acceptTerms()
     setBusy(true)
     setError(false)
     setNotice(false)
@@ -142,10 +147,25 @@ export function AuthPanel({ termsAccepted = true }: { termsAccepted?: boolean })
         </label>
         {error && <p className="form-error">{t('auth.error')}</p>}
         {notice && <p className="form-message">{t('auth.checkEmail')}</p>}
-        <button type="submit" className="btn btn--primary" disabled={busy || !termsAccepted}>
+        <button type="submit" className="btn btn--primary" disabled={busy || !checked}>
           {mode === 'login' ? t('auth.login') : t('auth.signup')}
         </button>
       </form>
+
+      <label className="terms-check" style={{ margin: '0.75rem 0 0' }}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+        />
+        <span>
+          <Link to="/eula">{t('footer.eula')}</Link>
+          {' · '}
+          <Link to="/privacy">{t('footer.privacy')}</Link>
+          {' · '}
+          <Link to="/data">{t('footer.data')}</Link>
+        </span>
+      </label>
 
       <button
         type="button"

@@ -49,8 +49,7 @@ const WA_COMPONENTS = { wa: <span className="accent" /> }
 export function Landing({ lang }: Props) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const [alreadyAccepted] = useState(hasAcceptedTerms)
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(hasAcceptedTerms)
 
   useEffect(() => {
     if (lang && i18n.resolvedLanguage !== lang) {
@@ -93,8 +92,8 @@ export function Landing({ lang }: Props) {
           <p className="landing__description">
             <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
           </p>
-          {!alreadyAccepted && (
-            <label className="terms-check">
+          <div className="landing__cta">
+            <label className="terms-check" style={{ margin: '0 auto 1rem' }}>
               <input
                 type="checkbox"
                 checked={checked}
@@ -107,14 +106,12 @@ export function Landing({ lang }: Props) {
                 />
               </span>
             </label>
-          )}
-          <div className="landing__cta">
             <button
               type="button"
               className="btn btn--primary btn--large"
-              disabled={!alreadyAccepted && !checked}
+              disabled={!checked}
               onClick={() => {
-                if (!alreadyAccepted) acceptTerms()
+                acceptTerms()
                 void navigate('/app')
               }}
             >
