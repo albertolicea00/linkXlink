@@ -8,12 +8,16 @@ import {
 } from 'libphonenumber-js/max'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { PhoneInput } from '../components/PhoneInput'
+import { AuthPanel } from '../components/AuthPanel'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { optimizeImage } from '../lib/imageOptimize'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
+import { fetchOwnProfile } from '../lib/ownProfile'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
 import appConfig from '../config/app-config.json'
+import type { Profile } from '../types'
 
 const PHOTOS_BUCKET = 'profile-photos'
 const DEFAULT_COUNTRY: CountryCode = 'CU'
@@ -27,6 +31,7 @@ function maxBirthdate(): string {
 }
 
 type FieldName = 'name' | 'birthdate' | 'phone' | 'photos'
+type Step = 1 | 2 | 3
 
 interface Props {
   lang?: 'es' | 'en'
@@ -34,6 +39,9 @@ interface Props {
 
 export function Register({ lang }: Props) {
   const { t, i18n } = useTranslation()
+  const { session, loading: authLoading } = useAuth()
+  const [ownProfile, setOwnProfile] = useState<Profile | null>(null)
+  const [ownChecked, setOwnChecked] = useState(false)
   const [alreadyAccepted] = useState(hasAcceptedTerms)
   const [checked, setChecked] = useState(false)
   const [shares, setShares] = useState(getShareCount)
@@ -56,6 +64,24 @@ export function Register({ lang }: Props) {
     }
   }, [lang, i18n])
 
+  useEffect(() => {
+    if (!session) {
+      setOwnProfile(null)
+      setOwnChecked(false)
+      return
+    }
+    let cancelled = false
+    void fetchOwnProfile().then((p) => {
+      if (!cancelled) {
+        setOwnProfile(p)
+        setOwnChecked(true)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   usePageMeta({
     title: `${t('register.title')} | Link x Link`,
     path: lang ? `/${lang}/register` : '/register',
@@ -63,6 +89,7 @@ export function Register({ lang }: Props) {
 
   const termsOk = alreadyAccepted || checked
   const sharesOk = shares >= REQUIRED_SHARES
+  const step: Step = !session ? 1 : !sharesOk ? 2 : 3
 
   const touch = (field: FieldName) => setTouched((s) => ({ ...s, [field]: true }))
 
@@ -110,6 +137,7 @@ export function Register({ lang }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!session) return
     setTouched({ name: true, birthdate: true, phone: true, photos: true })
     if (hasErrors) return
     setBusy(true)
@@ -128,8 +156,7 @@ export function Register({ lang }: Props) {
       // E.164 without the "+": digits-only with country code, as the DB expects.
       const whatsapp = parsePhoneNumberFromString(national, country)!.number.slice(1)
 
-      // Self-registered profiles start inactive; RLS rejects public inserts
-      // with active = true. An admin activates them from the panel.
+      // Owned by the signed-in user, always pending; RLS enforces both.
       // Birthdate is checked client-side only and deliberately NOT stored:
       // profile rows are publicly readable.
       const { error } = await supabase.from('profiles').insert({
@@ -138,6 +165,7 @@ export function Register({ lang }: Props) {
         whatsapp,
         photos: photoUrls,
         active: false,
+        owner_id: session.user.id,
       })
       if (error) throw error
 
@@ -150,6 +178,14 @@ export function Register({ lang }: Props) {
       setBusy(false)
     }
   }
+
+  const steps: { n: Step; label: string }[] = [
+    { n: 1, label: t('register.stepAccount') },
+    { n: 2, label: t('register.stepShare') },
+    { n: 3, label: t('register.stepProfile') },
+  ]
+
+  const showWizard = !done && !ownProfile && !authLoading && (step === 1 || !session || ownChecked)
 
   return (
     <div className="page landing register">
@@ -173,156 +209,197 @@ export function Register({ lang }: Props) {
       <main className="landing__main">
         <p className="landing__description register__intro">{t('register.intro')}</p>
 
-        {done ? (
+        {done && (
           <div className="register__success">
             <p>{t('register.success')}</p>
             <Link to="/app" className="btn btn--primary">
               {t('register.goToApp')}
             </Link>
           </div>
-        ) : (
-          <>
-            <section className="share-gate">
-              <h2>{t('register.shareTitle')}</h2>
-              <p>{t('register.shareHelp', { count: REQUIRED_SHARES })}</p>
-              <button type="button" className="btn btn--whatsapp" onClick={handleShare}>
-                {t('register.shareButton')}
-              </button>
-              <p className="share-gate__progress">
-                {t('register.shareProgress', {
-                  current: Math.min(shares, REQUIRED_SHARES),
-                  total: REQUIRED_SHARES,
-                })}
-              </p>
-            </section>
+        )}
 
-            <div className="register__card">
-              <div className="register__card-header">
-                <svg viewBox="0 0 512 512" className="register__card-icon" aria-hidden>
-                  <defs>
-                    <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stopColor="#ec4899" />
-                      <stop offset="1" stopColor="#fb7185" />
-                    </linearGradient>
-                  </defs>
-                  <rect width="512" height="512" rx="112" fill="url(#rg)" />
-                  <path
-                    d="M256 400 C 214 366 128 300 128 222 C 128 172 166 136 212 136 C 238 136 246 148 256 162 C 266 148 274 136 300 136 C 346 136 384 172 384 222 C 384 300 298 366 256 400 Z"
-                    fill="#fff"
-                  />
-                </svg>
-                <span className="register__card-title">{t('register.title')}</span>
-              </div>
-              <form className="register__form" onSubmit={handleSubmit} noValidate>
-                <label className="field">
-                  {t('admin.name')}
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onBlur={() => touch('name')}
-                    maxLength={80}
-                  />
-                  <span className="field-help">{t('register.nameHelp')}</span>
-                  {fieldError('name') && <span className="field-error">{fieldError('name')}</span>}
-                </label>
-                <label className="field">
-                  {t('admin.description')}
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    maxLength={300}
-                    rows={3}
-                  />
-                  <span className="field-help">{t('register.descriptionHelp')}</span>
-                </label>
-                <label className="field">
-                  {t('register.birthdate')}
-                  <input
-                    type="date"
-                    value={birthdate}
-                    max={maxBirthdate()}
-                    onChange={(e) => {
-                      setBirthdate(e.target.value)
-                      touch('birthdate')
-                    }}
-                    onBlur={() => touch('birthdate')}
-                    required
-                  />
-                  <span className="field-help">{t('register.birthdateHelp')}</span>
-                  {fieldError('birthdate') && (
-                    <span className="field-error">{fieldError('birthdate')}</span>
-                  )}
-                </label>
-                <div className="field">
-                  <span>{t('register.whatsapp')}</span>
-                  <PhoneInput
-                    country={country}
-                    national={national}
-                    onCountryChange={(c) => {
-                      setCountry(c)
-                      if (national) touch('phone')
-                    }}
-                    onNationalChange={(v) => {
-                      handleNationalChange(v)
-                      touch('phone')
-                    }}
-                    onBlur={() => touch('phone')}
-                  />
-                  <span className="field-help">{t('register.whatsappHelp')}</span>
-                  {fieldError('phone') && (
-                    <span className="field-error">{fieldError('phone')}</span>
-                  )}
-                </div>
-                <label className="field">
-                  {t('register.photos', { max: appConfig.max_photos_per_profile })}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple={appConfig.max_photos_per_profile > 1}
-                    onChange={(e) => {
-                      setFiles(Array.from(e.target.files ?? []))
-                      touch('photos')
-                    }}
-                  />
-                  <span className="field-help">{t('register.photosHelp')}</span>
-                  {fieldError('photos') && (
-                    <span className="field-error">{fieldError('photos')}</span>
-                  )}
-                </label>
-                {!alreadyAccepted && (
-                  <label className="terms-check">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={(e) => setChecked(e.target.checked)}
-                    />
-                    <span>
-                      <Trans
-                        i18nKey="landing.acceptTerms"
-                        components={{
-                          eula: <Link to="/eula" />,
-                          privacy: <Link to="/privacy" />,
-                          data: <Link to="/data" />,
-                        }}
-                      />
-                    </span>
-                  </label>
-                )}
-                {message && <p className="form-error">{message}</p>}
-                {!sharesOk && (
-                  <p className="form-message">
-                    {t('register.shareRequired', { count: REQUIRED_SHARES })}
-                  </p>
-                )}
-                <button
-                  type="submit"
-                  className="btn btn--primary"
-                  disabled={busy || !termsOk || !sharesOk}
+        {!done && ownProfile && (
+          <div className="register__success">
+            <p>
+              {ownProfile.active
+                ? t('register.alreadyActive')
+                : t('register.alreadyPending')}
+            </p>
+            <Link to="/app" className="btn btn--primary">
+              {t('register.goToApp')}
+            </Link>
+          </div>
+        )}
+
+        {showWizard && (
+          <>
+            <ol className="steps" aria-label={t('register.title')}>
+              {steps.map((s) => (
+                <li
+                  key={s.n}
+                  className={`steps__item${step === s.n ? ' steps__item--active' : ''}${
+                    step > s.n ? ' steps__item--done' : ''
+                  }`}
+                  aria-current={step === s.n ? 'step' : undefined}
                 >
-                  {busy ? t('register.submitting') : t('register.submit')}
+                  <span className="steps__num">{step > s.n ? '✓' : s.n}</span>
+                  {s.label}
+                </li>
+              ))}
+            </ol>
+
+            {session && (
+              <p className="register__account">
+                {session.user.email}
+                {' · '}
+                <button type="button" onClick={() => void supabase.auth.signOut()}>
+                  {t('admin.logout')}
                 </button>
-              </form>
-            </div>
+              </p>
+            )}
+
+            {step === 1 && (
+              <div className="register__card">
+                <div className="register__card-header">
+                  <RegisterLogo />
+                  <span className="register__card-title">{t('gate.authTitle')}</span>
+                  <span className="register__card-subtitle">{t('register.stepAccountTitle')}</span>
+                </div>
+                <AuthPanel />
+              </div>
+            )}
+
+            {step === 2 && (
+              <section className="share-gate">
+                <h2>{t('register.shareTitle')}</h2>
+                <p>{t('register.shareHelp', { count: REQUIRED_SHARES })}</p>
+                <button type="button" className="btn btn--whatsapp" onClick={handleShare}>
+                  {t('register.shareButton')}
+                </button>
+                <p className="share-gate__progress">
+                  {t('register.shareProgress', {
+                    current: Math.min(shares, REQUIRED_SHARES),
+                    total: REQUIRED_SHARES,
+                  })}
+                </p>
+              </section>
+            )}
+
+            {step === 3 && (
+              <div className="register__card">
+                <div className="register__card-header">
+                  <RegisterLogo />
+                  <span className="register__card-title">{t('gate.authTitle')}</span>
+                  <span className="register__card-subtitle">{t('register.title')}</span>
+                </div>
+                <form className="register__form" onSubmit={handleSubmit} noValidate>
+                  <label className="field">
+                    {t('admin.name')}
+                    <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onBlur={() => touch('name')}
+                      maxLength={80}
+                    />
+                    <span className="field-help">{t('register.nameHelp')}</span>
+                    {fieldError('name') && (
+                      <span className="field-error">{fieldError('name')}</span>
+                    )}
+                  </label>
+                  <label className="field">
+                    {t('admin.description')}
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      maxLength={300}
+                      rows={3}
+                    />
+                    <span className="field-help">{t('register.descriptionHelp')}</span>
+                  </label>
+                  <label className="field">
+                    {t('register.birthdate')}
+                    <input
+                      type="date"
+                      value={birthdate}
+                      max={maxBirthdate()}
+                      onChange={(e) => {
+                        setBirthdate(e.target.value)
+                        touch('birthdate')
+                      }}
+                      onBlur={() => touch('birthdate')}
+                      required
+                    />
+                    <span className="field-help">{t('register.birthdateHelp')}</span>
+                    {fieldError('birthdate') && (
+                      <span className="field-error">{fieldError('birthdate')}</span>
+                    )}
+                  </label>
+                  <div className="field">
+                    <span>{t('register.whatsapp')}</span>
+                    <PhoneInput
+                      country={country}
+                      national={national}
+                      onCountryChange={(c) => {
+                        setCountry(c)
+                        if (national) touch('phone')
+                      }}
+                      onNationalChange={(v) => {
+                        handleNationalChange(v)
+                        touch('phone')
+                      }}
+                      onBlur={() => touch('phone')}
+                    />
+                    <span className="field-help">{t('register.whatsappHelp')}</span>
+                    {fieldError('phone') && (
+                      <span className="field-error">{fieldError('phone')}</span>
+                    )}
+                  </div>
+                  <label className="field">
+                    {t('register.photos', { max: appConfig.max_photos_per_profile })}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple={appConfig.max_photos_per_profile > 1}
+                      onChange={(e) => {
+                        setFiles(Array.from(e.target.files ?? []))
+                        touch('photos')
+                      }}
+                    />
+                    <span className="field-help">{t('register.photosHelp')}</span>
+                    {fieldError('photos') && (
+                      <span className="field-error">{fieldError('photos')}</span>
+                    )}
+                  </label>
+                  {!alreadyAccepted && (
+                    <label className="terms-check">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => setChecked(e.target.checked)}
+                      />
+                      <span>
+                        <Trans
+                          i18nKey="landing.acceptTerms"
+                          components={{
+                            eula: <Link to="/eula" />,
+                            privacy: <Link to="/privacy" />,
+                            data: <Link to="/data" />,
+                          }}
+                        />
+                      </span>
+                    </label>
+                  )}
+                  {message && <p className="form-error">{message}</p>}
+                  <button
+                    type="submit"
+                    className="btn btn--primary"
+                    disabled={busy || !termsOk}
+                  >
+                    {busy ? t('register.submitting') : t('register.submit')}
+                  </button>
+                </form>
+              </div>
+            )}
           </>
         )}
       </main>
@@ -333,5 +410,23 @@ export function Register({ lang }: Props) {
         <Link to="/data">{t('footer.data')}</Link>
       </footer>
     </div>
+  )
+}
+
+function RegisterLogo() {
+  return (
+    <svg viewBox="0 0 512 512" className="register__card-icon" aria-hidden>
+      <defs>
+        <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ec4899" />
+          <stop offset="1" stopColor="#fb7185" />
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="112" fill="url(#rg)" />
+      <path
+        d="M256 400 C 214 366 128 300 128 222 C 128 172 166 136 212 136 C 238 136 246 148 256 162 C 266 148 274 136 300 136 C 346 136 384 172 384 222 C 384 300 298 366 256 400 Z"
+        fill="#fff"
+      />
+    </svg>
   )
 }

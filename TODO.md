@@ -175,6 +175,17 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [ ] Server-side rotation (balance exposure across all devices, not just per device)
 - [ ] `profile_events` public insert can be spammed — rate limit / Edge Function if abused
 
+## 17. User authentication
+
+- [x] Supabase Auth for end users: Google / Apple / Facebook (OAuth) + email+password (`auth_providers` config)
+- [x] Migration `0004_user_auth.sql`: `owner_id` on profiles (unique — one profile per account), insert requires signed-in owner, owners read own pending profile, photo upload requires auth
+- [x] Register as 3-step wizard: 1) account → 2) share gate → 3) profile form
+- [x] Soft gate on `/app`: blocking popup (not redirect) to log in, then to create profile (`require_auth_for_app`, `require_profile_for_app`)
+- [x] Already-registered detection (own profile pending/active screens)
+- [ ] Apply migration 0004 to real Supabase project
+- [ ] Enable Google/Apple/Facebook providers in Supabase Dashboard (each needs OAuth app credentials + redirect URL)
+- [ ] Password reset flow for users (supabase.auth.resetPasswordForEmail + /reset page)
+
 ## Future (out of MVP scope)
 
 - [ ] Referral validation: per-profile referral code in the shared link (`?ref=<code>`), track who joined through whose link, count only verified joins toward the share gate (replaces the localStorage tap counter)

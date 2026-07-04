@@ -68,8 +68,34 @@
     "error": "Could not send the report. Please try again.",
     "alreadyReported": "You already reported this profile."
   },
+  "auth": {
+    "continueWith": "Continue with {{provider}}",
+    "or": "or with your email",
+    "email": "Email",
+    "password": "Password",
+    "login": "Log in",
+    "signup": "Create account",
+    "noAccount": "No account? Create one here",
+    "haveAccount": "Already have an account? Log in",
+    "checkEmail": "Check your email and confirm your account to continue.",
+    "error": "Could not sign in. Check your details.",
+    "logout": "Log out"
+  },
+  "gate": {
+    "authTitle": "Join Link x Link",
+    "authText": "Create your account or log in to see the profiles.",
+    "profileTitle": "Your profile is missing",
+    "profileText": "You have an account. Create your profile to unlock the app.",
+    "createProfile": "Create my profile"
+  },
   "register": {
     "title": "Create your profile",
+    "stepAccount": "Account",
+    "stepAccountTitle": "Create your account",
+    "stepShare": "Share",
+    "stepProfile": "Profile",
+    "alreadyActive": "Your profile is already published. You're live in the app!",
+    "alreadyPending": "You already submitted your profile. It's pending moderator approval.",
     "intro": "Publish your profile so other people can find you and message you on WhatsApp.",
     "shareTitle": "Share to join",
     "shareHelp": "To register, share Link x Link with at least {{count}} people/groups on WhatsApp.",

@@ -68,8 +68,33 @@
     "error": "No se pudo enviar el reporte. Inténtalo de nuevo.",
     "alreadyReported": "Ya reportaste este perfil."
   },
+  "auth": {
+    "continueWith": "Continuar con {{provider}}",
+    "or": "o con tu correo",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "login": "Iniciar sesión",
+    "signup": "Crear cuenta",
+    "noAccount": "¿No tienes cuenta? Créala aquí",
+    "haveAccount": "¿Ya tienes cuenta? Inicia sesión",
+    "checkEmail": "Revisa tu correo y confirma la cuenta para continuar.",
+    "error": "No se pudo iniciar sesión. Revisa tus datos."
+  },
+  "gate": {
+    "authTitle": "Únete a Link x Link",
+    "authText": "Crea tu cuenta o inicia sesión para ver los perfiles.",
+    "profileTitle": "Te falta tu perfil",
+    "profileText": "Ya tienes cuenta. Crea tu perfil para desbloquear la app.",
+    "createProfile": "Crear mi perfil"
+  },
   "register": {
     "title": "Crea tu perfil",
+    "stepAccount": "Cuenta",
+    "stepAccountTitle": "Crea tu cuenta",
+    "stepShare": "Comparte",
+    "stepProfile": "Perfil",
+    "alreadyActive": "Tu perfil ya está publicado. ¡Ya apareces en la app!",
+    "alreadyPending": "Ya enviaste tu perfil. Está pendiente de aprobación por un moderador.",
     "intro": "Publica tu perfil para que otras personas te encuentren y te escriban por WhatsApp.",
     "shareTitle": "Comparte para unirte",
     "shareHelp": "Para registrarte, comparte Link x Link con al menos {{count}} personas/grupos por WhatsApp.",

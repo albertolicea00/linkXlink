@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
+import { useAuth } from '../hooks/useAuth'
+import { fetchOwnProfile } from '../lib/ownProfile'
 import { SwipeDeck } from '../components/SwipeDeck'
 import { ProfileCard } from '../components/ProfileCard'
 import { ReportModal } from '../components/ReportModal'
+import { AuthGateModal } from '../components/AuthGateModal'
 import { WarningBanner } from '../components/WarningBanner'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -19,10 +22,40 @@ import type { Profile } from '../types'
 export function AppPage() {
   const { t } = useTranslation()
   const { profiles, loading, error, refetch } = useProfiles()
-  const { count, swap, limitReached, nearLimit, max } = useSwapCounter()
+  const { count, swap } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
   const [clicks, setClicks] = useState(getClickCount)
+  const clickLimitReached = clicks >= appConfig.max_swaps_per_24h
+  const clickNearLimit = !clickLimitReached && clicks >= appConfig.warning_swap_threshold
   const [searchParams] = useSearchParams()
+
+  // Soft gate: friendly blocking popup instead of a redirect.
+  // Toggles: require_auth_for_app / require_profile_for_app.
+  const { session, loading: authLoading } = useAuth()
+  const [ownProfile, setOwnProfile] = useState<Profile | null>(null)
+  const [ownChecked, setOwnChecked] = useState(false)
+
+  useEffect(() => {
+    if (!session) {
+      setOwnProfile(null)
+      setOwnChecked(false)
+      return
+    }
+    let cancelled = false
+    void fetchOwnProfile().then((p) => {
+      if (!cancelled) {
+        setOwnProfile(p)
+        setOwnChecked(true)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const showAuthGate = appConfig.require_auth_for_app && !authLoading && !session
+  const showProfileGate =
+    appConfig.require_profile_for_app && !!session && ownChecked && !ownProfile
 
   // Developer deep link: /app?profile=<uuid> puts that profile on top.
   // Kill switch: deep_link_profiles_enabled in app-config.json.
@@ -57,8 +90,8 @@ export function AppPage() {
         </div>
       </header>
 
-      {limitReached && <WarningBanner variant="error" message={t('swaps.limitReached', { max })} />}
-      {nearLimit && <WarningBanner message={t('swaps.warning', { count })} />}
+      {clickLimitReached && <WarningBanner variant="error" message={t('swaps.limitReached', { max: appConfig.max_swaps_per_24h })} />}
+      {clickNearLimit && <WarningBanner message={t('swaps.warning', { count: clicks })} />}
 
       <main className="app-page__main">
         {loading && <p className="app-page__status">{t('feed.loading')}</p>}
@@ -82,15 +115,13 @@ export function AppPage() {
         {!loading && !error && profiles.length > 0 && (
           <SwipeDeck
             profiles={orderedProfiles}
-            swipeDisabled={limitReached}
             showCounter={appConfig.show_deck_counter}
             showUndo={appConfig.show_undo_button}
             renderCard={(p) => (
               <ProfileCard
                 profile={p}
-                whatsappDisabled={limitReached}
+                whatsappDisabled={clickLimitReached}
                 onWhatsappClick={() => {
-                  swap()
                   setClicks(recordClick())
                   trackProfileEvent(p.id, 'whatsapp_click')
                 }}
@@ -115,7 +146,7 @@ export function AppPage() {
 
         {!loading && !error && profiles.length > 0 && appConfig.show_deck_stats && (
           <p className="deck-stats">
-            <span>{t('feed.statsSwipes', { count, max })}</span>
+            <span>{t('feed.statsSwipes', { count, max: appConfig.max_swaps_per_24h })}</span>
             <span aria-hidden>·</span>
             <span>{t('feed.statsClicks', { count: clicks })}</span>
           </p>
@@ -129,6 +160,9 @@ export function AppPage() {
           onReported={() => void refetch()}
         />
       )}
+
+      {showAuthGate && <AuthGateModal mode="auth" />}
+      {!showAuthGate && showProfileGate && <AuthGateModal mode="profile" />}
     </div>
   )
 }

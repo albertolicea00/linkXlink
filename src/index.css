@@ -1169,6 +1169,12 @@ a.landing__brand {
   color: var(--color-primary);
 }
 
+.register__card-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: -0.25rem;
+}
+
 .share-gate {
   max-width: 420px;
   margin: 0 auto 2rem;
@@ -1346,4 +1352,165 @@ a.landing__brand {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Auth panel */
+.auth-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.auth-panel__providers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.auth-panel__provider {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-panel__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.auth-panel__divider::before,
+.auth-panel__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.auth-panel__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-panel__toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: center;
+}
+
+/* Register wizard steps */
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 auto 1.25rem;
+  padding: 0;
+  max-width: 420px;
+}
+
+.steps__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  flex: 1;
+  justify-content: center;
+}
+
+.steps__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.steps__item--active {
+  color: var(--color-text);
+}
+
+.steps__item--active .steps__num {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.steps__item--done .steps__num {
+  border-color: var(--color-whatsapp-dark);
+  color: var(--color-whatsapp-dark);
+}
+
+.register__account {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.register__account button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Auth gate over /app */
+.modal-backdrop--gate {
+  backdrop-filter: blur(4px);
+}
+
+.auth-gate {
+  text-align: center;
+}
+
+.auth-gate__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.auth-gate__logo {
+  width: 48px;
+  height: 48px;
+}
+
+.auth-gate__title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.auth-gate .auth-panel {
+  padding: 0.5rem 0 0;
+  text-align: left;
+}
+
+.auth-gate__text {
+  color: var(--color-text-muted);
+}
+
+.auth-gate__cta {
+  margin-top: 0.5rem;
 }
