@@ -1,17 +1,24 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { fallbackPhoto } from '../lib/fallbackPhoto'
 
 interface Props {
   photos: string[]
   name: string
+  /** Picks a stable branded fallback image when there are no photos. */
+  profileId?: string
 }
 
-export function PhotoCarousel({ photos, name }: Props) {
+export function PhotoCarousel({ photos, name, profileId }: Props) {
   const { t } = useTranslation()
   const [index, setIndex] = useState(0)
 
   if (photos.length === 0) {
-    return <div className="photo-carousel photo-carousel--empty" aria-hidden="true" />
+    return (
+      <div className="photo-carousel photo-carousel--empty" aria-hidden="true">
+        <img src={fallbackPhoto(profileId ?? name)} alt="" loading="lazy" draggable={false} />
+      </div>
+    )
   }
 
   const goTo = (i: number) => setIndex((i + photos.length) % photos.length)

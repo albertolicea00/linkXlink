@@ -24,7 +24,7 @@ export function ProfileCard({
 
   return (
     <article className="profile-card">
-      <PhotoCarousel photos={profile.photos ?? []} name={profile.name} />
+      <PhotoCarousel photos={profile.photos ?? []} name={profile.name} profileId={profile.id} />
       <div className="profile-card__body">
         <h2 className="profile-card__name">{profile.name}</h2>
         <p className="profile-card__description">{profile.description}</p>

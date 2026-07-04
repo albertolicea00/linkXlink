@@ -541,12 +541,15 @@ a {
 }
 
 .admin-moderation__wa {
-  flex: 1;
+  flex: 0 1 auto;
+  align-self: center;
   text-align: center;
   font-weight: 600;
+  font-size: 0.85rem;
   color: var(--color-whatsapp-dark);
   text-decoration: none;
-  padding: 0.4rem;
+  padding: 0.4rem 0.2rem;
+  white-space: nowrap;
 }
 
 /* Profile card */
