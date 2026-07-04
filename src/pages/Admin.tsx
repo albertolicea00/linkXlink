@@ -3,9 +3,13 @@ import type { Session } from '@supabase/supabase-js'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { SwipeDeck, type SwipeDirection } from '../components/SwipeDeck'
+import { ProfileCard } from '../components/ProfileCard'
 import { usePageMeta } from '../hooks/usePageMeta'
 import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
+import { logModeration } from '../lib/metrics'
 import type { Profile } from '../types'
 
 export function Admin() {
@@ -25,6 +29,7 @@ export function Admin() {
       <header className="admin-page__header">
         <h1>{t('admin.title')}</h1>
         <div className="admin-page__controls">
+          <LanguageSwitcher />
           <ThemeToggle />
           {session && (
             <button type="button" className="btn" onClick={() => void supabase.auth.signOut()}>
@@ -124,12 +129,18 @@ function AdminPanel() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Frozen snapshot for the moderation deck: stats update live, but the deck
+  // must keep a stable list so skipped cards don't reappear mid-session.
+  const [modQueue, setModQueue] = useState<Profile[]>([])
+
   const loadProfiles = async () => {
     const { data } = await supabase
       .from('profiles')
       .select('*')
       .order('created_at', { ascending: false })
-    setProfiles((data ?? []) as Profile[])
+    const list = (data ?? []) as Profile[]
+    setProfiles(list)
+    setModQueue(list.filter((p) => !p.active && p.report_count === 0))
   }
 
   useEffect(() => {
@@ -161,12 +172,20 @@ function AdminPanel() {
     void navigator.share?.({ title: 'Link x Link', text: shareText, url: siteUrl })
   }
 
-  const handleReactivate = async (id: string) => {
-    await supabase
-      .from('profiles')
-      .update({ active: true, report_count: 0, disabled_at: null })
-      .eq('id', id)
-    await loadProfiles()
+  const handleModeration = async (profile: Profile, dir: SwipeDirection) => {
+    if (dir === 'right') {
+      await supabase
+        .from('profiles')
+        .update({ active: true, report_count: 0, disabled_at: null })
+        .eq('id', profile.id)
+      // Update stats in place; modQueue stays frozen so the deck advances.
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === profile.id ? { ...p, active: true, report_count: 0, disabled_at: null } : p,
+        ),
+      )
+    }
+    await logModeration(profile.id, dir === 'right' ? 'approve' : 'skip')
   }
 
   return (
@@ -196,42 +215,43 @@ function AdminPanel() {
         </div>
       </section>
 
-      <section>
+      <section className="admin-moderation">
         <h2>{t('admin.pendingTitle')}</h2>
-        {pendingProfiles.length === 0 ? (
-          <p className="form-message">{t('admin.pendingEmpty')}</p>
-        ) : (
-          <ul className="admin-profile-list">
-            {pendingProfiles.map((p) => (
-              <li key={p.id} className="admin-profile-row">
-                {p.photos[0] && (
-                  <img src={p.photos[0]} alt="" className="admin-profile-row__thumb" />
-                )}
-                <div className="admin-profile-row__info">
-                  <span className="admin-profile-row__name">{p.name}</span>
-                  <a
-                    href={`https://wa.me/${p.whatsapp}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="admin-profile-row__wa"
-                  >
-                    +{p.whatsapp}
-                  </a>
-                  {p.description && (
-                    <span className="admin-profile-row__desc">{p.description}</span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={() => void handleReactivate(p.id)}
+        <SwipeDeck
+          profiles={modQueue}
+          overlayLabels={{ left: t('admin.skip'), right: t('admin.approve') }}
+          renderCard={(p) => (
+            <ProfileCard
+              profile={p}
+              actions={
+                <a
+                  href={`https://wa.me/${p.whatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="admin-moderation__wa"
                 >
-                  {t('admin.approve')}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+                  +{p.whatsapp}
+                </a>
+              }
+            />
+          )}
+          onSwipe={(p, dir) => void handleModeration(p, dir)}
+          renderActions={(swipe) => (
+            <div className="deck-actions">
+              <button type="button" className="btn deck-actions__skip" onClick={() => swipe('left')}>
+                {t('admin.skip')}
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary deck-actions__approve"
+                onClick={() => swipe('right')}
+              >
+                {t('admin.approve')}
+              </button>
+            </div>
+          )}
+          emptyState={<p className="form-message">{t('admin.pendingEmpty')}</p>}
+        />
       </section>
     </div>
   )

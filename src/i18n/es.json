@@ -120,6 +120,7 @@
     "pendingTitle": "Perfiles pendientes de aprobar",
     "pendingEmpty": "No hay perfiles pendientes.",
     "approve": "Aprobar",
+    "skip": "Saltar",
     "statusActive": "Activo",
     "statusDisabled": "Deshabilitado",
     "reactivate": "Reactivar",

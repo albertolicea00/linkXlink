@@ -202,16 +202,23 @@ a {
   padding: 0.2rem;
 }
 
-.lang-links a {
+.lang-links a,
+.lang-links button {
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
+  font-family: inherit;
   color: var(--color-text-muted);
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  line-height: inherit;
 }
 
-.lang-links a.lang-links--active {
+.lang-links a.lang-links--active,
+.lang-links button.lang-links--active {
   background: var(--color-primary);
   color: #fff;
 }

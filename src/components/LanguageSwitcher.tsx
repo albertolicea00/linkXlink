@@ -1,23 +1,23 @@
 import { useTranslation } from 'react-i18next'
 import appConfig from '../config/app-config.json'
 
+/** Same pill UI as the landing lang links, but switches i18n in place
+ * (app/admin routes have no per-language URL). */
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation()
 
   return (
-    <label className="language-switcher">
-      <span className="sr-only">{t('nav.language')}</span>
-      <select
-        value={i18n.resolvedLanguage}
-        onChange={(e) => void i18n.changeLanguage(e.target.value)}
-        aria-label={t('nav.language')}
-      >
-        {appConfig.supported_languages.map((lng) => (
-          <option key={lng} value={lng}>
-            {lng.toUpperCase()}
-          </option>
-        ))}
-      </select>
-    </label>
+    <nav className="lang-links" aria-label={t('nav.language')}>
+      {appConfig.supported_languages.map((lng) => (
+        <button
+          key={lng}
+          type="button"
+          className={i18n.resolvedLanguage === lng ? 'lang-links--active' : ''}
+          onClick={() => void i18n.changeLanguage(lng)}
+        >
+          {lng.toUpperCase()}
+        </button>
+      ))}
+    </nav>
   )
 }
