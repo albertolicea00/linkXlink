@@ -57,9 +57,24 @@ export function Eula() {
             </p>
           </>
         )}
-        <Link to="/" className="btn">
-          {t('legal.backHome')}
-        </Link>
+        <div className="legal-page__actions">
+          {es ? (
+            <p>
+              Lee también nuestra{' '}
+              <Link to="/privacy">política de privacidad</Link>
+              {' '}y nuestro{' '}
+              <Link to="/data">uso de datos</Link>.
+            </p>
+          ) : (
+            <p>
+              Also read our{' '}
+              <Link to="/privacy">privacy policy</Link>
+              {' '}and our{' '}
+              <Link to="/data">data usage policy</Link>.
+            </p>
+          )}
+        </div>
+        <Link to="/" className="btn">{t('legal.backHome')}</Link>
       </main>
     </div>
   )

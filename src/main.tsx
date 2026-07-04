@@ -8,6 +8,7 @@ import { AppPage } from './pages/AppPage'
 import { Admin } from './pages/Admin'
 import { Eula } from './pages/Eula'
 import { Privacy } from './pages/Privacy'
+import { DataUsage } from './pages/DataUsage'
 import { NotFound } from './pages/NotFound'
 import { hasAcceptedTerms } from './lib/terms'
 
@@ -31,6 +32,8 @@ const router = createBrowserRouter([
   { path: '/admin', element: <Admin /> },
   { path: '/eula', element: <Eula /> },
   { path: '/privacy', element: <Privacy /> },
+  { path: '/data', element: <DataUsage /> },
+  { path: '/cookies', element: <Navigate to="/data" replace /> },
   { path: '*', element: <NotFound /> },
 ])
 

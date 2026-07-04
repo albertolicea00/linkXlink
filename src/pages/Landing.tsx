@@ -103,7 +103,7 @@ export function Landing({ lang }: Props) {
               <span>
                 <Trans
                   i18nKey="landing.acceptTerms"
-                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" /> }}
+                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
                 />
               </span>
             </label>
@@ -155,6 +155,7 @@ export function Landing({ lang }: Props) {
       <footer className="landing__footer">
         <Link to="/eula">{t('footer.eula')}</Link>
         <Link to="/privacy">{t('footer.privacy')}</Link>
+        <Link to="/data">{t('footer.data')}</Link>
       </footer>
     </div>
   )

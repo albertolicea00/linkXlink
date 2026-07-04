@@ -23,7 +23,7 @@
     "how1": "Enter the app and swipe through profiles.",
     "how2": "Interested in someone? Tap the WhatsApp button.",
     "how3": "Something wrong? Report it and help the community.",
-    "acceptTerms": "I accept the <eula>terms and conditions</eula> and the <privacy>privacy policy</privacy>"
+    "acceptTerms": "I accept the <eula>terms and conditions</eula>, the <privacy>privacy policy</privacy> and the <data>data usage policy</data>"
   },
   "profile": {
     "openWhatsApp": "Open WhatsApp",
@@ -86,6 +86,7 @@
   "legal": {
     "eulaTitle": "Terms and conditions",
     "privacyTitle": "Privacy policy",
+    "dataTitle": "Data usage",
     "lastUpdated": "Last updated: {{date}}",
     "backHome": "Back to home"
   },
@@ -99,6 +100,7 @@
   },
   "footer": {
     "eula": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "data": "Data"
   }
 }

@@ -51,9 +51,24 @@ export function Privacy() {
             <p>Images are hosted on Supabase Storage and served through public URLs.</p>
           </>
         )}
-        <Link to="/" className="btn">
-          {t('legal.backHome')}
-        </Link>
+        <div className="legal-page__actions">
+          {es ? (
+            <p>
+              Lee también nuestros{' '}
+              <Link to="/eula">términos y condiciones</Link>
+              {' '}y nuestro{' '}
+              <Link to="/data">uso de datos</Link>.
+            </p>
+          ) : (
+            <p>
+              Also read our{' '}
+              <Link to="/eula">terms and conditions</Link>
+              {' '}and our{' '}
+              <Link to="/data">data usage policy</Link>.
+            </p>
+          )}
+        </div>
+        <Link to="/" className="btn">{t('legal.backHome')}</Link>
       </main>
     </div>
   )
