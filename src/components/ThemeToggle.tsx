@@ -2,19 +2,29 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getTheme, setTheme, type Theme } from '../lib/theme'
 
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+} as const
+
 function SunIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="theme-toggle__icon">
-      <circle cx="12" cy="12" r="4.2" />
-      <path d="M12 2.5v2.2M12 19.3v2.2M4.7 4.7l1.6 1.6M17.7 17.7l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.7 19.3l1.6-1.6M17.7 6.3l1.6-1.6" />
+    <svg {...iconProps} className="theme-toggle__icon">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2.3M12 19.7V22M22 12h-2.3M4.3 12H2M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7M19.1 19.1l-1.7-1.7M6.6 6.6 4.9 4.9" />
     </svg>
   )
 }
 
 function MoonIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="theme-toggle__icon">
-      <path d="M20 15.4A8.5 8.5 0 1 1 8.6 4 6.5 6.5 0 0 0 20 15.4Z" />
+    <svg {...iconProps} className="theme-toggle__icon">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
     </svg>
   )
 }
