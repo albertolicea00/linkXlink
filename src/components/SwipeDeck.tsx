@@ -11,17 +11,18 @@ export type SwipeDirection = 'left' | 'right'
 
 interface Props {
   profiles: Profile[]
-  renderCard: (profile: Profile) => ReactNode
+  /** `swipe` triggers the fly-out animation — use it for in-card action buttons. */
+  renderCard: (profile: Profile, swipe: (dir: SwipeDirection) => void) => ReactNode
   onSwipe: (profile: Profile, direction: SwipeDirection) => void
   /** Fired when a new card becomes the top of the deck (view tracking). */
   onTopChange?: (profile: Profile) => void
   swipeDisabled?: boolean
   /** Tinder-style stamps shown while dragging (e.g. SKIP / APPROVE). */
   overlayLabels?: { left: string; right: string }
-  /** Extra action row under the deck; `swipe` triggers the fly-out animation. */
-  renderActions?: (swipe: (dir: SwipeDirection) => void, profile: Profile) => ReactNode
   emptyState?: ReactNode
   showCounter?: boolean
+  /** "I changed my mind" link that brings the previous card back. */
+  showUndo?: boolean
 }
 
 export function SwipeDeck({
@@ -31,9 +32,9 @@ export function SwipeDeck({
   onTopChange,
   swipeDisabled = false,
   overlayLabels,
-  renderActions,
   emptyState = null,
   showCounter = false,
+  showUndo = false,
 }: Props) {
   const { t } = useTranslation()
   const [index, setIndex] = useState(0)
@@ -104,6 +105,12 @@ export function SwipeDeck({
     if (e.key === 'ArrowRight') swipe('right')
   }
 
+  const undo = () => {
+    if (leaving || index === 0) return
+    setDrag(null)
+    setIndex((i) => i - 1)
+  }
+
   if (!profile) return <div className="swipe-deck swipe-deck--empty">{emptyState}</div>
 
   const x = leaving ? (leaving === 'right' ? 1 : -1) * (window.innerWidth + 200) : (drag?.x ?? 0)
@@ -140,11 +147,14 @@ export function SwipeDeck({
               }}
               aria-hidden
             >
-              {renderCard(p)}
+              {renderCard(p, swipe)}
             </div>
           ))
           .reverse()}
         <div
+          // Keyed by profile: each card gets a fresh DOM node, so the next
+          // card never inherits the flown-out transform (snap-back glitch).
+          key={profile.id}
           className="swipe-deck__card swipe-deck__card--top"
           style={{ ...topStyle, zIndex: behind.length + 1 }}
           onPointerDown={handlePointerDown}
@@ -152,7 +162,7 @@ export function SwipeDeck({
           onPointerUp={handlePointerEnd}
           onPointerCancel={handlePointerEnd}
         >
-          {renderCard(profile)}
+          {renderCard(profile, swipe)}
           {overlayLabels && (
             <>
               <span
@@ -172,7 +182,11 @@ export function SwipeDeck({
         </div>
       </div>
 
-      {renderActions?.(swipe, profile)}
+      {showUndo && index > 0 && !leaving && (
+        <button type="button" className="swipe-deck__undo" onClick={undo}>
+          {t('feed.undo')}
+        </button>
+      )}
 
       {showCounter && (
         <p className="swipe-deck__counter">

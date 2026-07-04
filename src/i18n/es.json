@@ -43,7 +43,11 @@
     "next": "Siguiente",
     "counter": "{{current}} de {{total}}",
     "end": "Ya viste todos los perfiles por ahora.",
-    "restart": "Volver a empezar"
+    "restart": "Volver a empezar",
+    "statsSwipes": "{{count}}/{{max}} swipes hoy",
+    "statsClicks": "{{count}} clicks en WhatsApp",
+    "swipeHint": "Desliza la tarjeta para pasar al siguiente",
+    "undo": "← Me arrepentí, volver al anterior"
   },
   "swaps": {
     "warning": "Llevas {{count}} interacciones hoy. Abrir demasiados chats nuevos puede hacer que WhatsApp bloquee tu número temporalmente.",

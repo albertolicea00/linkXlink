@@ -15,5 +15,10 @@
   "preload_profiles_ahead": 3,
   "rotation_least_seen_first": true,
   "track_views": true,
-  "track_whatsapp_clicks": true
+  "track_whatsapp_clicks": true,
+  "deep_link_profiles_enabled": true,
+  "show_deck_counter": false,
+  "show_deck_stats": true,
+  "show_undo_button": true,
+  "fallback_photo_variants": 5
 }

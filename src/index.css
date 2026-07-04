@@ -480,11 +480,25 @@ a {
   cursor: grabbing;
 }
 
+.swipe-deck__stack {
+  margin-bottom: 20px; /* room for the peeking edge of stacked cards */
+}
+
 .swipe-deck__card--behind {
   position: absolute;
   inset: 0;
   pointer-events: none;
   transition: transform 0.25s ease;
+}
+
+/* Wash out stacked cards so their content doesn't read as duplicated UI */
+.swipe-deck__card--behind::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  opacity: 0.75;
 }
 
 .swipe-deck__stamp {
@@ -520,6 +534,42 @@ a {
   white-space: nowrap;
   text-align: center;
   margin-top: 0.75rem;
+}
+
+.deck-hint {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.swipe-deck__undo {
+  display: block;
+  margin: 0.75rem auto 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.deck-actions__skip,
+.deck-actions__approve {
+  flex: 1;
+}
+
+.deck-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .deck-actions {
@@ -590,7 +640,7 @@ a {
 }
 
 .photo-carousel--empty {
-  aspect-ratio: 4 / 2;
+  aspect-ratio: 4 / 5; /* branded fallback image fills like a real photo */
 }
 
 .photo-carousel img {

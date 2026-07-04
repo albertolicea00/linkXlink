@@ -220,36 +220,38 @@ function AdminPanel() {
         <SwipeDeck
           profiles={modQueue}
           overlayLabels={{ left: t('admin.skip'), right: t('admin.approve') }}
-          renderCard={(p) => (
+          renderCard={(p, swipe) => (
             <ProfileCard
               profile={p}
               actions={
-                <a
-                  href={`https://wa.me/${p.whatsapp}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="admin-moderation__wa"
-                >
-                  +{p.whatsapp}
-                </a>
+                <>
+                  <button
+                    type="button"
+                    className="btn deck-actions__skip"
+                    onClick={() => swipe('left')}
+                  >
+                    <span aria-hidden>←</span> {t('admin.skip')}
+                  </button>
+                  <a
+                    href={`https://wa.me/${p.whatsapp}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="admin-moderation__wa"
+                  >
+                    +{p.whatsapp}
+                  </a>
+                  <button
+                    type="button"
+                    className="btn btn--primary deck-actions__approve"
+                    onClick={() => swipe('right')}
+                  >
+                    {t('admin.approve')} <span aria-hidden>→</span>
+                  </button>
+                </>
               }
             />
           )}
           onSwipe={(p, dir) => void handleModeration(p, dir)}
-          renderActions={(swipe) => (
-            <div className="deck-actions">
-              <button type="button" className="btn deck-actions__skip" onClick={() => swipe('left')}>
-                {t('admin.skip')}
-              </button>
-              <button
-                type="button"
-                className="btn btn--primary deck-actions__approve"
-                onClick={() => swipe('right')}
-              >
-                {t('admin.approve')}
-              </button>
-            </div>
-          )}
           emptyState={<p className="form-message">{t('admin.pendingEmpty')}</p>}
         />
       </section>

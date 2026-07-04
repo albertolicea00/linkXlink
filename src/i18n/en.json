@@ -43,7 +43,11 @@
     "next": "Next",
     "counter": "{{current}} of {{total}}",
     "end": "You've seen all profiles for now.",
-    "restart": "Start over"
+    "restart": "Start over",
+    "statsSwipes": "{{count}}/{{max}} swipes today",
+    "statsClicks": "{{count}} WhatsApp clicks",
+    "swipeHint": "Swipe the card to see the next one",
+    "undo": "← I changed my mind, go back"
   },
   "swaps": {
     "warning": "You have made {{count}} interactions today. Opening too many new chats may get your number temporarily blocked by WhatsApp.",
