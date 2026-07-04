@@ -1,22 +1,25 @@
 /* Self-hosted variable font — same look for every user, works offline (PWA) */
 @font-face {
-  font-family: 'Fredoka';
+  font-family: "Fredoka";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/fredoka-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2013-2014, U+2018-201A, U+201C-201E,
+  src: url("/fonts/fredoka-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+2013-2014, U+2018-201A, U+201C-201E,
     U+2022, U+2026, U+20AC, U+2212;
 }
 
 @font-face {
-  font-family: 'Fredoka';
+  font-family: "Fredoka";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/fredoka-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
-    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0;
+  src: url("/fonts/fredoka-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0;
 }
 
 :root {
@@ -41,7 +44,13 @@
 
   /* 'Fredoka' must come first: generic keywords like `fantasy` always resolve,
      so anything after them never loads. */
-  font-family: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    "Fredoka",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   line-height: 1.5;
   color: var(--color-text);
   background-color: var(--color-bg);
@@ -49,7 +58,7 @@
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --color-bg: #17121a;
   --color-surface: #221a24;
   --color-text: #f6f0f4;
@@ -150,7 +159,7 @@ a {
 .btn--whatsapp {
   background: var(--color-whatsapp);
   border-color: var(--color-whatsapp-dark);
-  color: #fff;
+  color: #030303;
   flex: 1;
 }
 
@@ -210,12 +219,21 @@ a {
 .theme-toggle {
   min-height: 40px;
   min-width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-surface);
   font-size: 1.1rem;
   cursor: pointer;
   line-height: 1;
+}
+
+.theme-toggle__icon {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .landing__main {
@@ -237,11 +255,15 @@ a {
 }
 
 .landing__hero::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -40px -60px auto;
   height: 260px;
-  background: radial-gradient(closest-side, var(--color-primary-glow), transparent);
+  background: radial-gradient(
+    closest-side,
+    var(--color-primary-glow),
+    transparent
+  );
   pointer-events: none;
 }
 
@@ -312,7 +334,9 @@ a {
   border-radius: var(--radius);
   padding: 1.5rem 1.75rem;
   text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .benefit:hover {
@@ -675,6 +699,7 @@ a {
 .admin-page__header h1 {
   margin: 0;
   font-size: 1.3rem;
+  color: var(--color-primary);
 }
 
 .admin-page main {
@@ -686,6 +711,52 @@ a {
 
 .admin-panel section {
   margin-bottom: 2rem;
+}
+
+/* Admin login card */
+.admin-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100dvh - 140px);
+}
+
+.admin-login__card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 2rem 1.5rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.admin-login__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-login__logo-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.admin-login__app-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.admin-login .admin-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-login .admin-form .btn {
+  margin-top: 0.5rem;
 }
 
 .admin-profile-list {
@@ -758,4 +829,104 @@ a {
   .modal {
     border-radius: var(--radius);
   }
+}
+
+/* Landing CTA row */
+.landing__cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.landing__cta a.btn {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+/* Register */
+a.landing__brand {
+  text-decoration: none;
+}
+
+.register__intro {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.register__card {
+  max-width: 420px;
+  margin: 0 auto 3rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.register__card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.register__card-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.register__card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.share-gate {
+  max-width: 420px;
+  margin: 0 auto 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  text-align: center;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.share-gate h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.share-gate p {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.share-gate .btn--whatsapp {
+  flex: none;
+}
+
+.share-gate__progress {
+  font-weight: 700;
+}
+
+.register__form .terms-check {
+  margin: 0 0 1.25rem;
+}
+
+.register__success {
+  max-width: 420px;
+  margin: 0 auto 3rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  text-align: center;
+  display: grid;
+  gap: 1rem;
 }

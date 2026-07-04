@@ -8,5 +8,6 @@
     "es",
     "en"
   ],
-  "max_photos_per_profile": 3
+  "max_photos_per_profile": 1,
+  "required_shares_to_register": 3
 }

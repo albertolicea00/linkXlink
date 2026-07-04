@@ -6,11 +6,13 @@ import './index.css'
 import { Landing } from './pages/Landing'
 import { AppPage } from './pages/AppPage'
 import { Admin } from './pages/Admin'
+import { Register } from './pages/Register'
 import { Eula } from './pages/Eula'
 import { Privacy } from './pages/Privacy'
 import { DataUsage } from './pages/DataUsage'
 import { NotFound } from './pages/NotFound'
 import { hasAcceptedTerms } from './lib/terms'
+import { ADMIN_PATH } from './lib/adminPath'
 
 function RequireTerms({ children }: { children: ReactNode }) {
   if (!hasAcceptedTerms()) return <Navigate to="/" replace />
@@ -29,7 +31,10 @@ const router = createBrowserRouter([
       </RequireTerms>
     ),
   },
-  { path: '/admin', element: <Admin /> },
+  { path: '/register', element: <Register /> },
+  { path: '/es/register', element: <Register lang="es" /> },
+  { path: '/en/register', element: <Register lang="en" /> },
+  { path: ADMIN_PATH, element: <Admin /> },
   { path: '/eula', element: <Eula /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/data', element: <DataUsage /> },

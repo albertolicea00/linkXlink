@@ -123,6 +123,7 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [x] Validate profile data before saving (admin + DB checks)
 - [x] Sanitize `whatsapp` field (digits only, country code)
 - [x] Report spam control (basic: localStorage duplicate guard per device)
+- [x] Configurable admin route via `VITE_ADMIN_PATH` (hides URL; auth + RLS remain the real protection)
 
 ## 13. Deploy
 
@@ -130,8 +131,20 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [ ] Deploy config (Vercel/Netlify)
 - [ ] PWA verified on deployed domain
 
+## 14. Self-registration
+
+- [x] `/register` route + page (name, description, whatsapp, photos)
+- [x] Terms/privacy/data acceptance required before submitting
+- [x] Share gate: user must share the app link with N people on WhatsApp (`required_shares_to_register`, default 3) — client-side counter (localStorage), counts taps, not verified sends
+- [x] Migration `0002_self_registration.sql`: public insert of profiles forced to `active = false` (pending), public photo upload, bucket size/mime limits
+- [x] Self-registered profiles land as pending; admin activates them from the panel (existing reactivate button)
+- [x] "Create my profile" button next to "Enter" on the landing
+- [ ] Apply migration 0002 to real Supabase project
+
 ## Future (out of MVP scope)
 
+- [ ] Referral validation: per-profile referral code in the shared link (`?ref=<code>`), track who joined through whose link, count only verified joins toward the share gate (replaces the localStorage tap counter)
+- [ ] Referral stats in admin (who invited whom, conversion)
 - [ ] Filters by category or zone
 - [ ] Internal chat
 - [ ] More link types beyond WhatsApp

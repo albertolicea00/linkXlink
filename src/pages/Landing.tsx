@@ -108,17 +108,22 @@ export function Landing({ lang }: Props) {
               </span>
             </label>
           )}
-          <button
-            type="button"
-            className="btn btn--primary btn--large"
-            disabled={!alreadyAccepted && !checked}
-            onClick={() => {
-              if (!alreadyAccepted) acceptTerms()
-              void navigate('/app')
-            }}
-          >
-            {t('landing.enter')}
-          </button>
+          <div className="landing__cta">
+            <button
+              type="button"
+              className="btn btn--primary btn--large"
+              disabled={!alreadyAccepted && !checked}
+              onClick={() => {
+                if (!alreadyAccepted) acceptTerms()
+                void navigate('/app')
+              }}
+            >
+              {t('landing.enter')}
+            </button>
+            <Link to="/register" className="btn btn--large">
+              {t('landing.register')}
+            </Link>
+          </div>
         </section>
 
         <section className="landing__benefits">
@@ -148,6 +153,8 @@ export function Landing({ lang }: Props) {
             <li>{t('landing.how1')}</li>
             <li>{t('landing.how2')}</li>
             <li>{t('landing.how3')}</li>
+            <li>{t('landing.how4')}</li>
+            <li>{t('landing.how5')}</li>
           </ol>
         </section>
       </main>
