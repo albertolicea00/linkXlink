@@ -22,7 +22,8 @@
     "howTitle": "¿Cómo funciona?",
     "how1": "Entra a la app y desliza entre los perfiles.",
     "how2": "¿Te interesa alguien? Pulsa el botón de WhatsApp.",
-    "how3": "¿Algo no funciona? Repórtalo y ayuda a la comunidad."
+    "how3": "¿Algo no funciona? Repórtalo y ayuda a la comunidad.",
+    "acceptTerms": "Acepto los <eula>términos y condiciones</eula> y la <privacy>política de privacidad</privacy>"
   },
   "profile": {
     "openWhatsApp": "Abrir WhatsApp",

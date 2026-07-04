@@ -1,6 +1,6 @@
-import { StrictMode } from 'react'
+import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import './i18n'
 import './index.css'
 import { Landing } from './pages/Landing'
@@ -9,12 +9,25 @@ import { Admin } from './pages/Admin'
 import { Eula } from './pages/Eula'
 import { Privacy } from './pages/Privacy'
 import { NotFound } from './pages/NotFound'
+import { hasAcceptedTerms } from './lib/terms'
+
+function RequireTerms({ children }: { children: ReactNode }) {
+  if (!hasAcceptedTerms()) return <Navigate to="/" replace />
+  return children
+}
 
 const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
   { path: '/es', element: <Landing lang="es" /> },
   { path: '/en', element: <Landing lang="en" /> },
-  { path: '/app', element: <AppPage /> },
+  {
+    path: '/app',
+    element: (
+      <RequireTerms>
+        <AppPage />
+      </RequireTerms>
+    ),
+  },
   { path: '/admin', element: <Admin /> },
   { path: '/eula', element: <Eula /> },
   { path: '/privacy', element: <Privacy /> },

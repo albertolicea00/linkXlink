@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 
 interface Props {
   lang?: 'es' | 'en'
@@ -47,6 +48,9 @@ const WA_COMPONENTS = { wa: <span className="accent" /> }
 
 export function Landing({ lang }: Props) {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const [alreadyAccepted] = useState(hasAcceptedTerms)
+  const [checked, setChecked] = useState(false)
 
   useEffect(() => {
     if (lang && i18n.resolvedLanguage !== lang) {
@@ -58,6 +62,7 @@ export function Landing({ lang }: Props) {
     title: t('meta.homeTitle'),
     description: t('meta.homeDescription'),
     path: lang ? `/${lang}` : '/',
+    ogImage: i18n.resolvedLanguage === 'en' ? '/og-en.png' : '/og.png',
   })
 
   const active = i18n.resolvedLanguage
@@ -88,9 +93,32 @@ export function Landing({ lang }: Props) {
           <p className="landing__description">
             <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
           </p>
-          <Link to="/app" className="btn btn--primary btn--large">
+          {!alreadyAccepted && (
+            <label className="terms-check">
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
+              />
+              <span>
+                <Trans
+                  i18nKey="landing.acceptTerms"
+                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" /> }}
+                />
+              </span>
+            </label>
+          )}
+          <button
+            type="button"
+            className="btn btn--primary btn--large"
+            disabled={!alreadyAccepted && !checked}
+            onClick={() => {
+              if (!alreadyAccepted) acceptTerms()
+              void navigate('/app')
+            }}
+          >
             {t('landing.enter')}
-          </Link>
+          </button>
         </section>
 
         <section className="landing__benefits">
