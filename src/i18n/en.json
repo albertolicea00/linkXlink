@@ -127,7 +127,8 @@
     "statsBanned": "Banned",
     "shareTitle": "Share the app",
     "shareDesc": "Share this link so people can discover profiles and register:",
-    "shareCopied": "Copied!"
+    "shareCopied": "Copied!",
+    "shareMore": "More"
   },
   "legal": {
     "eulaTitle": "Terms and conditions",
