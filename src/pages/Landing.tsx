@@ -62,7 +62,7 @@ export function Landing({ lang }: Props) {
     title: t('meta.homeTitle'),
     description: t('meta.homeDescription'),
     path: lang ? `/${lang}` : '/',
-    ogImage: i18n.resolvedLanguage === 'en' ? '/og-en.png' : '/og.png',
+    ogImage: i18n.resolvedLanguage === 'en' ? '/og-en.png' : '/og-es.png',
   })
 
   const active = i18n.resolvedLanguage
