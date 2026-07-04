@@ -115,10 +115,19 @@
     "validationWhatsapp": "Número de WhatsApp inválido. Usa solo dígitos con código de país.",
     "validationPhotos": "Sube entre 1 y 3 fotos.",
     "profilesTitle": "Perfiles",
+    "pendingTitle": "Perfiles pendientes de aprobar",
+    "pendingEmpty": "No hay perfiles pendientes.",
+    "approve": "Aprobar",
     "statusActive": "Activo",
     "statusDisabled": "Deshabilitado",
     "reactivate": "Reactivar",
-    "reports": "reportes"
+    "reports": "reportes",
+    "statsTotal": "Totales",
+    "statsPending": "Pendientes",
+    "statsBanned": "Baneados",
+    "shareTitle": "Comparte la app",
+    "shareDesc": "Comparte este enlace para que la gente descubra perfiles y se registre:",
+    "shareCopied": "¡Copiado!"
   },
   "legal": {
     "eulaTitle": "Términos y condiciones",

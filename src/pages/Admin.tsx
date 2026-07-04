@@ -1,15 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { isValidWhatsappNumber, sanitizeWhatsappNumber } from '../lib/whatsapp'
 import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
 import type { Profile } from '../types'
-
-const PHOTOS_BUCKET = 'profile-photos'
 
 export function Admin() {
   const { t } = useTranslation()
@@ -113,15 +110,20 @@ function LoginForm() {
   )
 }
 
+function StatCard({ value, label, variant }: { value: number; label: string; variant: 'total' | 'pending' | 'active' | 'banned' }) {
+  return (
+    <div className={`stat-card stat-card--${variant}`}>
+      <span className="stat-card__value">{value}</span>
+      <span className="stat-card__label">{label}</span>
+    </div>
+  )
+}
+
 function AdminPanel() {
   const { t } = useTranslation()
   const [profiles, setProfiles] = useState<Profile[]>([])
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [whatsapp, setWhatsapp] = useState('')
-  const [files, setFiles] = useState<File[]>([])
-  const [message, setMessage] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [copied, setCopied] = useState(false)
 
   const loadProfiles = async () => {
     const { data } = await supabase
@@ -135,52 +137,21 @@ function AdminPanel() {
     void loadProfiles()
   }, [])
 
-  const validate = (): string | null => {
-    if (!name.trim()) return t('admin.validationName')
-    if (!isValidWhatsappNumber(whatsapp)) return t('admin.validationWhatsapp')
-    if (files.length < 1 || files.length > appConfig.max_photos_per_profile)
-      return t('admin.validationPhotos')
-    return null
-  }
+  const pendingProfiles = profiles.filter((p) => !p.active && p.report_count === 0)
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const validationError = validate()
-    if (validationError) {
-      setMessage(validationError)
-      return
-    }
-    setBusy(true)
-    setMessage(null)
-    try {
-      const photoUrls: string[] = []
-      for (const file of files) {
-        const path = `${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-        const { error } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, file)
-        if (error) throw error
-        const { data } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path)
-        photoUrls.push(data.publicUrl)
-      }
+  const total = profiles.length
+  const pending = pendingProfiles.length
+  const active = profiles.filter((p) => p.active).length
+  const banned = profiles.filter((p) => !p.active && p.report_count > 0).length
 
-      const { error } = await supabase.from('profiles').insert({
-        name: name.trim(),
-        description: description.trim(),
-        whatsapp: sanitizeWhatsappNumber(whatsapp),
-        photos: photoUrls,
-      })
-      if (error) throw error
+  const siteUrl = appConfig.site_url
 
-      setMessage(t('admin.created'))
-      setName('')
-      setDescription('')
-      setWhatsapp('')
-      setFiles([])
-      await loadProfiles()
-    } catch {
-      setMessage(t('admin.createError'))
-    } finally {
-      setBusy(false)
-    }
+  const handleCopy = () => {
+    if (!inputRef.current) return
+    inputRef.current.select()
+    navigator.clipboard?.writeText(inputRef.current.value)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const handleReactivate = async (id: string) => {
@@ -193,68 +164,60 @@ function AdminPanel() {
 
   return (
     <div className="admin-panel">
-      <section>
-        <h2>{t('admin.newProfile')}</h2>
-        <form className="admin-form" onSubmit={handleCreate}>
-          <label className="field">
-            {t('admin.name')}
-            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} />
-          </label>
-          <label className="field">
-            {t('admin.description')}
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              maxLength={300}
-              rows={3}
-            />
-          </label>
-          <label className="field">
-            {t('admin.whatsapp')}
-            <input
-              value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
-              inputMode="numeric"
-            />
-          </label>
-          <label className="field">
-            {t('admin.photos')}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
-            />
-          </label>
-          {message && <p className="form-message">{message}</p>}
-          <button type="submit" className="btn btn--primary" disabled={busy}>
-            {t('admin.create')}
+      <div className="admin-stats">
+        <StatCard value={total} label={t('admin.statsTotal')} variant="total" />
+        <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
+        <StatCard value={active} label={t('admin.statusActive')} variant="active" />
+        <StatCard value={banned} label={t('admin.statsBanned')} variant="banned" />
+      </div>
+
+      <section className="admin-share">
+        <h2>{t('admin.shareTitle')}</h2>
+        <p className="admin-share__desc">{t('admin.shareDesc')}</p>
+        <div className="admin-share__row">
+          <input ref={inputRef} className="admin-share__input" value={siteUrl} readOnly onClick={(e) => (e.target as HTMLInputElement).select()} />
+          <button type="button" className="btn btn--primary" onClick={handleCopy}>
+            {copied ? t('admin.shareCopied') : t('admin.shareTitle')}
           </button>
-        </form>
+        </div>
       </section>
 
       <section>
-        <h2>{t('admin.profilesTitle')}</h2>
-        <ul className="admin-profile-list">
-          {profiles.map((p) => (
-            <li key={p.id} className="admin-profile-row">
-              <span className="admin-profile-row__name">{p.name}</span>
-              <span
-                className={`status status--${p.active ? 'active' : 'disabled'}`}
-              >
-                {p.active ? t('admin.statusActive') : t('admin.statusDisabled')}
-              </span>
-              <span className="admin-profile-row__reports">
-                {p.report_count} {t('admin.reports')}
-              </span>
-              {!p.active && (
-                <button type="button" className="btn" onClick={() => void handleReactivate(p.id)}>
-                  {t('admin.reactivate')}
+        <h2>{t('admin.pendingTitle')}</h2>
+        {pendingProfiles.length === 0 ? (
+          <p className="form-message">{t('admin.pendingEmpty')}</p>
+        ) : (
+          <ul className="admin-profile-list">
+            {pendingProfiles.map((p) => (
+              <li key={p.id} className="admin-profile-row">
+                {p.photos[0] && (
+                  <img src={p.photos[0]} alt="" className="admin-profile-row__thumb" />
+                )}
+                <div className="admin-profile-row__info">
+                  <span className="admin-profile-row__name">{p.name}</span>
+                  <a
+                    href={`https://wa.me/${p.whatsapp}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="admin-profile-row__wa"
+                  >
+                    +{p.whatsapp}
+                  </a>
+                  {p.description && (
+                    <span className="admin-profile-row__desc">{p.description}</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => void handleReactivate(p.id)}
+                >
+                  {t('admin.approve')}
                 </button>
-              )}
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )
