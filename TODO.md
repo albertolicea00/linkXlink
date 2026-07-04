@@ -139,7 +139,22 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [x] Migration `0002_self_registration.sql`: public insert of profiles forced to `active = false` (pending), public photo upload, bucket size/mime limits
 - [x] Self-registered profiles land as pending; admin activates them from the panel (existing reactivate button)
 - [x] "Create my profile" button next to "Enter" on the landing
+- [x] Field help texts (what other people will see on the card)
+- [x] Phone input with country selector + flag, validated with libphonenumber-js, stored as digits with country code
+- [x] Birthdate field with 18+ check (client-side only; deliberately not stored — profile rows are publicly readable)
+- [x] Client-side image optimization before upload (resize to 1280px max, WebP with JPEG fallback)
+- [x] Unique index on `whatsapp` (one profile per number, friendly duplicate error)
 - [ ] Apply migration 0002 to real Supabase project
+
+## 15. Registration security gaps (known — future work)
+
+- [ ] Require registration before entering `/app` to swipe (gate the feed for unregistered devices)
+- [ ] No way to know if a device/person already registered — needs user accounts or phone verification
+- [ ] Anyone can register someone else's number — needs WhatsApp OTP / verification deep link
+- [ ] Share gate is a client-side tap counter — bypassable; replace with verified referrals (`?ref=<code>`)
+- [ ] Age check is declarative (client-side birthdate) — not verifiable
+- [ ] Public photo upload can be abused outside the form — rate limit via Edge Function if abused
+- [ ] EULA/privacy texts should state the 18+ requirement explicitly
 
 ## Future (out of MVP scope)
 
