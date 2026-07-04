@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AuthPanel } from './AuthPanel'
+import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 
 interface Props {
   /** 'auth' → sign in / sign up; 'profile' → account exists, profile missing. */
@@ -13,6 +15,8 @@ interface Props {
  */
 export function AuthGateModal({ mode }: Props) {
   const { t } = useTranslation()
+  const [alreadyAccepted] = useState(hasAcceptedTerms)
+  const [checked, setChecked] = useState(false)
 
   return (
     <div className="modal-backdrop modal-backdrop--gate" role="presentation">
@@ -32,7 +36,24 @@ export function AuthGateModal({ mode }: Props) {
         </div>
         <p className="auth-gate__text">{t(`gate.${mode}Text`)}</p>
         {mode === 'auth' ? (
-          <AuthPanel />
+          <>
+            <AuthPanel termsAccepted={alreadyAccepted || checked} />
+            <label className="terms-check" style={{ padding: '0.5rem 0 0' }}>
+              <input
+                type="checkbox"
+                checked={alreadyAccepted || checked}
+                onChange={(e) => setChecked(e.target.checked)}
+                disabled={alreadyAccepted}
+              />
+              <span>
+                <Link to="/eula">{t('footer.eula')}</Link>
+                {' · '}
+                <Link to="/privacy">{t('footer.privacy')}</Link>
+                {' · '}
+                <Link to="/data">{t('footer.data')}</Link>
+              </span>
+            </label>
+          </>
         ) : (
           <Link to="/register" className="btn btn--primary btn--large auth-gate__cta">
             {t('gate.createProfile')}

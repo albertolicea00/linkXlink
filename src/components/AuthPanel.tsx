@@ -61,7 +61,7 @@ const PROVIDER_NAMES: Record<Provider, string> = {
  * (`auth_providers`) plus email+password. OAuth redirects back to the
  * current page, where the session is picked up automatically.
  */
-export function AuthPanel() {
+export function AuthPanel({ termsAccepted = true }: { termsAccepted?: boolean }) {
   const { t } = useTranslation()
   const [mode, setMode] = useState<'signup' | 'login'>('signup')
   const [email, setEmail] = useState('')
@@ -142,7 +142,7 @@ export function AuthPanel() {
         </label>
         {error && <p className="form-error">{t('auth.error')}</p>}
         {notice && <p className="form-message">{t('auth.checkEmail')}</p>}
-        <button type="submit" className="btn btn--primary" disabled={busy}>
+        <button type="submit" className="btn btn--primary" disabled={busy || !termsAccepted}>
           {mode === 'login' ? t('auth.login') : t('auth.signup')}
         </button>
       </form>
