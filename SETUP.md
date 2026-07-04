@@ -172,3 +172,15 @@ Or add it now in the repo before pushing — Vercel will pick it up automaticall
 - The **report threshold** lives in two places — update **both** if you change it:
   - `app.settings` in the Supabase database (authoritative)
   - `src/config/app-config.json` in the codebase (UI display)
+
+
+<!-- 
+
+To create Admins in Supabase (users who can access the admin panel):
+1. In the Supabase dashboard: Authentication → Users → Add user → Create new user (email + password, enable auto-confirm).
+2. Copy the UUID of that user and run the following in the SQL Editor:
+```sql
+insert into public.admins (id, email) values ('<uuid-del-usuario>', 'correo@ejemplo.com');
+``` 
+-->
+
