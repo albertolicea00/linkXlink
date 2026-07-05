@@ -27,7 +27,8 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 📲 **Direct WhatsApp** | One-tap to `wa.me/<number>` |
 | 🔑 **User accounts** | Supabase Auth: Google / Facebook / Apple (configurable) + email |
 | 📝 **Self-registration** | 3-step wizard (account → share gate → profile): gender, interests, 18+ birthdate, pro phone validation with country flag, client-side photo optimization |
-| 👤 **My account** | Edit name/bio/gender/interests, hide or pause your profile until a date |
+| 👤 **My account** | Read-only summary + edit (name/bio/gender/interests), hide or pause your profile until a date |
+| 💬 **Community** | Telegram channel for support, bug reports & feature requests (`telegram_url`) — on /account and landing |
 | 👀 **Anonymous preview** | Signed-out visitors get a teaser of N profiles (numbers hidden) before the gate |
 | 🛂 **Roles** | Admins (global stats + manage moderators) and moderators (approve/skip deck + own stats); admin can switch views |
 | 🚨 **Community reports** | Profile disables after `report_threshold` reports (DB trigger); full moderation audit trail |

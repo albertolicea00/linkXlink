@@ -206,6 +206,15 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [ ] `interested_in` is stored but does not filter the feed yet — wire it when matching lands
 - [ ] Photo/WhatsApp editing from `/account` (today only text fields + visibility)
 
+## 19. Community, account UX & polish
+
+- [x] Telegram community banner on `/account` + step 6 on landing (`telegram_url`) — bug reports / features / support channel for now
+- [x] `/account` shows a read-only summary; "Edit profile" reveals the editable form
+- [x] Mobile-only pink section title in page headers (`.page-section`)
+- [x] Register step "done" circles in pink (was green)
+- [x] Moderator stats: approved-by-me + pending, centered; banned card removed (moderator view)
+- [ ] Dedicated in-app bug/feature form (today it's just the Telegram link)
+
 ## Future (out of MVP scope)
 
 - [ ] Referral validation: per-profile referral code in the shared link (`?ref=<code>`), track who joined through whose link, count only verified joins toward the share gate (replaces the localStorage tap counter)

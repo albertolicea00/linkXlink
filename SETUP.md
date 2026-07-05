@@ -202,6 +202,7 @@ Or add it now in the repo before pushing — Vercel will pick it up automaticall
 ## Notes
 
 - **Env var changes** on Vercel require redeployment: **Deployments → Redeploy**
+- The **Telegram community link** (`telegram_url` in `src/config/app-config.json`) is where bug reports, feature requests and support go for now — point it at your own channel.
 - The **report threshold** lives in two places — update **both** if you change it:
   - `app.settings` in the Supabase database (authoritative)
   - `src/config/app-config.json` in the codebase (UI display)
