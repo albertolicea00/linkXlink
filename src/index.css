@@ -1669,3 +1669,14 @@ a.landing__brand {
   padding: 0;
   border-radius: 999px;
 }
+
+/* Two fields side by side (gender + interested-in) */
+.field-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.field-row .field {
+  flex: 1;
+  min-width: 0;
+}

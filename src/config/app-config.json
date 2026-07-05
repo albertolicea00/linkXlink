@@ -26,6 +26,16 @@
   "show_undo_button": true,
   "fallback_photo_variants": 10,
   "show_age": true,
+  "gender_options": [
+    "male",
+    "female",
+    "non_binary",
+    "trans_male",
+    "trans_female",
+    "genderfluid",
+    "agender",
+    "other"
+  ],
   "max_interests": 6,
   "interest_options": [
     "music",
