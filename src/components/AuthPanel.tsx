@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import appConfig from '../config/app-config.json'
@@ -152,21 +152,6 @@ export function AuthPanel() {
         </button>
       </form>
 
-      <label className="terms-check" style={{ margin: '0.75rem 0 0' }}>
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => setChecked(e.target.checked)}
-        />
-        <span>
-          <Link to="/eula">{t('footer.eula')}</Link>
-          {' · '}
-          <Link to="/privacy">{t('footer.privacy')}</Link>
-          {' · '}
-          <Link to="/data">{t('footer.data')}</Link>
-        </span>
-      </label>
-
       <button
         type="button"
         className="auth-panel__toggle"
@@ -174,6 +159,25 @@ export function AuthPanel() {
       >
         {mode === 'login' ? t('auth.noAccount') : t('auth.haveAccount')}
       </button>
+
+      <label className="terms-check" style={{ margin: '0.75rem 0 0' }}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+        />
+        <span>
+          <Trans
+            i18nKey="landing.acceptTerms"
+            components={{
+              eula: <Link to="/eula" />,
+              privacy: <Link to="/privacy" />,
+              data: <Link to="/data" />,
+            }}
+          />
+        </span>
+      </label>
+
     </div>
   )
 }
