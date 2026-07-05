@@ -210,7 +210,7 @@ export function Account() {
 
                 <button
                   type="button"
-                  className="btn btn--primary"
+                  className="btn"
                   onClick={() => {
                     setStatus('idle')
                     setEditing(true)
