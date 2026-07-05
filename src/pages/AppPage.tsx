@@ -12,6 +12,7 @@ import { ReportModal } from '../components/ReportModal'
 import { AuthGateModal } from '../components/AuthGateModal'
 import { WarningBanner } from '../components/WarningBanner'
 import { PageHeader } from '../components/PageHeader'
+import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
@@ -137,7 +138,7 @@ export function AppPage() {
         )}
 
       <main className="app-page__main">
-        {isLoading && <p className="app-page__status">{t('feed.loading')}</p>}
+        {isLoading && <Loader text={t('feed.loading')} />}
 
         {!isLoading && !previewMode && error && (
           <div className="app-page__status">

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../components/PageHeader'
 import { ProfileExtraFields } from '../components/ProfileExtraFields'
 import { TelegramBanner } from '../components/TelegramBanner'
+import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
 import { fetchOwnProfile } from '../lib/ownProfile'
@@ -146,7 +147,7 @@ export function Account() {
       <main className="landing__main">
         <TelegramBanner />
 
-        {(!loaded || authLoading) && <p className="app-page__status">{t('feed.loading')}</p>}
+        {(!loaded || authLoading) && <Loader text={t('account.loading')} />}
 
         {loaded && !profile && (
           <div className="register__success">
