@@ -72,6 +72,8 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 
 Contributions welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for development guide and pull request process.
 
+> **Important:** The `main` branch is strictly reserved for stable releases. All Pull Requests MUST be made against the `beta` branch. No PRs will be approved if they target `main` directly.
+
 ---
 
 ## 📄 License

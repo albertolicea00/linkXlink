@@ -17,6 +17,7 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 - Code, identifiers, comments, commit messages: English
 - UI texts: never hardcoded — always through i18n keys (es/en)
 - Commits: Conventional Commits, short subject, no co-author, no AI attribution
+- **Branching**: The `main` branch is for stable releases only. All feature work and pull requests MUST target the `beta` branch.
 - System parameters live in `src/config/app-config.json` — change behavior there, not with magic numbers. Includes: report/swap/click limits, share gate size, swipe threshold, preload count, rotation, tracking flags, deep link kill switch, `auth_providers`, app gate toggles, preview count, deck counter/stats/undo visibility, fallback image variants, `telegram_url`, `gender_options`, `interest_options`, `max_interests`, `show_age`.
 
 ## Auth & roles

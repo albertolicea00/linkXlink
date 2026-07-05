@@ -28,11 +28,12 @@ Available commands:
 
 ## 🔀 Pull Requests
 
-1. Create a descriptive branch name (`feat/`, `fix/`, `refactor/`)
-2. Make sure `npm run build` passes without errors
-3. Follow project conventions
-4. If adding UI strings, include **es** and **en** translations
-5. Use the PR template when opening
+1. **Target Branch:** All Pull Requests MUST be opened against the `beta` branch. The `main` branch is strictly reserved for stable releases.
+2. Create a descriptive branch name (`feat/`, `fix/`, `refactor/`)
+3. Make sure `npm run build` passes without errors
+4. Follow project conventions
+5. If adding UI strings, include **es** and **en** translations
+6. Use the PR template when opening
 
 ## 🐛 Reporting Bugs
 
