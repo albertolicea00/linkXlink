@@ -6,6 +6,7 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { ADMIN_PATH } from '../lib/adminPath'
+import { WarningBanner } from '../components/WarningBanner'
 import appConfig from '../config/app-config.json'
 
 interface Props {
@@ -71,6 +72,15 @@ export function Landing({ lang }: Props) {
 
   const active = i18n.resolvedLanguage
 
+  const isPreRelease = appConfig.first_release_date && new Date() < new Date(appConfig.first_release_date)
+  const releaseDate = appConfig.first_release_date
+    ? new Date(appConfig.first_release_date).toLocaleDateString(i18n.resolvedLanguage, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : ''
+
   return (
     <div className="page landing">
       <header className="landing__header">
@@ -90,6 +100,11 @@ export function Landing({ lang }: Props) {
 
       <main className="landing__main">
         <section className="landing__hero">
+          {isPreRelease && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <WarningBanner variant="info" message={t('landing.releaseBanner', { date: releaseDate })} />
+            </div>
+          )}
           <h1>{t('app.name')}</h1>
           <p className="landing__tagline">
             <Trans i18nKey="app.tagline" components={WA_COMPONENTS} />
