@@ -181,9 +181,10 @@ export function AppPage() {
               renderCard={(p) => (
                 <ProfileCard
                   profile={p}
-                  whatsappDisabled={previewMode || clickLimitReached}
-                  onWhatsappClick={() => {
+                  whatsappDisabled={clickLimitReached}
+                  onWhatsappClick={(e) => {
                     if (previewMode) {
+                      e.preventDefault()
                       setGateOpen(true)
                       return
                     }

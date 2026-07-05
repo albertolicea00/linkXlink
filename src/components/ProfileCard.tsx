@@ -8,7 +8,7 @@ import { PhotoCarousel } from './PhotoCarousel'
 
 interface Props {
   profile: Profile
-  onWhatsappClick?: () => void
+  onWhatsappClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
   onReportClick?: () => void
   whatsappDisabled?: boolean
   /** Replaces the default WhatsApp/Report action row (e.g. moderation view). */
@@ -62,7 +62,7 @@ export function ProfileCard({
                   e.preventDefault()
                   return
                 }
-                onWhatsappClick?.()
+                onWhatsappClick?.(e)
               }}
               aria-disabled={whatsappDisabled}
             >

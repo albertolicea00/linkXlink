@@ -231,9 +231,16 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
           <SwipeDeck
             profiles={modQueue}
             overlayLabels={{ left: t('admin.skip'), right: t('admin.approve') }}
-            renderCard={(p, swipe) => (
-              <ProfileCard
-                profile={p}
+            renderCard={(p, swipe) => {
+              const maskPhone = (phone: string) => {
+                if (!phone || phone.length < 6) return ''
+                return `+${phone.slice(0, 2)} ${phone.slice(2, 4)} xxx ${phone.slice(-2)}`
+              }
+              const maskedName = `${p.name} (${maskPhone(p.whatsapp)})`
+              
+              return (
+                <ProfileCard
+                  profile={{ ...p, name: maskedName }}
                 actions={
                   <>
                     <button
@@ -243,25 +250,18 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
                     >
                       <span aria-hidden>←</span> {t('admin.skip')}
                     </button>
-                    <a
-                      href={`https://wa.me/${p.whatsapp}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="admin-moderation__wa"
-                    >
-                      +{p.whatsapp}
-                    </a>
-                    <button
-                      type="button"
-                      className="btn btn--primary deck-actions__approve"
-                      onClick={() => swipe('right')}
-                    >
-                      {t('admin.approve')} <span aria-hidden>→</span>
-                    </button>
-                  </>
-                }
-              />
-            )}
+                      <button
+                        type="button"
+                        className="btn btn--primary deck-actions__approve"
+                        onClick={() => swipe('right')}
+                      >
+                        {t('admin.approve')} <span aria-hidden>→</span>
+                      </button>
+                    </>
+                  }
+                />
+              )
+            }}
             onSwipe={(p, dir) => void handleModeration(p, dir)}
             emptyState={
               loadingProfiles ? (
