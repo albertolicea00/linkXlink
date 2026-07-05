@@ -182,9 +182,12 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [x] Register as 3-step wizard: 1) account → 2) share gate → 3) profile form
 - [x] Soft gate on `/app`: blocking popup (not redirect) to log in, then to create profile (`require_auth_for_app`, `require_profile_for_app`)
 - [x] Already-registered detection (own profile pending/active screens)
-- [ ] Apply migration 0004 to real Supabase project
+- [x] `moderators` table separate from `admins` (migration `0005_moderators.sql`): moderation-only rights via `is_moderator()`; admins unchanged
+- [x] Admin panel role gate: session alone is not enough — plain users get "not authorized" (needed now that users share Supabase Auth)
+- [ ] Apply migrations 0004 + 0005 to real Supabase project
 - [ ] Enable Google/Apple/Facebook providers in Supabase Dashboard (each needs OAuth app credentials + redirect URL)
 - [ ] Password reset flow for users (supabase.auth.resetPasswordForEmail + /reset page)
+- [ ] Hide admin-only sections from moderators in the panel UI (today RLS blocks the data; UI shows empty stats)
 
 ## Future (out of MVP scope)
 

@@ -22,14 +22,20 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 
 | | |
 |---|---|
-| 🃏 **Profile cards** | 1–3 photos, name, description |
+| 🃏 **Profile cards** | Photos, name, description — branded fallback image when there are no photos |
+| 👆 **Tinder-style swipes** | Real drag gestures, card stack, fly-out animation, undo |
 | 📲 **Direct WhatsApp** | One-tap to `wa.me/<number>` |
-| 👆 **Swipe navigation** | Fluid horizontal card browsing |
+| 🔑 **User accounts** | Supabase Auth: Google / Facebook / Apple (configurable) + email |
+| 📝 **Self-registration** | 3-step wizard (account → share gate → profile), pro phone validation with country flag, 18+ check, client-side photo optimization |
+| 🛂 **Moderation** | New profiles land pending; moderators approve/skip in a swipe deck; full audit trail (who approved whom) |
 | 🚨 **Community reports** | Profile disables after `report_threshold` reports (DB trigger) |
-| ⚠️ **Swap limit** | Client-side counter (rolling 24h) with WhatsApp ban warning |
+| ⚠️ **Click limit** | Client-side counter (rolling 24h) with WhatsApp ban warning |
+| 📊 **Metrics** | Anonymous per-device views & WhatsApp clicks (`profile_events`) |
+| 🔀 **Rotation** | Per-device least-seen-first ordering — not everyone sees the same people first |
 | 🌐 **i18n** | Spanish (default) and English |
-| 📱 **Installable PWA** | Basic offline support |
-| 🔐 **Admin panel** | `/admin` to create and reactivate profiles (Supabase Auth) |
+| 📱 **Installable PWA** | Offline support: cached profiles + photos, auto-updating service worker |
+| 🔐 **Admin panel** | Hidden path (`VITE_ADMIN_PATH`), roles: admins (full) and moderators (approve only) |
+| ⚙️ **Parametrizable** | Limits, gates, tracking, deck behavior — all in `src/config/app-config.json` |
 
 ---
 
@@ -37,11 +43,13 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 
 | Route | Purpose |
 |---|---|
-| `/` | Landing page |
-| `/app` | Profile feed |
-| `/admin` | Admin panel |
+| `/` | Landing page (`/es`, `/en` for language-specific) |
+| `/app` | Swipe feed (soft-gated: account + profile required, via popup) |
+| `/register` | Self-registration wizard |
+| `/admin` | Staff panel — path configurable via `VITE_ADMIN_PATH` |
 | `/eula` | Terms and conditions |
 | `/privacy` | Privacy policy |
+| `/data` | Data usage |
 
 ---
 
