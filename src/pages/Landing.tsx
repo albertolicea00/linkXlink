@@ -92,20 +92,20 @@ export function Landing({ lang }: Props) {
           <p className="landing__description">
             <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
           </p>
-          <div className="landing__cta">
-            <label className="terms-check" style={{ margin: '0 auto 1rem' }}>
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => setChecked(e.target.checked)}
+          <label className="terms-check">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={(e) => setChecked(e.target.checked)}
+            />
+            <span>
+              <Trans
+                i18nKey="landing.acceptTerms"
+                components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
               />
-              <span>
-                <Trans
-                  i18nKey="landing.acceptTerms"
-                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
-                />
-              </span>
-            </label>
+            </span>
+          </label>
+          <div className="landing__cta">
             <button
               type="button"
               className="btn btn--primary btn--large"
