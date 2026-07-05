@@ -158,7 +158,7 @@ export function AuthPanel() {
 
       <button
         type="button"
-        className="auth-panel__toggle"
+        className="btn btn--secondary"
         onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
       >
         {mode === 'login' ? t('auth.noAccount') : t('auth.haveAccount')}
