@@ -220,13 +220,6 @@ export function Account() {
                 </button>
                 {status === 'saved' && <p className="form-message">{t('account.saved')}</p>}
 
-                <button
-                  type="button"
-                  className="btn btn--secondary auth-panel__toggle"
-                  onClick={() => void supabase.auth.signOut().then(() => navigate('/app'))}
-                >
-                  {t('admin.logout')}
-                </button>
               </div>
             ) : (
               <form className="register__form" onSubmit={handleSave}>
@@ -335,6 +328,16 @@ export function Account() {
             )}
           </div>
         )}
+
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <button
+            type="button"
+            className="btn btn--secondary auth-panel__toggle"
+            onClick={() => void supabase.auth.signOut().then(() => navigate('/app'))}
+          >
+            {t('admin.logout')}
+          </button>
+        </div>
       </main>
     </div>
   )
