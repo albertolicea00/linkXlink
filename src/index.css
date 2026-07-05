@@ -1154,7 +1154,7 @@ a.landing__brand {
 
 .register__card {
   max-width: 420px;
-  margin: 0 auto 3rem;
+  margin: 0 auto;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 16px;
@@ -1883,4 +1883,86 @@ a.landing__brand {
   height: 64px;
   margin: 0 auto 0.75rem;
   border-radius: 16px;
+}
+
+/* Account layout */
+.account-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.account-photos {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.account-photos h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.account-photos__list {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.account-photos__thumb {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+  cursor: zoom-in;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.account-photos__thumb:hover {
+  opacity: 0.85;
+}
+
+.account-photos__empty {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+/* Fullscreen Photo Viewer */
+.photo-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  cursor: zoom-out;
+}
+
+.photo-viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .account-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .account-layout > .register__card {
+    flex: 2;
+    min-width: 0;
+  }
+  .account-layout > .account-photos {
+    flex: 1;
+    min-width: 0;
+  }
 }

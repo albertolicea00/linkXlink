@@ -173,6 +173,7 @@
     "nature": "🌿 Naturaleza"
   },
   "account": {
+    "photosTitle": "Mis fotos",
     "loading": "Cargando tu cuenta…",
     "title": "Mi cuenta",
     "age": "{{age}} años",

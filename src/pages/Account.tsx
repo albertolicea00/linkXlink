@@ -55,6 +55,7 @@ export function Account() {
   const [duration, setDuration] = useState('')
   const [editing, setEditing] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [viewPhoto, setViewPhoto] = useState<string | null>(null)
 
   usePageMeta({ title: `${t('account.title')} | Link x Link`, path: '/account', noindex: true })
 
@@ -159,8 +160,9 @@ export function Account() {
         )}
 
         {loaded && profile && (
-          <div className="register__card">
-            <div className="register__card-header">
+          <div className="account-layout">
+            <div className="register__card">
+              <div className="register__card-header">
               <span className="register__card-title">{session?.user.email}</span>
               {age !== null && (
                 <span className="register__card-subtitle">{t('account.age', { age })}</span>
@@ -327,6 +329,26 @@ export function Account() {
               </form>
             )}
           </div>
+
+          <div className="account-photos">
+            <h3>{t('account.photosTitle')}</h3>
+            {profile.photos && profile.photos.length > 0 ? (
+              <div className="account-photos__list">
+                {profile.photos.map((url, i) => (
+                  <img
+                    key={i}
+                    src={url}
+                    alt=""
+                    className="account-photos__thumb"
+                    onClick={() => setViewPhoto(url)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="account-photos__empty">{t('account.notSet')}</p>
+            )}
+          </div>
+        </div>
         )}
 
         <div style={{ marginTop: '2rem', textAlign: 'center' }}>
@@ -339,6 +361,12 @@ export function Account() {
           </button>
         </div>
       </main>
+
+      {viewPhoto && (
+        <div className="photo-viewer" onClick={() => setViewPhoto(null)}>
+          <img src={viewPhoto} alt="Full screen" />
+        </div>
+      )}
     </div>
   )
 }
