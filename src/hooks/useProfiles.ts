@@ -9,6 +9,12 @@ export function useProfiles() {
   const [error, setError] = useState<string | null>(null)
 
   const fetchProfiles = useCallback(async () => {
+    if (appConfig.first_release_date && new Date() < new Date(appConfig.first_release_date)) {
+      setProfiles([])
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     const { data, error } = await supabase

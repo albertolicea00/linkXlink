@@ -18,6 +18,7 @@
   "track_views": true,
   "track_whatsapp_clicks": true,
   "deep_link_profiles_enabled": true,
+  "first_release_date": "2026-07-10T00:00:00Z",
   "test_mode": false,
   "auth_providers": ["google"],
   "require_auth_for_app": true,

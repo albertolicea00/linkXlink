@@ -8,6 +8,10 @@ import type { Profile } from '../types'
  * render with the WhatsApp button disabled (contacting requires an account).
  */
 export async function fetchPreviewProfiles(): Promise<Profile[]> {
+  if (appConfig.first_release_date && new Date() < new Date(appConfig.first_release_date)) {
+    return []
+  }
+
   const { data, error } = await supabase.rpc('preview_profiles', {
     p_limit: appConfig.preview_profiles_count,
     p_test_mode: appConfig.test_mode,
