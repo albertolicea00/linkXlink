@@ -892,6 +892,12 @@ a {
   margin-bottom: 2rem;
 }
 
+/* Moderator: 2 stat cards, centered */
+.admin-stats--mod {
+  grid-template-columns: repeat(2, minmax(0, 160px));
+  justify-content: center;
+}
+
 .stat-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1401,16 +1407,7 @@ a.landing__brand {
 }
 
 .auth-panel__toggle {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--color-primary);
-  text-decoration: underline;
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  align-self: center;
+  margin: 0 1rem;
 }
 
 /* Register wizard steps */
@@ -1459,8 +1456,13 @@ a.landing__brand {
 }
 
 .steps__item--done .steps__num {
-  border-color: var(--color-whatsapp-dark);
-  color: var(--color-whatsapp-dark);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.register__title {
+  color: var(--color-primary);
 }
 
 .register__account {
@@ -1606,30 +1608,6 @@ a.landing__brand {
   color: var(--color-text);
 }
 
-/* Admin view switch */
-.view-switch {
-  display: inline-flex;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.view-switch button {
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 0.3rem 0.85rem;
-  border: none;
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.view-switch button.view-switch--active {
-  background: var(--color-primary);
-  color: #fff;
-}
-
 /* Moderators manager */
 .moderators__subtitle {
   margin-top: 1.5rem;
@@ -1679,4 +1657,230 @@ a.landing__brand {
 .field-row .field {
   flex: 1;
   min-width: 0;
+}
+
+/* App-like navigation bar */
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.navbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 48px;
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.navbar__item.active {
+  color: var(--color-primary);
+}
+
+/* Keep page content clear of the fixed bar */
+.app-page,
+.admin-page,
+.account {
+  padding-bottom: 76px;
+}
+
+/* Desktop: float the bar as a top-right pill instead of a full-width bottom bar */
+@media (min-width: 768px) {
+  .navbar {
+    left: auto;
+    right: 1rem;
+    bottom: 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    padding: 0.35rem 0.5rem;
+    gap: 0.25rem;
+    box-shadow: var(--shadow);
+  }
+
+  .navbar__item {
+    flex: 0 0 auto;
+    min-width: 66px;
+  }
+
+  .app-page,
+  .admin-page,
+  .account {
+    padding-bottom: 0;
+  }
+}
+
+/* Shared page header title: "Link x Link - <section>" (desktop),
+   just "<section>" on mobile. All pink. */
+.page-title {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.page-title__brand {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.page-title__sep,
+.page-title__section {
+  color: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+  .page-title__brand,
+  .page-title__sep {
+    display: none;
+  }
+}
+
+/* Telegram community banner */
+.tg-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(120deg, rgba(41, 171, 226, 0.14), var(--color-surface));
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.tg-banner__icon {
+  color: #29a9e0;
+  flex-shrink: 0;
+}
+
+.tg-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.tg-banner__text strong {
+  font-size: 0.95rem;
+}
+
+.tg-banner__text span {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.tg-banner__cta {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  background: #29a9e0;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+}
+
+/* Account read-only summary */
+.account-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.account-view__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.account-view__label {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.account-view__value {
+  font-weight: 600;
+  text-align: right;
+}
+
+.account-view__status {
+  font-weight: 700;
+}
+
+/* Step list item content wraps as one flex child (multi-part step 6) */
+.landing__how li > span {
+  flex: 1;
+}
+
+/* Account edit action row: left-aligned, save first */
+.account-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.75rem;
+}
+
+/* Hide-until duration select */
+.visibility__duration {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0.5rem 1.6rem;
+}
+
+.visibility__duration select {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  max-width: 12rem;
+}
+
+/* Paused/hidden nudge banner on explore */
+.paused-banner {
+  display: block;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Preview-end app logo */
+.preview-end__logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  border-radius: 16px;
 }

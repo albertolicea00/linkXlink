@@ -1,6 +1,6 @@
 import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import './i18n'
 import './index.css'
 import { Landing } from './pages/Landing'
@@ -12,6 +12,8 @@ import { Eula } from './pages/Eula'
 import { Privacy } from './pages/Privacy'
 import { DataUsage } from './pages/DataUsage'
 import { NotFound } from './pages/NotFound'
+import { NavBar } from './components/NavBar'
+import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
 import { ADMIN_PATH } from './lib/adminPath'
 
@@ -20,23 +22,40 @@ function RequireTerms({ children }: { children: ReactNode }) {
   return children
 }
 
+// Persistent chrome for the signed-in-ish surface: the nav bar is mounted
+// ONCE here, so navigating between these pages (or flipping the admin view)
+// never remounts or re-fetches it. Landing/legal sit outside → no nav bar.
+function ChromeLayout() {
+  return (
+    <>
+      <Outlet />
+      <NavBar />
+    </>
+  )
+}
+
 const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
   { path: '/es', element: <Landing lang="es" /> },
   { path: '/en', element: <Landing lang="en" /> },
   {
-    path: '/app',
-    element: (
-      <RequireTerms>
-        <AppPage />
-      </RequireTerms>
-    ),
+    element: <ChromeLayout />,
+    children: [
+      {
+        path: '/app',
+        element: (
+          <RequireTerms>
+            <AppPage />
+          </RequireTerms>
+        ),
+      },
+      { path: '/account', element: <Account /> },
+      { path: ADMIN_PATH, element: <Admin /> },
+    ],
   },
   { path: '/register', element: <Register /> },
   { path: '/es/register', element: <Register lang="es" /> },
   { path: '/en/register', element: <Register lang="en" /> },
-  { path: '/account', element: <Account /> },
-  { path: ADMIN_PATH, element: <Admin /> },
   { path: '/eula', element: <Eula /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/data', element: <DataUsage /> },
@@ -46,6 +65,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <NavStateProvider>
+      <RouterProvider router={router} />
+    </NavStateProvider>
   </StrictMode>,
 )

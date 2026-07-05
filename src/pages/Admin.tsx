@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Session } from '@supabase/supabase-js'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
-import { ThemeToggle } from '../components/ThemeToggle'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { PageHeader } from '../components/PageHeader'
 import { SwipeDeck, type SwipeDirection } from '../components/SwipeDeck'
 import { ProfileCard } from '../components/ProfileCard'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { useNav } from '../context/nav'
 import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
 import { logModeration } from '../lib/metrics'
-import { fetchStaffRole, type StaffRole } from '../lib/staffRole'
 import {
   listModerators,
   searchUsers,
@@ -24,76 +23,29 @@ import type { Profile } from '../types'
 
 export function Admin() {
   const { t } = useTranslation()
-  const [session, setSession] = useState<Session | null>(null)
-  // Regular users share the same Supabase Auth now: a session alone is not
-  // enough — the panel only opens for rows in `admins` or `moderators`.
-  const [role, setRole] = useState<StaffRole | 'checking'>('checking')
-  // Admins can flip to the moderator interface (admin IS a moderator).
-  // Moderators are locked to the moderator view.
-  const [view, setView] = useState<'admin' | 'moderator'>('admin')
+  // Role/session come from the shared nav context (fetched once). Regular
+  // users share the same Supabase Auth, so a session alone is not enough —
+  // the panel only opens for rows in `admins` or `moderators`.
+  const { session, role, loading } = useNav()
+  // Admins flip between views from the nav bar, which links to
+  // ?view=admin / ?view=moderator. Moderators are locked to the moderator view.
+  const [searchParams] = useSearchParams()
+  const view: 'admin' | 'moderator' = searchParams.get('view') === 'moderator' ? 'moderator' : 'admin'
+  const effectiveView = role === 'admin' ? view : 'moderator'
 
   usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: ADMIN_PATH, noindex: true })
 
-  useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
-    return () => sub.subscription.unsubscribe()
-  }, [])
-
-  useEffect(() => {
-    if (!session) {
-      setRole('checking')
-      return
-    }
-    let cancelled = false
-    void fetchStaffRole().then((r) => {
-      if (!cancelled) setRole(r)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const effectiveView = role === 'admin' ? view : 'moderator'
-
   return (
     <div className="page admin-page">
-      <header className="admin-page__header">
-        <h1>{t('admin.title')}</h1>
-        <div className="admin-page__controls">
-          {role === 'admin' && (
-            <div className="view-switch" role="group" aria-label={t('admin.viewSwitch')}>
-              <button
-                type="button"
-                className={view === 'admin' ? 'view-switch--active' : ''}
-                onClick={() => setView('admin')}
-              >
-                {t('admin.viewAdmin')}
-              </button>
-              <button
-                type="button"
-                className={view === 'moderator' ? 'view-switch--active' : ''}
-                onClick={() => setView('moderator')}
-              >
-                {t('admin.viewModerator')}
-              </button>
-            </div>
-          )}
-          <LanguageSwitcher />
-          <ThemeToggle />
-          {session && (
-            <button type="button" className="btn" onClick={() => void supabase.auth.signOut()}>
-              {t('admin.logout')}
-            </button>
-          )}
-        </div>
-      </header>
+      <PageHeader
+        section={effectiveView === 'moderator' ? t('nav.moderator') : t('nav.admin')}
+      />
       <main>
-        {!session && <LoginForm />}
-        {session && role === 'checking' && (
+        {!session && !loading && <LoginForm />}
+        {session && loading && (
           <p className="app-page__status">{t('admin.checkingAccess')}</p>
         )}
-        {session && role === null && (
+        {session && !loading && role === null && (
           <p className="app-page__status form-error">{t('admin.notAuthorized')}</p>
         )}
         {session && (role === 'admin' || role === 'moderator') && (
@@ -260,10 +212,9 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   if (view === 'moderator') {
     return (
       <div className="admin-panel">
-        <div className="admin-stats">
+        <div className="admin-stats admin-stats--mod">
           <StatCard value={approvedByMe} label={t('admin.statsApprovedByMe')} variant="approved" />
           <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
-          <StatCard value={banned} label={t('admin.statsBanned')} variant="banned" />
         </div>
 
         <ShareApp />

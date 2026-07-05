@@ -13,6 +13,7 @@
     "description": "Discover profiles of people near you and contact them directly on <wa>WhatsApp</wa>. No sign-up, no hassle.",
     "enter": "Enter",
     "register": "Create my profile",
+    "myProfile": "My profile",
     "benefitsTitle": "Why Link x Link?",
     "benefit1Title": "Local profiles",
     "benefit1Text": "Real people from your area, with photos and description.",
@@ -26,6 +27,7 @@
     "how3": "Enter the app and swipe through profiles.",
     "how4": "Interested in someone? Tap the WhatsApp button.",
     "how5": "Something wrong? Report it and help the community.",
+    "how6": "Join our <tg>Telegram community</tg> to help keep the app running, report bugs and get support.",
     "acceptTerms": "I accept the <eula>terms and conditions</eula>, the <privacy>privacy policy</privacy> and the <data>data usage policy</data>"
   },
   "profile": {
@@ -49,7 +51,9 @@
     "swipeHint": "Swipe the card to see the next one",
     "undo": "← I changed my mind, go back",
     "previewBanner": "Preview. Sign up to see all profiles and get in touch.",
-    "previewEnd": "This is just a taste. Join to see every profile."
+    "previewEnd": "This is just a taste. Join to see every profile.",
+    "pausedUntil": "You're invisible until {{date}}. Tap to change it.",
+    "pausedHidden": "Your profile is hidden. Tap to become visible again."
   },
   "swaps": {
     "warning": "You have made {{count}} interactions today. Opening too many new chats may get your number temporarily blocked by WhatsApp.",
@@ -69,6 +73,11 @@
     "success": "Report sent. Thanks for helping the community.",
     "error": "Could not send the report. Please try again.",
     "alreadyReported": "You already reported this profile."
+  },
+  "community": {
+    "title": "Join our Telegram community",
+    "text": "Help keep the app running, report bugs, request features or get support.",
+    "join": "Join"
   },
   "auth": {
     "continueWith": "Continue with {{provider}}",
@@ -105,7 +114,7 @@
     "shareButton": "Share on WhatsApp",
     "shareProgress": "{{current}} of {{total}} shared",
     "shareRequired": "Share with {{count}} people to enable registration.",
-    "shareMessage": "Join Link x Link and connect with local people on WhatsApp: {{url}}",
+    "shareMessage": "Join Link x Link and connect with people on WhatsApp: {{url}}",
     "nameHelp": "This is how other people will see you on your card.",
     "descriptionHelp": "Shown on your card, under your name. Say something short about yourself.",
     "birthdate": "Date of birth",
@@ -128,7 +137,7 @@
     "duplicate": "That WhatsApp number is already registered.",
     "submitting": "Submitting…",
     "submit": "Submit registration",
-    "success": "Done! Your profile was submitted. It will be visible once an admin approves it.",
+    "success": "Done! Your profile was submitted. It will be visible once an moderator approves it.",
     "error": "Could not submit your registration. Please try again.",
     "goToApp": "Go to the app"
   },
@@ -168,6 +177,10 @@
     "title": "My account",
     "age": "{{age}} years old",
     "noProfile": "You haven't created your profile yet.",
+    "edit": "Edit profile",
+    "cancel": "Cancel",
+    "notSet": "Not set",
+    "interestsLabel": "Interests",
     "save": "Save changes",
     "saved": "Changes saved.",
     "saveError": "Could not save changes.",
@@ -175,10 +188,15 @@
     "visible": "Show me normally",
     "until": "Hide me until a date",
     "hidden": "Don't show me anymore",
-    "visibilityHelp": "Controls whether your profile is shown to others. You can turn it back on anytime."
+    "visibilityHelp": "Controls whether your profile is shown to others. You can turn it back on anytime.",
+    "durationChoose": "Choose duration",
+    "days": "{{n}} days",
+    "weeks": "{{n}} weeks",
+    "months": "{{n}} months",
+    "hiddenUntilInfo": "You'll be hidden until {{date}}."
   },
   "admin": {
-    "title": "Administration",
+    "title": "Admin",
     "viewSwitch": "Switch view",
     "viewAdmin": "Admin",
     "viewModerator": "Moderator",
@@ -244,7 +262,14 @@
   },
   "nav": {
     "language": "Language",
-    "theme": "Toggle theme"
+    "theme": "Toggle theme",
+    "main": "Navigation",
+    "account": "Account",
+    "login": "Log in",
+    "admin": "Admin",
+    "moderator": "Moderate",
+    "app": "Explore",
+    "share": "Share"
   },
   "footer": {
     "eula": "Terms",

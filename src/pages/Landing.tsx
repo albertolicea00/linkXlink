@@ -3,7 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { useNav } from '../context/nav'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
+import { ADMIN_PATH } from '../lib/adminPath'
+import appConfig from '../config/app-config.json'
 
 interface Props {
   lang?: 'es' | 'en'
@@ -50,6 +53,8 @@ export function Landing({ lang }: Props) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [checked, setChecked] = useState(hasAcceptedTerms)
+  const { session, role, hasProfile, loading: navLoading } = useNav()
+  const isStaff = role === 'admin' || role === 'moderator'
 
   useEffect(() => {
     if (lang && i18n.resolvedLanguage !== lang) {
@@ -92,34 +97,53 @@ export function Landing({ lang }: Props) {
           <p className="landing__description">
             <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
           </p>
-          <label className="terms-check">
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={(e) => setChecked(e.target.checked)}
-            />
-            <span>
-              <Trans
-                i18nKey="landing.acceptTerms"
-                components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
+          {!session && (
+            <label className="terms-check">
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
               />
-            </span>
-          </label>
+              <span>
+                <Trans
+                  i18nKey="landing.acceptTerms"
+                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
+                />
+              </span>
+            </label>
+          )}
           <div className="landing__cta">
+            {/* Signed out: accept terms → enter, plus register.
+                Signed in: enter the app, moderate (staff), and edit/create profile. */}
             <button
               type="button"
               className="btn btn--primary btn--large"
-              disabled={!checked}
+              disabled={!session && !checked}
               onClick={() => {
-                acceptTerms()
+                if (!session) acceptTerms()
                 void navigate('/app')
               }}
             >
               {t('landing.enter')}
             </button>
-            <Link to="/register" className="btn btn--large">
-              {t('landing.register')}
-            </Link>
+
+            {!navLoading && session && isStaff && (
+              <Link to={`${ADMIN_PATH}?view=moderator`} className="btn btn--large">
+                {t('nav.moderator')}
+              </Link>
+            )}
+
+            {!navLoading && session && hasProfile && (
+              <Link to="/account" className="btn btn--large">
+                {t('landing.myProfile')}
+              </Link>
+            )}
+
+            {!navLoading && (!session || !hasProfile) && (
+              <Link to="/register" className="btn btn--large">
+                {t('landing.register')}
+              </Link>
+            )}
           </div>
         </section>
 
@@ -152,6 +176,18 @@ export function Landing({ lang }: Props) {
             <li>{t('landing.how3')}</li>
             <li>{t('landing.how4')}</li>
             <li>{t('landing.how5')}</li>
+            <li>
+              <span>
+                <Trans
+                  i18nKey="landing.how6"
+                  components={{
+                    tg: (
+                      <a href={appConfig.telegram_url} target="_blank" rel="noopener noreferrer" />
+                    ),
+                  }}
+                />
+              </span>
+            </li>
           </ol>
         </section>
       </main>
