@@ -17,7 +17,7 @@
   "track_views": true,
   "track_whatsapp_clicks": true,
   "deep_link_profiles_enabled": true,
-  "auth_providers": ["google", "apple", "facebook"],
+  "auth_providers": ["google"],
   "require_auth_for_app": true,
   "require_profile_for_app": true,
   "show_deck_counter": false,

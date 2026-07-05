@@ -102,26 +102,30 @@ export function AuthPanel() {
 
   return (
     <div className="auth-panel">
-      <div className="auth-panel__providers">
-        {providers.map((p) => {
-          const Icon = PROVIDER_ICONS[p]
-          return (
-            <button
-              key={p}
-              type="button"
-              className="btn auth-panel__provider"
-              onClick={() => handleOAuth(p)}
-            >
-              <Icon />
-              {t('auth.continueWith', { provider: PROVIDER_NAMES[p] })}
-            </button>
-          )
-        })}
-      </div>
+      {providers.length > 0 && (
+        <>
+          <div className="auth-panel__providers">
+            {providers.map((p) => {
+              const Icon = PROVIDER_ICONS[p]
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  className="btn auth-panel__provider"
+                  onClick={() => handleOAuth(p)}
+                >
+                  <Icon />
+                  {t('auth.continueWith', { provider: PROVIDER_NAMES[p] })}
+                </button>
+              )
+            })}
+          </div>
 
-      <div className="auth-panel__divider" role="presentation">
-        <span>{t('auth.or')}</span>
-      </div>
+          <div className="auth-panel__divider" role="presentation">
+            <span>{t('auth.or')}</span>
+          </div>
+        </>
+      )}
 
       <form className="auth-panel__form" onSubmit={handleSubmit}>
         <label className="field">
