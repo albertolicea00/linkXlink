@@ -5,18 +5,42 @@ import { AuthPanel } from './AuthPanel'
 interface Props {
   /** 'auth' → sign in / sign up; 'profile' → account exists, profile missing. */
   mode: 'auth' | 'profile'
+  /** When set, the gate is dismissable (preview mode) — shows a close button
+   * and closes on backdrop click. Omit for the hard gate (no preview). */
+  onClose?: () => void
 }
 
 /**
- * Soft gate over /app: not a redirect, a friendly blocking overlay.
- * Enforcement toggles: require_auth_for_app / require_profile_for_app.
+ * Soft gate over /app: not a redirect, a friendly overlay. In preview mode
+ * it is dismissable so the visitor can go back to the teaser cards.
+ * Enforcement is server-side (RLS, migrations 0006/0007) — this is UX.
  */
-export function AuthGateModal({ mode }: Props) {
+export function AuthGateModal({ mode, onClose }: Props) {
   const { t } = useTranslation()
-  
+
   return (
-    <div className="modal-backdrop modal-backdrop--gate" role="presentation">
-      <div className="modal auth-gate" role="dialog" aria-modal="true" aria-label={t(`gate.${mode}Title`)}>
+    <div
+      className="modal-backdrop modal-backdrop--gate"
+      role="presentation"
+      onClick={onClose ? () => onClose() : undefined}
+    >
+      <div
+        className="modal auth-gate"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t(`gate.${mode}Title`)}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {onClose && (
+          <button
+            type="button"
+            className="auth-gate__close"
+            onClick={onClose}
+            aria-label={t('report.cancel')}
+          >
+            ×
+          </button>
+        )}
         <div className="auth-gate__brand">
           <svg viewBox="0 0 512 512" className="auth-gate__logo" aria-hidden>
             <defs>
@@ -26,15 +50,16 @@ export function AuthGateModal({ mode }: Props) {
               </linearGradient>
             </defs>
             <rect width="512" height="512" rx="112" fill="url(#g)" />
-            <path d="M256 400 C 214 366 128 300 128 222 C 128 172 166 136 212 136 C 238 136 246 148 256 162 C 266 148 274 136 300 136 C 346 136 384 172 384 222 C 384 300 298 366 256 400 Z" fill="#fff" />
+            <path
+              d="M256 400 C 214 366 128 300 128 222 C 128 172 166 136 212 136 C 238 136 246 148 256 162 C 266 148 274 136 300 136 C 346 136 384 172 384 222 C 384 300 298 366 256 400 Z"
+              fill="#fff"
+            />
           </svg>
-          <span className="auth-gate__title">{t('gate.authTitle')}</span>
+          <span className="auth-gate__title">{t(`gate.${mode}Title`)}</span>
         </div>
         <p className="auth-gate__text">{t(`gate.${mode}Text`)}</p>
         {mode === 'auth' ? (
-          <>
-            <AuthPanel/>
-          </>
+          <AuthPanel />
         ) : (
           <Link to="/register" className="btn btn--primary btn--large auth-gate__cta">
             {t('gate.createProfile')}

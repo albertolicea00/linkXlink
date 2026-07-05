@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Profile } from '../types'
 import { whatsappUrl } from '../lib/whatsapp'
+import { ageFromBirthdate } from '../lib/age'
+import appConfig from '../config/app-config.json'
 import { PhotoCarousel } from './PhotoCarousel'
 
 interface Props {
@@ -21,13 +23,29 @@ export function ProfileCard({
   actions,
 }: Props) {
   const { t } = useTranslation()
+  const age = ageFromBirthdate(profile.birthdate)
+  const interests = profile.interests ?? []
 
   return (
     <article className="profile-card">
       <PhotoCarousel photos={profile.photos ?? []} name={profile.name} profileId={profile.id} />
       <div className="profile-card__body">
-        <h2 className="profile-card__name">{profile.name}</h2>
+        <h2 className="profile-card__name">
+          {profile.name}
+          {appConfig.show_age && age !== null && (
+            <span className="profile-card__age">, {age}</span>
+          )}
+        </h2>
         <p className="profile-card__description">{profile.description}</p>
+        {interests.length > 0 && (
+          <ul className="profile-card__interests">
+            {interests.map((key) => (
+              <li key={key} className="chip chip--static">
+                {t(`interests.${key}`, key)}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <div className="profile-card__actions">
         {actions !== undefined ? (

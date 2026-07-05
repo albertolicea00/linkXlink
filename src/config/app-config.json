@@ -20,8 +20,25 @@
   "auth_providers": ["google"],
   "require_auth_for_app": true,
   "require_profile_for_app": true,
+  "preview_profiles_count": 3,
   "show_deck_counter": false,
   "show_deck_stats": true,
   "show_undo_button": true,
-  "fallback_photo_variants": 10
+  "fallback_photo_variants": 10,
+  "show_age": true,
+  "max_interests": 6,
+  "interest_options": [
+    "music",
+    "sports",
+    "movies",
+    "travel",
+    "gaming",
+    "reading",
+    "cooking",
+    "art",
+    "fitness",
+    "photography",
+    "dancing",
+    "nature"
+  ]
 }

@@ -5,6 +5,7 @@ import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
 import { useAuth } from '../hooks/useAuth'
 import { fetchOwnProfile } from '../lib/ownProfile'
+import { fetchPreviewProfiles } from '../lib/previewProfiles'
 import { SwipeDeck } from '../components/SwipeDeck'
 import { ProfileCard } from '../components/ProfileCard'
 import { ReportModal } from '../components/ReportModal'
@@ -29,8 +30,6 @@ export function AppPage() {
   const clickNearLimit = !clickLimitReached && clicks >= appConfig.warning_swap_threshold
   const [searchParams] = useSearchParams()
 
-  // Soft gate: friendly blocking popup instead of a redirect.
-  // Toggles: require_auth_for_app / require_profile_for_app.
   const { session, loading: authLoading } = useAuth()
   const [ownProfile, setOwnProfile] = useState<Profile | null>(null)
   const [ownChecked, setOwnChecked] = useState(false)
@@ -53,12 +52,43 @@ export function AppPage() {
     }
   }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const showAuthGate = appConfig.require_auth_for_app && !authLoading && !session
-  const showProfileGate =
-    appConfig.require_profile_for_app && !!session && ownChecked && !ownProfile
+  // RLS ties the feed to the session; the initial fetch may fire before
+  // Supabase restores it from storage, so refetch once auth resolves.
+  useEffect(() => {
+    if (session) void refetch()
+  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Developer deep link: /app?profile=<uuid> puts that profile on top.
-  // Kill switch: deep_link_profiles_enabled in app-config.json.
+  // Who is blocked from the full feed, and how to invite them in.
+  const needsAuth = appConfig.require_auth_for_app && !authLoading && !session
+  const needsProfile =
+    appConfig.require_profile_for_app && !!session && ownChecked && !ownProfile
+  const blocked = needsAuth || needsProfile
+  const gateMode: 'auth' | 'profile' = session ? 'profile' : 'auth'
+
+  // Preview: signed-out / profile-less visitors get a teaser of N profiles
+  // (whatsapp disabled) instead of an immediate wall. Set preview_profiles_count
+  // to 0 to gate instantly.
+  const previewEnabled = appConfig.preview_profiles_count > 0
+  const previewMode = blocked && previewEnabled
+  const [preview, setPreview] = useState<Profile[]>([])
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [gateOpen, setGateOpen] = useState(false)
+
+  useEffect(() => {
+    if (!previewMode) return
+    let cancelled = false
+    setPreviewLoading(true)
+    void fetchPreviewProfiles().then((list) => {
+      if (!cancelled) {
+        setPreview(list)
+        setPreviewLoading(false)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [previewMode])
+
   const targetId = appConfig.deep_link_profiles_enabled ? searchParams.get('profile') : null
 
   // Shuffled + least-seen-first, recomputed only when a new list arrives.
@@ -77,6 +107,11 @@ export function AppPage() {
     path: '/app',
   })
 
+  // Gate the instant a blocked visitor has no preview to show.
+  const isLoading = previewMode ? previewLoading : loading
+  const deckProfiles = previewMode ? preview : orderedProfiles
+  const showGate = gateOpen || (blocked && !previewEnabled)
+
   return (
     <div className="page app-page">
       <h1 className="sr-only">{t('meta.appTitle')}</h1>
@@ -85,18 +120,32 @@ export function AppPage() {
           {t('app.name')}
         </Link>
         <div className="app-page__controls">
+          {session && (
+            <Link to="/account" className="btn app-page__account" aria-label={t('account.title')}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </Link>
+          )}
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
       </header>
 
-      {clickLimitReached && <WarningBanner variant="error" message={t('swaps.limitReached', { max: appConfig.max_swaps_per_24h })} />}
+      {clickLimitReached && (
+        <WarningBanner
+          variant="error"
+          message={t('swaps.limitReached', { max: appConfig.max_swaps_per_24h })}
+        />
+      )}
       {clickNearLimit && <WarningBanner message={t('swaps.warning', { count: clicks })} />}
+      {previewMode && <WarningBanner variant="info" message={t('feed.previewBanner')} />}
 
       <main className="app-page__main">
-        {loading && <p className="app-page__status">{t('feed.loading')}</p>}
+        {isLoading && <p className="app-page__status">{t('feed.loading')}</p>}
 
-        {!loading && error && (
+        {!isLoading && !previewMode && error && (
           <div className="app-page__status">
             <p>{t('feed.error')}</p>
             <button type="button" className="btn" onClick={() => void refetch()}>
@@ -105,46 +154,64 @@ export function AppPage() {
           </div>
         )}
 
-        {!loading && !error && profiles.length === 0 && (
+        {!isLoading && deckProfiles.length === 0 && !(blocked && !previewEnabled) && (
           <p className="app-page__status">{t('feed.empty')}</p>
         )}
 
-        {!loading && !error && profiles.length > 0 && (
-          <p className="deck-hint">{t('feed.swipeHint')}</p>
-        )}
-        {!loading && !error && profiles.length > 0 && (
-          <SwipeDeck
-            profiles={orderedProfiles}
-            showCounter={appConfig.show_deck_counter}
-            showUndo={appConfig.show_undo_button}
-            renderCard={(p) => (
-              <ProfileCard
-                profile={p}
-                whatsappDisabled={clickLimitReached}
-                onWhatsappClick={() => {
-                  setClicks(recordClick())
-                  trackProfileEvent(p.id, 'whatsapp_click')
-                }}
-                onReportClick={() => setReporting(p)}
-              />
-            )}
-            onSwipe={() => swap()}
-            onTopChange={(p) => {
-              markSeen(p.id)
-              trackProfileEvent(p.id, 'view')
-            }}
-            emptyState={
-              <div className="app-page__status">
-                <p>{t('feed.end')}</p>
-                <button type="button" className="btn" onClick={() => void refetch()}>
-                  {t('feed.restart')}
-                </button>
-              </div>
-            }
-          />
+        {!isLoading && deckProfiles.length > 0 && (
+          <>
+            <p className="deck-hint">{t('feed.swipeHint')}</p>
+            <SwipeDeck
+              profiles={deckProfiles}
+              showCounter={appConfig.show_deck_counter}
+              showUndo={!previewMode && appConfig.show_undo_button}
+              renderCard={(p) => (
+                <ProfileCard
+                  profile={p}
+                  whatsappDisabled={previewMode || clickLimitReached}
+                  onWhatsappClick={() => {
+                    if (previewMode) {
+                      setGateOpen(true)
+                      return
+                    }
+                    setClicks(recordClick())
+                    trackProfileEvent(p.id, 'whatsapp_click')
+                  }}
+                  onReportClick={() => (previewMode ? setGateOpen(true) : setReporting(p))}
+                />
+              )}
+              onSwipe={() => !previewMode && swap()}
+              onTopChange={(p) => {
+                if (previewMode) return
+                markSeen(p.id)
+                trackProfileEvent(p.id, 'view')
+              }}
+              emptyState={
+                previewMode ? (
+                  <div className="app-page__status">
+                    <p>{t('feed.previewEnd')}</p>
+                    <button
+                      type="button"
+                      className="btn btn--primary"
+                      onClick={() => setGateOpen(true)}
+                    >
+                      {t(gateMode === 'auth' ? 'gate.authCta' : 'gate.createProfile')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="app-page__status">
+                    <p>{t('feed.end')}</p>
+                    <button type="button" className="btn" onClick={() => void refetch()}>
+                      {t('feed.restart')}
+                    </button>
+                  </div>
+                )
+              }
+            />
+          </>
         )}
 
-        {!loading && !error && profiles.length > 0 && appConfig.show_deck_stats && (
+        {!isLoading && !previewMode && deckProfiles.length > 0 && appConfig.show_deck_stats && (
           <p className="deck-stats">
             <span>{t('feed.statsSwipes', { count, max: appConfig.max_swaps_per_24h })}</span>
             <span aria-hidden>·</span>
@@ -161,8 +228,7 @@ export function AppPage() {
         />
       )}
 
-      {showAuthGate && <AuthGateModal mode="auth" />}
-      {!showAuthGate && showProfileGate && <AuthGateModal mode="profile" />}
+      {showGate && <AuthGateModal mode={gateMode} onClose={previewEnabled ? () => setGateOpen(false) : undefined} />}
     </div>
   )
 }

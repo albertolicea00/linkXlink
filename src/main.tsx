@@ -7,6 +7,7 @@ import { Landing } from './pages/Landing'
 import { AppPage } from './pages/AppPage'
 import { Admin } from './pages/Admin'
 import { Register } from './pages/Register'
+import { Account } from './pages/Account'
 import { Eula } from './pages/Eula'
 import { Privacy } from './pages/Privacy'
 import { DataUsage } from './pages/DataUsage'
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
   { path: '/register', element: <Register /> },
   { path: '/es/register', element: <Register lang="es" /> },
   { path: '/en/register', element: <Register lang="en" /> },
+  { path: '/account', element: <Account /> },
   { path: ADMIN_PATH, element: <Admin /> },
   { path: '/eula', element: <Eula /> },
   { path: '/privacy', element: <Privacy /> },

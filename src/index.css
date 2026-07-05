@@ -710,6 +710,12 @@ a {
   color: var(--color-error-text);
 }
 
+.warning-banner--info {
+  background: var(--color-primary-glow);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
 /* Modal */
 .modal-backdrop {
   position: fixed;
@@ -1479,7 +1485,22 @@ a.landing__brand {
   backdrop-filter: blur(4px);
 }
 
+.auth-gate__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .auth-gate {
+  position: relative;
   text-align: center;
 }
 
@@ -1513,4 +1534,138 @@ a.landing__brand {
 
 .auth-gate__cta {
   margin-top: 0.5rem;
+}
+
+/* Interest chips */
+.interest-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.chip--selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: #fff;
+}
+
+.chip--static {
+  cursor: default;
+  background: var(--color-primary-glow);
+  color: var(--color-primary-dark);
+  border-color: transparent;
+}
+
+/* Profile card extras */
+.profile-card__age {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.profile-card__interests {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+/* Account visibility */
+.visibility {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.visibility legend {
+  font-weight: 600;
+  padding: 0 0.4rem;
+}
+
+.visibility__date {
+  margin: 0.25rem 0 0.5rem 1.6rem;
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* Admin view switch */
+.view-switch {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.view-switch button {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.3rem 0.85rem;
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.view-switch button.view-switch--active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* Moderators manager */
+.moderators__subtitle {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+}
+
+.moderators__results,
+.moderators__list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moderators__results li,
+.moderators__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  font-size: 0.9rem;
+}
+
+.stat-card--approved .stat-card__value {
+  color: var(--color-whatsapp-dark);
+}
+
+.app-page__account {
+  min-height: 40px;
+  min-width: 40px;
+  padding: 0;
+  border-radius: 999px;
 }

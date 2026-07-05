@@ -9,6 +9,7 @@ import {
 import { ThemeToggle } from '../components/ThemeToggle'
 import { PhoneInput } from '../components/PhoneInput'
 import { AuthPanel } from '../components/AuthPanel'
+import { ProfileExtraFields } from '../components/ProfileExtraFields'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
@@ -17,7 +18,7 @@ import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
 import appConfig from '../config/app-config.json'
-import type { Profile } from '../types'
+import type { Gender, InterestedIn, Profile } from '../types'
 
 const PHOTOS_BUCKET = 'profile-photos'
 const DEFAULT_COUNTRY: CountryCode = 'CU'
@@ -30,7 +31,7 @@ function maxBirthdate(): string {
   return d.toISOString().slice(0, 10)
 }
 
-type FieldName = 'name' | 'birthdate' | 'phone' | 'photos'
+type FieldName = 'name' | 'birthdate' | 'phone' | 'photos' | 'gender'
 type Step = 1 | 2 | 3
 
 interface Props {
@@ -50,6 +51,9 @@ export function Register({ lang }: Props) {
   const [country, setCountry] = useState<CountryCode>(DEFAULT_COUNTRY)
   const [national, setNational] = useState('')
   const [birthdate, setBirthdate] = useState('')
+  const [gender, setGender] = useState<Gender | ''>('')
+  const [interestedIn, setInterestedIn] = useState<InterestedIn | ''>('')
+  const [interests, setInterests] = useState<string[]>([])
   const [files, setFiles] = useState<File[]>([])
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({})
   const [message, setMessage] = useState<string | null>(null)
@@ -116,6 +120,7 @@ export function Register({ lang }: Props) {
   const errors: Record<FieldName, string | null> = {
     name: name.trim() ? null : t('admin.validationName'),
     birthdate: birthdate && birthdate <= maxBirthdate() ? null : t('register.validationAge'),
+    gender: gender ? null : t('register.validationGender'),
     phone: phoneError(),
     photos: photosError(),
   }
@@ -138,7 +143,7 @@ export function Register({ lang }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!session) return
-    setTouched({ name: true, birthdate: true, phone: true, photos: true })
+    setTouched({ name: true, birthdate: true, phone: true, photos: true, gender: true })
     if (hasErrors) return
     setBusy(true)
     setMessage(null)
@@ -157,8 +162,8 @@ export function Register({ lang }: Props) {
       const whatsapp = parsePhoneNumberFromString(national, country)!.number.slice(1)
 
       // Owned by the signed-in user, always pending; RLS enforces both.
-      // Birthdate is checked client-side only and deliberately NOT stored:
-      // profile rows are publicly readable.
+      // Birthdate is stored to show age; the feed is member-gated (0006) and
+      // the UI never renders the raw date to other users, only the age.
       const { error } = await supabase.from('profiles').insert({
         name: name.trim(),
         description: description.trim(),
@@ -166,6 +171,10 @@ export function Register({ lang }: Props) {
         photos: photoUrls,
         active: false,
         owner_id: session.user.id,
+        birthdate,
+        gender: gender || null,
+        interested_in: interestedIn || null,
+        interests,
       })
       if (error) throw error
 
@@ -334,6 +343,20 @@ export function Register({ lang }: Props) {
                       <span className="field-error">{fieldError('birthdate')}</span>
                     )}
                   </label>
+                  <ProfileExtraFields
+                    gender={gender}
+                    interestedIn={interestedIn}
+                    interests={interests}
+                    onGender={(g) => {
+                      setGender(g)
+                      touch('gender')
+                    }}
+                    onInterestedIn={setInterestedIn}
+                    onInterests={setInterests}
+                  />
+                  {fieldError('gender') && (
+                    <span className="field-error">{fieldError('gender')}</span>
+                  )}
                   <div className="field">
                     <span>{t('register.whatsapp')}</span>
                     <PhoneInput

@@ -1,6 +1,6 @@
 interface Props {
   message: string
-  variant?: 'warning' | 'error'
+  variant?: 'warning' | 'error' | 'info'
 }
 
 export function WarningBanner({ message, variant = 'warning' }: Props) {

@@ -47,7 +47,9 @@
     "statsSwipes": "{{count}}/{{max}} swipes today",
     "statsClicks": "{{count}} WhatsApp clicks",
     "swipeHint": "Swipe the card to see the next one",
-    "undo": "← I changed my mind, go back"
+    "undo": "← I changed my mind, go back",
+    "previewBanner": "Preview. Sign up to see all profiles and get in touch.",
+    "previewEnd": "This is just a taste. Join to see every profile."
   },
   "swaps": {
     "warning": "You have made {{count}} interactions today. Opening too many new chats may get your number temporarily blocked by WhatsApp.",
@@ -86,7 +88,8 @@
     "authText": "Create your account or log in to see the profiles.",
     "profileTitle": "Your profile is missing",
     "profileText": "You have an account. Create your profile to unlock the app.",
-    "createProfile": "Create my profile"
+    "createProfile": "Create my profile",
+    "authCta": "Create account or log in"
   },
   "register": {
     "title": "Create your profile",
@@ -114,6 +117,7 @@
     "photos": "Photos (max {{max}})",
     "photosHelp": "Shown on your card. Optimized automatically before upload.",
     "validationAge": "You must be over 18 to register.",
+    "validationGender": "Select your gender.",
     "phoneRequired": "Enter your WhatsApp number.",
     "phoneTooShort": "The number is too short for the selected country.",
     "phoneTooLong": "The number is too long for the selected country.",
@@ -128,8 +132,62 @@
     "error": "Could not submit your registration. Please try again.",
     "goToApp": "Go to the app"
   },
+  "profileFields": {
+    "choose": "Choose…",
+    "gender": "Gender",
+    "gender_male": "Man",
+    "gender_female": "Woman",
+    "gender_other": "Other",
+    "interestedIn": "Interested in",
+    "interested_male": "Men",
+    "interested_female": "Women",
+    "interested_both": "Both",
+    "interestedInHelp": "It doesn't filter profiles yet; it will be used later.",
+    "interests": "Interests (up to {{max}})"
+  },
+  "interests": {
+    "music": "Music",
+    "sports": "Sports",
+    "movies": "Movies",
+    "travel": "Travel",
+    "gaming": "Gaming",
+    "reading": "Reading",
+    "cooking": "Cooking",
+    "art": "Art",
+    "fitness": "Fitness",
+    "photography": "Photography",
+    "dancing": "Dancing",
+    "nature": "Nature"
+  },
+  "account": {
+    "title": "My account",
+    "age": "{{age}} years old",
+    "noProfile": "You haven't created your profile yet.",
+    "save": "Save changes",
+    "saved": "Changes saved.",
+    "saveError": "Could not save changes.",
+    "visibilityTitle": "Visibility",
+    "visible": "Show me normally",
+    "until": "Hide me until a date",
+    "hidden": "Don't show me anymore",
+    "visibilityHelp": "Controls whether your profile is shown to others. You can turn it back on anytime."
+  },
   "admin": {
     "title": "Administration",
+    "viewSwitch": "Switch view",
+    "viewAdmin": "Admin",
+    "viewModerator": "Moderator",
+    "statsApprovedByMe": "Approved by me",
+    "moderatorsTitle": "Moderators",
+    "moderatorSearch": "Search user",
+    "moderatorSearchPlaceholder": "User email…",
+    "moderatorSearchHelp": "Search by email and make them a moderator.",
+    "searching": "Searching…",
+    "makeModerator": "Make moderator",
+    "alreadyModerator": "Already a moderator",
+    "currentModerators": "Current moderators",
+    "noModerators": "No moderators yet.",
+    "removeModerator": "Remove",
     "email": "Email",
     "password": "Password",
     "login": "Log in",

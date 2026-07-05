@@ -47,7 +47,9 @@
     "statsSwipes": "{{count}}/{{max}} swipes hoy",
     "statsClicks": "{{count}} clicks en WhatsApp",
     "swipeHint": "Desliza la tarjeta para pasar al siguiente",
-    "undo": "← Me arrepentí, volver al anterior"
+    "undo": "← Me arrepentí, volver al anterior",
+    "previewBanner": "Vista previa. Regístrate para ver todos los perfiles y contactar.",
+    "previewEnd": "Esto es solo una muestra. Únete para ver todos los perfiles."
   },
   "swaps": {
     "warning": "Llevas {{count}} interacciones hoy. Abrir demasiados chats nuevos puede hacer que WhatsApp bloquee tu número temporalmente.",
@@ -85,7 +87,8 @@
     "authText": "Crea tu cuenta o inicia sesión para ver los perfiles.",
     "profileTitle": "Te falta tu perfil",
     "profileText": "Ya tienes cuenta. Crea tu perfil para desbloquear la app.",
-    "createProfile": "Crear mi perfil"
+    "createProfile": "Crear mi perfil",
+    "authCta": "Crear cuenta o iniciar sesión"
   },
   "register": {
     "title": "Crea tu perfil",
@@ -113,6 +116,7 @@
     "photos": "Fotos (máx. {{max}})",
     "photosHelp": "Se mostrarán en tu tarjeta. Se optimizan automáticamente antes de subirse.",
     "validationAge": "Debes ser mayor de 18 años para registrarte.",
+    "validationGender": "Selecciona tu género.",
     "phoneRequired": "Escribe tu número de WhatsApp.",
     "phoneTooShort": "El número es demasiado corto para el país elegido.",
     "phoneTooLong": "El número es demasiado largo para el país elegido.",
@@ -127,8 +131,62 @@
     "error": "No se pudo enviar tu registro. Inténtalo de nuevo.",
     "goToApp": "Ir a la app"
   },
+  "profileFields": {
+    "choose": "Elige…",
+    "gender": "Género",
+    "gender_male": "Hombre",
+    "gender_female": "Mujer",
+    "gender_other": "Otro",
+    "interestedIn": "Me interesa",
+    "interested_male": "Hombres",
+    "interested_female": "Mujeres",
+    "interested_both": "Ambos",
+    "interestedInHelp": "Por ahora no filtra los perfiles; se usará más adelante.",
+    "interests": "Intereses (hasta {{max}})"
+  },
+  "interests": {
+    "music": "Música",
+    "sports": "Deportes",
+    "movies": "Cine",
+    "travel": "Viajar",
+    "gaming": "Videojuegos",
+    "reading": "Leer",
+    "cooking": "Cocinar",
+    "art": "Arte",
+    "fitness": "Fitness",
+    "photography": "Fotografía",
+    "dancing": "Bailar",
+    "nature": "Naturaleza"
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "age": "{{age}} años",
+    "noProfile": "Aún no has creado tu perfil.",
+    "save": "Guardar cambios",
+    "saved": "Cambios guardados.",
+    "saveError": "No se pudieron guardar los cambios.",
+    "visibilityTitle": "Visibilidad",
+    "visible": "Aparecer normalmente",
+    "until": "Ocultarme hasta una fecha",
+    "hidden": "No aparecer más",
+    "visibilityHelp": "Controla si tu perfil se muestra a los demás. Puedes volver a activarlo cuando quieras."
+  },
   "admin": {
     "title": "Administración",
+    "viewSwitch": "Cambiar vista",
+    "viewAdmin": "Admin",
+    "viewModerator": "Moderador",
+    "statsApprovedByMe": "Aprobados por mí",
+    "moderatorsTitle": "Moderadores",
+    "moderatorSearch": "Buscar usuario",
+    "moderatorSearchPlaceholder": "Correo del usuario…",
+    "moderatorSearchHelp": "Busca por correo y conviértelo en moderador.",
+    "searching": "Buscando…",
+    "makeModerator": "Hacer moderador",
+    "alreadyModerator": "Ya es moderador",
+    "currentModerators": "Moderadores actuales",
+    "noModerators": "No hay moderadores todavía.",
+    "removeModerator": "Quitar",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "login": "Iniciar sesión",
