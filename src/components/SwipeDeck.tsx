@@ -23,6 +23,8 @@ interface Props {
   showCounter?: boolean
   /** "I changed my mind" link that brings the previous card back. */
   showUndo?: boolean
+  /** Hint text shown above the deck (e.g. "Swipe to next"). Hidden in empty state. */
+  hint?: ReactNode
 }
 
 export function SwipeDeck({
@@ -35,6 +37,7 @@ export function SwipeDeck({
   emptyState = null,
   showCounter = false,
   showUndo = false,
+  hint,
 }: Props) {
   const { t } = useTranslation()
   const [index, setIndex] = useState(0)
@@ -129,6 +132,7 @@ export function SwipeDeck({
 
   return (
     <div className="swipe-deck">
+      {hint && <div className="swipe-deck__hint-wrap">{hint}</div>}
       <div
         className="swipe-deck__stack"
         role="group"

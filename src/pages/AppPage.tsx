@@ -11,8 +11,7 @@ import { ProfileCard } from '../components/ProfileCard'
 import { ReportModal } from '../components/ReportModal'
 import { AuthGateModal } from '../components/AuthGateModal'
 import { WarningBanner } from '../components/WarningBanner'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
-import { ThemeToggle } from '../components/ThemeToggle'
+import { PageHeader } from '../components/PageHeader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
@@ -114,24 +113,7 @@ export function AppPage() {
 
   return (
     <div className="page app-page">
-      <h1 className="sr-only">{t('meta.appTitle')}</h1>
-      <header className="app-page__header">
-        <Link to="/" className="app-page__logo">
-          {t('app.name')}
-        </Link>
-        <div className="app-page__controls">
-          {session && (
-            <Link to="/account" className="btn app-page__account" aria-label={t('account.title')}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
-            </Link>
-          )}
-          <LanguageSwitcher />
-          <ThemeToggle />
-        </div>
-      </header>
+      <PageHeader section={t('nav.app')} />
 
       {clickLimitReached && (
         <WarningBanner
@@ -141,6 +123,18 @@ export function AppPage() {
       )}
       {clickNearLimit && <WarningBanner message={t('swaps.warning', { count: clicks })} />}
       {previewMode && <WarningBanner variant="info" message={t('feed.previewBanner')} />}
+
+      {/* Own profile paused/hidden → nudge to re-appear (links to account). */}
+      {!previewMode &&
+        ownProfile &&
+        (ownProfile.self_hidden ||
+          (ownProfile.hidden_until && new Date(ownProfile.hidden_until) > new Date())) && (
+          <Link to="/account" className="paused-banner">
+            {ownProfile.self_hidden
+              ? t('feed.pausedHidden')
+              : t('feed.pausedUntil', { date: ownProfile.hidden_until!.slice(0, 10) })}
+          </Link>
+        )}
 
       <main className="app-page__main">
         {isLoading && <p className="app-page__status">{t('feed.loading')}</p>}
@@ -160,9 +154,9 @@ export function AppPage() {
 
         {!isLoading && deckProfiles.length > 0 && (
           <>
-            <p className="deck-hint">{t('feed.swipeHint')}</p>
             <SwipeDeck
               profiles={deckProfiles}
+              hint={<p className="deck-hint">{t('feed.swipeHint')}</p>}
               showCounter={appConfig.show_deck_counter}
               showUndo={!previewMode && appConfig.show_undo_button}
               renderCard={(p) => (
@@ -189,6 +183,7 @@ export function AppPage() {
               emptyState={
                 previewMode ? (
                   <div className="app-page__status">
+                    <img src="/icons/icon.svg" alt="" className="preview-end__logo" />
                     <p>{t('feed.previewEnd')}</p>
                     <button
                       type="button"
