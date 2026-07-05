@@ -23,5 +23,5 @@
   "show_deck_counter": false,
   "show_deck_stats": true,
   "show_undo_button": true,
-  "fallback_photo_variants": 5
+  "fallback_photo_variants": 10
 }
