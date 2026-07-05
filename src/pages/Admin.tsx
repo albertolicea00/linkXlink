@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { PageHeader } from '../components/PageHeader'
+import { TelegramBanner } from '../components/TelegramBanner'
 import { SwipeDeck, type SwipeDirection } from '../components/SwipeDeck'
+import { Loader } from '../components/Loader'
 import { ProfileCard } from '../components/ProfileCard'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
@@ -172,8 +174,10 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   // Frozen snapshot for the moderation deck: stats update live, but the deck
   // must keep a stable list so skipped cards don't reappear mid-session.
   const [modQueue, setModQueue] = useState<Profile[]>([])
+  const [loadingProfiles, setLoadingProfiles] = useState(true)
 
   const loadProfiles = async () => {
+    setLoadingProfiles(true)
     const { data } = await supabase
       .from('profiles')
       .select('*')
@@ -181,6 +185,7 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
     const list = (data ?? []) as Profile[]
     setProfiles(list)
     setModQueue(list.filter((p) => !p.active && p.report_count === 0))
+    setLoadingProfiles(false)
   }
 
   useEffect(() => {
@@ -217,6 +222,7 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
           <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
         </div>
 
+        <TelegramBanner />
         <ShareApp />
 
         <section className="admin-moderation">
@@ -256,7 +262,13 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
               />
             )}
             onSwipe={(p, dir) => void handleModeration(p, dir)}
-            emptyState={<p className="form-message">{t('admin.pendingEmpty')}</p>}
+            emptyState={
+              loadingProfiles ? (
+                <Loader text={t('feed.loading')} />
+              ) : (
+                <p className="form-message">{t('admin.pendingEmpty')}</p>
+              )
+            }
           />
         </section>
       </div>
@@ -280,23 +292,16 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
 
 function ShareApp() {
   const { t } = useTranslation()
-  const inputRef = useRef<HTMLInputElement>(null)
   const siteUrl = appConfig.site_url
   const shareText = t('register.shareMessage', { url: siteUrl })
 
-  const handleCopy = () => {
-    if (!inputRef.current) return
-    inputRef.current.select()
-    navigator.clipboard?.writeText(inputRef.current.value)
-  }
-
   return (
     <section className="admin-share">
-      <h2>{t('admin.shareTitle')}</h2>
-      <p className="admin-share__desc">{t('admin.shareDesc')}</p>
-      <div className="admin-share__row">
+      {/* <h2>{t('admin.shareTitle')}</h2> */}
+      {/* <p className="admin-share__desc">{t('admin.shareDesc')}</p> */}
+      {/* <div className="admin-share__row">
         <input ref={inputRef} className="admin-share__input" value={siteUrl} readOnly onClick={handleCopy} />
-      </div>
+      </div> */}
       <div className="admin-share__buttons">
         <button
           type="button"
@@ -327,8 +332,15 @@ function ModeratorsManager() {
   const [term, setTerm] = useState('')
   const [results, setResults] = useState<UserSearchResult[]>([])
   const [searching, setSearching] = useState(false)
+  const [loadingMods, setLoadingMods] = useState(true)
 
-  const load = () => void listModerators().then(setModerators)
+  const load = () => {
+    setLoadingMods(true)
+    void listModerators().then((m) => {
+      setModerators(m)
+      setLoadingMods(false)
+    })
+  }
 
   useEffect(() => {
     load()
@@ -402,7 +414,9 @@ function ModeratorsManager() {
       )}
 
       <h3 className="moderators__subtitle">{t('admin.currentModerators')}</h3>
-      {moderators.length === 0 ? (
+      {loadingMods ? (
+        <Loader text={t('feed.loading')} />
+      ) : moderators.length === 0 ? (
         <p className="form-message">{t('admin.noModerators')}</p>
       ) : (
         <ul className="moderators__list">
