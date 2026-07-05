@@ -188,6 +188,23 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [ ] Enable Google/Apple/Facebook providers in Supabase Dashboard (each needs OAuth app credentials + redirect URL)
 - [ ] Password reset flow for users (supabase.auth.resetPasswordForEmail + /reset page)
 - [ ] Hide admin-only sections from moderators in the panel UI (today RLS blocks the data; UI shows empty stats)
+- [x] Server-side `/app` gate (migration `0006_app_access.sql`): reading active profiles now requires a signed-in user with their own profile (`has_own_profile()`) or a moderator — the popup was cosmetic and the feed was scrapeable with the anon key
+- [x] Refetch feed once the session restores (RLS ties reads to auth; initial fetch could race the session load)
+- [ ] Apply migration 0006 to real Supabase project
+- [ ] Profile photos still live in a PUBLIC storage bucket — the image URLs are readable by anyone who has them, even with the row RLS above. Options if this matters: private bucket + signed URLs (breaks PWA CacheFirst + needs URL refresh), or accept photos as public-by-nature
+- [ ] `profile_events` accepts public inserts (metrics) — spammable; rate-limit via Edge Function if abused
+
+## 18. Preview, profile fields, roles & account
+
+- [x] Anonymous preview of N profiles (`preview_profiles` RPC, whatsapp hidden), gate triggers after; `preview_profiles_count` (0 = instant gate) — migration `0007_preview.sql`
+- [x] Profile fields: gender, interested_in (stored, not filtered yet), birthdate (stored → age shown), interests (tags from `interest_options`, cap `max_interests`), self_hidden / hidden_until — migration `0009_profile_fields.sql`
+- [x] `/account` page: edit name/bio/gender/interested-in/interests + visibility (visible / hide-until-date / hide-indefinitely) via `update_own_profile` RPC (whitelisted, can't self-approve)
+- [x] Age shown on cards (`show_age`); birthdate stored but raw date never rendered to others
+- [x] Admin panel split by role: admin view (global stats + moderators mgmt, no share/deck) vs moderator view (approved-by-me/pending/banned + share + deck); navbar view switch for admins
+- [x] Manage moderators from panel: search users by email (`search_users` RPC), promote/demote — migration `0008_moderator_mgmt.sql`
+- [ ] Apply migrations 0006–0009 to real Supabase project
+- [ ] `interested_in` is stored but does not filter the feed yet — wire it when matching lands
+- [ ] Photo/WhatsApp editing from `/account` (today only text fields + visibility)
 
 ## Future (out of MVP scope)
 

@@ -46,30 +46,32 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0003_metrics.sql` | `profile_events` (views / WhatsApp clicks) + `moderation_actions` (audit trail) |
 | `0004_user_auth.sql` | `profiles.owner_id` (one profile per account), registration requires a signed-in user |
 | `0005_moderators.sql` | `moderators` table + `is_moderator()`; moderation policies extended to moderators |
+| `0006_app_access.sql` | Server-side `/app` gate: reading active profiles requires a signed-in user with their own profile (or a moderator) |
+| `0007_preview.sql` | `preview_profiles()` RPC — anonymous teaser of N profiles (no whatsapp exposed) |
+| `0008_moderator_mgmt.sql` | `search_users()` + `my_approved_count()` RPCs for the admin panel |
+| `0009_profile_fields.sql` | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC |
 
 ### 3. Verify the schema
 
 - **Table Editor** → confirm `profiles`, `reports`, `admins`, `moderators`, `profile_events`, `moderation_actions` exist
 - **Storage** → confirm `profile-photos` bucket (should be public)
 
-### 4. Create staff (admins and moderators)
+### 4. Create the first admin
 
-Both are hand-created: a Supabase Auth user + a row in the corresponding table.
+The first admin must be created by hand (Supabase Auth user + row in `admins`). After that, admins can promote any registered user to **moderator** from the panel — no SQL needed.
 
 - **Authentication → Users → Add user** (email + password, enable auto-confirm)
 - Copy the generated **UUID**
-- **SQL Editor** → run one of:
+- **SQL Editor** → run:
   ```sql
-  -- Full admin (manages moderators, reads metrics, everything):
   insert into public.admins (id, email)
-  values ('<copied-uuid>', '<email>');
-
-  -- Moderator (only approves/skips pending profiles):
-  insert into public.moderators (id, email)
   values ('<copied-uuid>', '<email>');
   ```
 
+> Need a moderator by hand too? Same flow, `insert into public.moderators (id, email) values (...)`. Normally you'd just use the panel's **Admin → Moderators** search instead.
 > An account with no row in either table gets "not authorized" on the admin panel, even with a valid login — regular app users share the same Supabase Auth.
+
+**Roles:** `admins` = full power (global stats, manage moderators; can switch to the moderator view). `moderators` = approve/skip pending profiles + their own stats (approved-by-me / pending / banned) + share the app. Admin **is** a moderator; a moderator is **not** an admin.
 
 ### 5. Enable auth providers (end users)
 
