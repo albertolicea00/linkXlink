@@ -136,6 +136,8 @@
     "loginDesc": "Panel de administración para moderación de usuarios y opciones de la app",
     "loginHelper": "La creación de nuevos moderadores o recuperación de clave está en desarrollo — contacta a un administrador del sistema.",
     "loginError": "Credenciales incorrectas.",
+    "checkingAccess": "Comprobando acceso…",
+    "notAuthorized": "Esta cuenta no tiene permisos de moderación. Contacta a un administrador.",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
     "newProfile": "Nuevo perfil",

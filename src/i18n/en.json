@@ -137,6 +137,8 @@
     "loginDesc": "Administration panel for user moderation and app settings",
     "loginHelper": "Creating new moderators or recovering a password is in development — contact a system administrator.",
     "loginError": "Invalid credentials.",
+    "checkingAccess": "Checking access…",
+    "notAuthorized": "This account has no moderation permissions. Contact an administrator.",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "newProfile": "New profile",

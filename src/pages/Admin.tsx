@@ -10,11 +10,15 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
 import { logModeration } from '../lib/metrics'
+import { fetchStaffRole, type StaffRole } from '../lib/staffRole'
 import type { Profile } from '../types'
 
 export function Admin() {
   const { t } = useTranslation()
   const [session, setSession] = useState<Session | null>(null)
+  // Regular users share the same Supabase Auth now: a session alone is not
+  // enough — the panel only opens for rows in `admins` or `moderators`.
+  const [role, setRole] = useState<StaffRole | 'checking'>('checking')
 
   usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: ADMIN_PATH, noindex: true })
 
@@ -23,6 +27,20 @@ export function Admin() {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
     return () => sub.subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (!session) {
+      setRole('checking')
+      return
+    }
+    let cancelled = false
+    void fetchStaffRole().then((r) => {
+      if (!cancelled) setRole(r)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="page admin-page">
@@ -38,7 +56,16 @@ export function Admin() {
           )}
         </div>
       </header>
-      <main>{session ? <AdminPanel /> : <LoginForm />}</main>
+      <main>
+        {!session && <LoginForm />}
+        {session && role === 'checking' && (
+          <p className="app-page__status">{t('admin.checkingAccess')}</p>
+        )}
+        {session && role === null && (
+          <p className="app-page__status form-error">{t('admin.notAuthorized')}</p>
+        )}
+        {session && (role === 'admin' || role === 'moderator') && <AdminPanel />}
+      </main>
     </div>
   )
 }
