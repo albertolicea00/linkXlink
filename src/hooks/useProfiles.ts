@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
 
 export function useProfiles() {
@@ -14,6 +15,7 @@ export function useProfiles() {
       .from('profiles')
       .select('*')
       .eq('active', true)
+      .eq('is_fake', appConfig.test_mode)
       .order('created_at', { ascending: false })
 
     if (error) {

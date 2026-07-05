@@ -181,6 +181,7 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
     const { data } = await supabase
       .from('profiles')
       .select('*')
+      .eq('is_fake', appConfig.test_mode)
       .order('created_at', { ascending: false })
     const list = (data ?? []) as Profile[]
     setProfiles(list)

@@ -8,6 +8,7 @@ export interface Profile {
   whatsapp: string
   photos: string[]
   active: boolean
+  is_fake: boolean
   report_count: number
   created_at: string
   disabled_at: string | null

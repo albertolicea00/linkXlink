@@ -50,6 +50,8 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0007_preview.sql` | `preview_profiles()` RPC — anonymous teaser of N profiles (no whatsapp exposed) |
 | `0008_moderator_mgmt.sql` | `search_users()` + `my_approved_count()` RPCs for the admin panel |
 | `0009_profile_fields.sql` | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC |
+| `0010_more_genders.sql` | Expanded gender options in database check constraints |
+| `0011_test_profiles.sql` | Adds `is_fake` column and test mode support to `preview_profiles()` RPC |
 
 ### 3. Verify the schema
 

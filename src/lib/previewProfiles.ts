@@ -10,6 +10,7 @@ import type { Profile } from '../types'
 export async function fetchPreviewProfiles(): Promise<Profile[]> {
   const { data, error } = await supabase.rpc('preview_profiles', {
     p_limit: appConfig.preview_profiles_count,
+    p_test_mode: appConfig.test_mode,
   })
   if (error || !data) return []
   return (data as Omit<Profile, 'whatsapp' | 'active' | 'report_count' | 'disabled_at'>[]).map(
