@@ -54,7 +54,7 @@
     "swipeHint": "Swipe the card to see the next one",
     "undo": "← I changed my mind, go back",
     "previewBanner": "Complete your profile to see all profiles and get in touch.",
-    "previewEnd": "This is just a taste. Join to see every profile.",
+    "previewEnd": "This is just a taste. Complete your profile see every profile.",
     "pausedUntil": "You're invisible until {{date}}. Tap to change it.",
     "pausedHidden": "Your profile is hidden. Tap to become visible again."
   },
