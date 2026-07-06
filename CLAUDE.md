@@ -18,7 +18,8 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 - UI texts: never hardcoded — always through i18n keys (es/en)
 - Commits: Conventional Commits, short subject, no co-author, no AI attribution
 - **Branching**: The `main` branch is for stable releases only. All feature work and pull requests MUST target the `beta` branch.
-- System parameters live in `src/config/app-config.json` — change behavior there, not with magic numbers. Includes: report/swap/click limits, share gate size, swipe threshold, preload count, rotation, tracking flags, deep link kill switch, `auth_providers`, app gate toggles, preview count, deck counter/stats/undo visibility, fallback image variants, `telegram_url`, `gender_options`, `interest_options`, `max_interests`, `show_age`, `test_mode`.
+- System parameters live in `src/config/app-config.json` — change behavior there, not with magic numbers. Includes: report/swap/click limits, share gate size, swipe threshold, preload count, rotation, tracking flags, deep link kill switch, `auth_providers`, app gate toggles, preview count, deck counter/stats/undo visibility, fallback image variants, `telegram_url`, `gender_options`, `interest_options`, `max_interests`, `show_age`, `moderation_approve_quorum`, `moderation_deny_quorum`, `moderation_deny_reasons`, `seed_profiles_visible_before_claim`, `whatsapp_prefill_enabled`. Quorum thresholds are ALSO stored authoritatively in `app.settings` (`approve_quorum` / `deny_quorum`); config mirrors them for UI, the `moderate_profile` RPC enforces the DB copy.
+- `test_mode` was removed. Fake-profile viewing, release-gate bypass, and the unclaimed-migrated view are now per-device admin dev flags (`src/lib/devFlags.ts`, localStorage), toggled from a panel in `/account` that only admins see. All off = normal app. NOT a security boundary (the `is_fake` filter is client-side).
 
 ## Auth & roles
 
@@ -35,7 +36,8 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 - `DESIGN.md` — architecture and design decisions
 - `TODO.md` — full checklist (incl. known security gaps); check items off as they land
 - `SETUP.md` — Supabase + Vercel step-by-step (migrations, providers, staff creation)
-- `supabase/migrations/` — SQL schema, RLS, triggers (source of truth for DB). Apply in numeric order 0001 → 0009.
+- `supabase/migrations/` — SQL schema, RLS, triggers (source of truth for DB). Apply in numeric order 0001 → 0015. `supabase/seed.sql` (service-role, run once) bootstraps the launch feed with migrated/claimable people.
+- `RULES.md` — community & moderation policy (content rules, approve/deny quorum, deny reasons, seed claiming, ownership claims)
 
 ## Commands
 
@@ -52,10 +54,13 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 
 - Profile disabled when `report_count >= report_threshold` (default 3) — enforced by DB trigger, not client
 - Reading the feed is server-gated (migration 0006): active profiles are readable only by a signed-in user who owns a profile (`has_own_profile()`) or a moderator/admin. The `/app` popup is UX only — the real gate is RLS. Owners always read their own pending profile. NOTE: photos live in a public storage bucket, so image URLs remain publicly fetchable even though profile rows are gated.
-- One profile per WhatsApp number and per account (unique indexes); duplicate insert → Postgres 23505 → friendly i18n error
+- Moderation is quorum-gated (migration 0012, `moderate_profile` RPC): approve or deny applies when one admin votes OR N distinct moderators agree (N = `approve_quorum` / `deny_quorum`). Deny requires a text reason (picked from `moderation_deny_reasons`, stored in `moderation_actions.reason`); denied profiles get `denied_at` set and leave the pending queue. In the moderator deck a swipe is ALWAYS a skip — approve/deny are explicit buttons only (see `SwipeMeta` in `SwipeDeck`).
+- One profile per WhatsApp number and per account (unique indexes); duplicate insert → Postgres 23505 → friendly i18n error. EXCEPTION: seed rows (migration 0013, `migrated = true`, ownerless) are claimable — registering with the matching number calls `claim_migrated_profile` to assign the row to the caller (their submitted fields overwrite the placeholders; the seed stays active). If the number is owned by a non-seed profile, the registrant can file an ownership claim ("Es mío") via `claim_ownership` → `ownership_claims` (migration 0014); moderators review, NO auto-reassignment.
 - WhatsApp numbers stored digits-only with country code (E.164 without `+`); rendered as `https://wa.me/<number>`
 - Registration wizard: 1) account 2) share app link N times (client-side tap counter — bypassable, future referral validation) 3) profile form (name, bio, birthdate, gender, interested-in, interests, phone, photos; real-time validation, 18+ check)
-- Profile extras: `gender` (male/female/other), `interested_in` (male/female/both — stored but NOT used to filter yet), `birthdate` stored to display age (UI shows age, never the raw date), `interests` (tags from `interest_options`, capped at `max_interests`), `self_hidden` / `hidden_until` user-controlled visibility (feed policy + preview RPC both respect them)
+- Profile extras: `gender` (male/female/other), `interested_in` (male/female/both — stored but NOT used to filter yet), `birthdate` stored to display age (UI shows age, never the raw date), `interests` (tags from `interest_options`, capped at `max_interests`), `region` (free-text state/province; the COUNTRY is derived from the phone's country code, so no per-country list), `self_hidden` / `hidden_until` user-controlled visibility (feed policy + preview RPC both respect them)
+- Self-edit (`update_own_profile` RPC) now also covers `region` and `photos` — replacing a photo is a direct change with NO re-moderation (revisit if abused). Still cannot touch active/report_count/owner_id/whatsapp/birthdate.
+- WhatsApp deep link prefills a default message (`feed.whatsappMessage` i18n, `{{name}}` interpolated) via `wa.me/<n>?text=...`, gated by `whatsapp_prefill_enabled`.
 - Photos: client-optimized before upload (≤1280px, WebP/JPEG), 10 MB client cap, 5 MB + mime whitelist enforced by the bucket
 - Swap/click counters are client-side (localStorage, rolling 24h window) — soft limits, warn about WhatsApp ban risk
 - Deck rotation is per-device (localStorage least-seen-first + shuffle); metrics events (`profile_events`: view / whatsapp_click per anonymous device id) and the moderation audit (`moderation_actions`: who approved/skipped/banned whom) live in the DB

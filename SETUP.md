@@ -52,6 +52,14 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0009_profile_fields.sql` | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC |
 | `0010_more_genders.sql` | Expanded gender options in database check constraints |
 | `0011_test_profiles.sql` | Adds `is_fake` column and test mode support to `preview_profiles()` RPC |
+| `0012_moderation_quorum.sql` | Quorum-gated approve/deny (`moderate_profile` RPC), deny `reason`, `profiles.denied_at`, `approve_quorum`/`deny_quorum` settings |
+| `0013_seed_migration.sql` | `profiles.migrated` + `claim_migrated_profile()` RPC (phone-based claim of seed rows) |
+| `0014_ownership_claims.sql` | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed) |
+| `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
+
+Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
+with real people and run it **with the service role** (it inserts ownerless,
+`migrated = true` rows that their owners later claim by phone).
 
 ### 3. Verify the schema
 
