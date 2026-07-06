@@ -76,9 +76,12 @@ export function AuthPanel() {
   const providers = appConfig.auth_providers as Provider[]
 
   const handleOAuth = (provider: Provider) => {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')
+    const redirectUrl = isLocal ? window.location.origin : appConfig.site_url
+
     void supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin + window.location.pathname },
+      options: { redirectTo: redirectUrl },
     })
   }
 
