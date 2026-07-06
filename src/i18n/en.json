@@ -39,6 +39,7 @@
   },
   "feed": {
     "loading": "Loading profiles…",
+    "whatsappMessage": "Hi {{name}} 👋, I saw you on Link x Link",
     "empty": "No profiles available right now.",
     "emptyDesc": "We're in the early stages. Help us by sharing the app with your friends, and come back in a few days to discover more people.",
     "shareApp": "Share app",
@@ -138,6 +139,9 @@
     "validationPhotoSize": "Each photo must be under {{mb}} MB.",
     "validationPhotoType": "Only images are allowed.",
     "duplicate": "That WhatsApp number is already registered.",
+    "ownershipPrompt": "Is that number yours? Report it so a moderator can review it.",
+    "ownershipClaim": "It's mine",
+    "ownershipFiled": "Report sent. A moderator will review your request.",
     "submitting": "Submitting…",
     "submit": "Submit registration",
     "success": "Done! Your profile was submitted. It will be visible once an moderator approves it.",
@@ -160,7 +164,10 @@
     "interested_female": "Women",
     "interested_both": "Both",
     "interestedInHelp": "It doesn't filter profiles yet; it will be used later.",
-    "interests": "Interests (up to {{max}})"
+    "interests": "Interests (up to {{max}})",
+    "region": "Region",
+    "regionPlaceholder": "Province / state",
+    "regionHelp": "The area you're from. The country is taken from your number's code."
   },
   "interests": {
     "music": "🎵 Music",
@@ -198,7 +205,15 @@
     "days": "{{n}} days",
     "weeks": "{{n}} weeks",
     "months": "{{n}} months",
-    "hiddenUntilInfo": "You'll be hidden until {{date}}."
+    "hiddenUntilInfo": "You'll be hidden until {{date}}.",
+    "devTitle": "Developer options",
+    "devHelp": "Admins only. Stored on this device. With everything off, the app behaves like it does for everyone else.",
+    "devShowFakes": "Show only test (fake) profiles",
+    "devBypassRelease": "Bypass the release date",
+    "devOnlyMigrated": "Show only unclaimed migrated profiles",
+    "devReloadHint": "Re-open the app to apply changes.",
+    "replacePhoto": "Change photo",
+    "replacePhotoHelp": "Upload a new image to replace the current one."
   },
   "admin": {
     "title": "Admin",
@@ -242,7 +257,25 @@
     "pendingTitle": "Profiles pending approval",
     "pendingEmpty": "No pending profiles.",
     "approve": "Approve",
+    "deny": "Deny",
     "skip": "Skip",
+    "cancel": "Cancel",
+    "moderationHint": "Drag or use arrow keys to skip. Use the buttons to approve or deny.",
+    "moderationError": "Could not record your vote. Try again.",
+    "approvedMsg": "Profile approved.",
+    "deniedMsg": "Profile denied.",
+    "voteRecorded": "Vote recorded ({{votes}}/{{quorum}}). More moderators needed.",
+    "denyTitle": "Why are you denying this profile?",
+    "denyReasonOtherPlaceholder": "Type the reason…",
+    "denyReason": {
+      "spam": "Spam or advertising",
+      "fake_photos": "Fake or someone else's photos",
+      "underage": "Looks underage",
+      "offensive": "Offensive content",
+      "duplicate": "Duplicate profile",
+      "wrong_number": "Wrong WhatsApp number",
+      "other": "Other reason"
+    },
     "statusActive": "Active",
     "statusDisabled": "Disabled",
     "reactivate": "Reactivate",

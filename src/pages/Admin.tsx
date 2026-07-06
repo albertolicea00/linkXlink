@@ -4,14 +4,15 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { PageHeader } from '../components/PageHeader'
 import { TelegramBanner } from '../components/TelegramBanner'
-import { SwipeDeck, type SwipeDirection } from '../components/SwipeDeck'
+import { SwipeDeck, type SwipeDirection, type SwipeMeta } from '../components/SwipeDeck'
 import { Loader } from '../components/Loader'
 import { ProfileCard } from '../components/ProfileCard'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
 import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
-import { logModeration } from '../lib/metrics'
+import { moderateProfile } from '../lib/metrics'
+import { getDevFlags } from '../lib/devFlags'
 import {
   listModerators,
   searchUsers,
@@ -166,6 +167,73 @@ function StatCard({ value, label, variant }: { value: number; label: string; var
   )
 }
 
+/**
+ * Deny picker: reasons come from app-config (moderation_deny_reasons) and are
+ * shown as a localized list, but the value stored is plain text — the canonical
+ * reason key, or the free text typed for "other".
+ */
+function DenyReasonModal({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: (reason: string) => void
+  onCancel: () => void
+}) {
+  const { t } = useTranslation()
+  const reasons = appConfig.moderation_deny_reasons
+  const [selected, setSelected] = useState<string>('')
+  const [custom, setCustom] = useState('')
+
+  const isOther = selected === 'other'
+  const reason = isOther ? custom.trim() : selected
+  const canConfirm = reason.length > 0
+
+  return (
+    <div className="modal-backdrop" role="dialog" aria-modal="true">
+      <div className="modal">
+        <h3>{t('admin.denyTitle')}</h3>
+        <div className="deny-reasons">
+          {reasons.map((key) => (
+            <label key={key} className="deny-reasons__item">
+              <input
+                type="radio"
+                name="deny-reason"
+                value={key}
+                checked={selected === key}
+                onChange={() => setSelected(key)}
+              />
+              <span>{t(`admin.denyReason.${key}`)}</span>
+            </label>
+          ))}
+        </div>
+        {isOther && (
+          <input
+            type="text"
+            className="input"
+            maxLength={500}
+            placeholder={t('admin.denyReasonOtherPlaceholder')}
+            value={custom}
+            onChange={(e) => setCustom(e.target.value)}
+          />
+        )}
+        <div className="modal__actions">
+          <button type="button" className="btn" onClick={onCancel}>
+            {t('admin.cancel')}
+          </button>
+          <button
+            type="button"
+            className="btn btn--danger"
+            disabled={!canConfirm}
+            onClick={() => onConfirm(reason)}
+          >
+            {t('admin.deny')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   const { t } = useTranslation()
   const [profiles, setProfiles] = useState<Profile[]>([])
@@ -175,17 +243,20 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   // must keep a stable list so skipped cards don't reappear mid-session.
   const [modQueue, setModQueue] = useState<Profile[]>([])
   const [loadingProfiles, setLoadingProfiles] = useState(true)
+  // Deck feedback: quorum-not-yet-reached toast + the deny-reason picker.
+  const [modMessage, setModMessage] = useState<string | null>(null)
+  const [denyTarget, setDenyTarget] = useState<{ profile: Profile; swipe: (dir: SwipeDirection, meta?: SwipeMeta) => void } | null>(null)
 
   const loadProfiles = async () => {
     setLoadingProfiles(true)
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('is_fake', appConfig.test_mode)
+      .eq('is_fake', getDevFlags().showFakes)
       .order('created_at', { ascending: false })
     const list = (data ?? []) as Profile[]
     setProfiles(list)
-    setModQueue(list.filter((p) => !p.active && p.report_count === 0))
+    setModQueue(list.filter((p) => !p.active && p.report_count === 0 && !p.denied_at))
     setLoadingProfiles(false)
   }
 
@@ -195,24 +266,44 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   }, [])
 
   const total = profiles.length
-  const pending = profiles.filter((p) => !p.active && p.report_count === 0).length
+  const pending = profiles.filter((p) => !p.active && p.report_count === 0 && !p.denied_at).length
   const active = profiles.filter((p) => p.active).length
-  const banned = profiles.filter((p) => !p.active && p.report_count > 0).length
+  const banned = profiles.filter((p) => !p.active && (p.report_count > 0 || p.denied_at)).length
 
-  const handleModeration = async (profile: Profile, dir: SwipeDirection) => {
-    if (dir === 'right') {
-      await supabase
-        .from('profiles')
-        .update({ active: true, report_count: 0, disabled_at: null })
-        .eq('id', profile.id)
-      setProfiles((prev) =>
-        prev.map((p) =>
-          p.id === profile.id ? { ...p, active: true, report_count: 0, disabled_at: null } : p,
-        ),
-      )
-      setApprovedByMe((n) => n + 1)
+  // A drag/arrow swipe carries no meta → always a skip. Approve/deny only ever
+  // come from the explicit in-card buttons (meta.action), and are quorum-gated
+  // server-side: one admin OR N distinct moderators (moderate_profile RPC).
+  const handleModeration = async (profile: Profile, _dir: SwipeDirection, meta?: SwipeMeta) => {
+    const action = meta?.action ?? 'skip'
+    const result = await moderateProfile(profile.id, action, meta?.reason)
+
+    if (action === 'skip') return
+    if (!result) {
+      setModMessage(t('admin.moderationError'))
+      return
     }
-    await logModeration(profile.id, dir === 'right' ? 'approve' : 'skip')
+
+    if (result.applied) {
+      if (action === 'approve') {
+        setProfiles((prev) =>
+          prev.map((p) =>
+            p.id === profile.id ? { ...p, active: true, report_count: 0, disabled_at: null } : p,
+          ),
+        )
+        setApprovedByMe((n) => n + 1)
+        setModMessage(t('admin.approvedMsg'))
+      } else {
+        setProfiles((prev) =>
+          prev.map((p) => (p.id === profile.id ? { ...p, active: false } : p)),
+        )
+        setModMessage(t('admin.deniedMsg'))
+      }
+    } else {
+      // Vote recorded, quorum not yet reached.
+      setModMessage(
+        t('admin.voteRecorded', { votes: result.votes, quorum: result.quorum }),
+      )
+    }
   }
 
   if (view === 'moderator') {
@@ -228,41 +319,51 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
 
         <section className="admin-moderation">
           <h2>{t('admin.pendingTitle')}</h2>
+          <p className="field-help">{t('admin.moderationHint')}</p>
+          {modMessage && <p className="form-message">{modMessage}</p>}
           <SwipeDeck
             profiles={modQueue}
-            overlayLabels={{ left: t('admin.skip'), right: t('admin.approve') }}
+            // Any swipe (drag/arrow) is a skip now — both stamps say "skip".
+            overlayLabels={{ left: t('admin.skip'), right: t('admin.skip') }}
             renderCard={(p, swipe) => {
               const maskPhone = (phone: string) => {
                 if (!phone || phone.length < 6) return ''
                 return `+${phone.slice(0, 2)} ${phone.slice(2, 4)} xxx ${phone.slice(-2)}`
               }
               const maskedName = `${p.name} (${maskPhone(p.whatsapp)})`
-              
+
               return (
                 <ProfileCard
                   profile={{ ...p, name: maskedName }}
-                actions={
-                  <>
-                    <button
-                      type="button"
-                      className="btn deck-actions__skip"
-                      onClick={() => swipe('left')}
-                    >
-                      <span aria-hidden>←</span> {t('admin.skip')}
-                    </button>
+                  actions={
+                    <>
+                      <button
+                        type="button"
+                        className="btn deck-actions__skip"
+                        onClick={() => swipe('left')}
+                      >
+                        {t('admin.skip')}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn deck-actions__deny"
+                        onClick={() => setDenyTarget({ profile: p, swipe })}
+                      >
+                        {t('admin.deny')}
+                      </button>
                       <button
                         type="button"
                         className="btn btn--primary deck-actions__approve"
-                        onClick={() => swipe('right')}
+                        onClick={() => swipe('right', { action: 'approve' })}
                       >
-                        {t('admin.approve')} <span aria-hidden>→</span>
+                        {t('admin.approve')}
                       </button>
                     </>
                   }
                 />
               )
             }}
-            onSwipe={(p, dir) => void handleModeration(p, dir)}
+            onSwipe={(p, dir, meta) => void handleModeration(p, dir, meta)}
             emptyState={
               loadingProfiles ? (
                 <Loader text={t('feed.loading')} />
@@ -272,6 +373,15 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
             }
           />
         </section>
+        {denyTarget && (
+          <DenyReasonModal
+            onCancel={() => setDenyTarget(null)}
+            onConfirm={(reason) => {
+              denyTarget.swipe('left', { action: 'deny', reason })
+              setDenyTarget(null)
+            }}
+          />
+        )}
       </div>
     )
   }

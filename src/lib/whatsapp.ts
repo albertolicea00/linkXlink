@@ -11,6 +11,7 @@ export function isValidWhatsappNumber(raw: string): boolean {
   return digits.length >= 8 && digits.length <= 15
 }
 
-export function whatsappUrl(raw: string): string {
-  return `https://wa.me/${sanitizeWhatsappNumber(raw)}`
+export function whatsappUrl(raw: string, message?: string): string {
+  const base = `https://wa.me/${sanitizeWhatsappNumber(raw)}`
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base
 }

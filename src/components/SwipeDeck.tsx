@@ -9,11 +9,25 @@ const EXIT_MS = 260
 
 export type SwipeDirection = 'left' | 'right'
 
+/**
+ * Optional payload passed from an in-card action button through `swipe()` to
+ * `onSwipe`. A plain drag/arrow-key swipe carries NO meta — the moderator deck
+ * uses that to treat every gesture as "skip" while the explicit Approve/Deny
+ * buttons attach an action. The end-user feed ignores meta entirely.
+ */
+export interface SwipeMeta {
+  action?: 'approve' | 'deny'
+  reason?: string
+}
+
 interface Props {
   profiles: Profile[]
   /** `swipe` triggers the fly-out animation — use it for in-card action buttons. */
-  renderCard: (profile: Profile, swipe: (dir: SwipeDirection) => void) => ReactNode
-  onSwipe: (profile: Profile, direction: SwipeDirection) => void
+  renderCard: (
+    profile: Profile,
+    swipe: (dir: SwipeDirection, meta?: SwipeMeta) => void,
+  ) => ReactNode
+  onSwipe: (profile: Profile, direction: SwipeDirection, meta?: SwipeMeta) => void
   /** Fired when a new card becomes the top of the deck (view tracking). */
   onTopChange?: (profile: Profile) => void
   swipeDisabled?: boolean
@@ -71,10 +85,10 @@ export function SwipeDeck({
     }
   }, [index, profiles])
 
-  const swipe = (dir: SwipeDirection) => {
+  const swipe = (dir: SwipeDirection, meta?: SwipeMeta) => {
     if (!profile || leaving || swipeDisabled) return
     setLeaving(dir)
-    onSwipe(profile, dir)
+    onSwipe(profile, dir, meta)
     window.setTimeout(() => {
       setLeaving(null)
       setDrag(null)

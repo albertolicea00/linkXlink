@@ -15,10 +15,13 @@ export interface Profile {
   gender?: Gender | null
   interested_in?: InterestedIn | null
   birthdate?: string | null
+  region?: string | null
   interests?: string[]
   self_hidden?: boolean
   hidden_until?: string | null
   owner_id?: string | null
+  migrated?: boolean
+  denied_at?: string | null
 }
 
 export type ReportReason = 'link_not_found' | 'wrong_number' | 'fraudulent'

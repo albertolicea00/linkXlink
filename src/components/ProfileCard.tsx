@@ -25,6 +25,9 @@ export function ProfileCard({
   const { t } = useTranslation()
   const age = ageFromBirthdate(profile.birthdate)
   const interests = profile.interests ?? []
+  const waMessage = appConfig.whatsapp_prefill_enabled
+    ? t('feed.whatsappMessage', { name: profile.name })
+    : undefined
 
   return (
     <article className="profile-card">
@@ -36,6 +39,11 @@ export function ProfileCard({
             <span className="profile-card__age">, {age}</span>
           )}
         </h2>
+        {profile.region && (
+          <p className="profile-card__region">
+            <span aria-hidden>📍</span> {profile.region}
+          </p>
+        )}
         <p className="profile-card__description">{profile.description}</p>
         {interests.length > 0 && (
           <ul className="profile-card__interests">
@@ -54,7 +62,7 @@ export function ProfileCard({
           <>
             <a
               className={`btn btn--whatsapp${whatsappDisabled ? ' btn--disabled' : ''}`}
-              href={whatsappDisabled ? undefined : whatsappUrl(profile.whatsapp)}
+              href={whatsappDisabled ? undefined : whatsappUrl(profile.whatsapp, waMessage)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => {

@@ -1,9 +1,22 @@
 {
   "site_url": "https://linkxlink.vercel.app",
   "telegram_url": "https://t.me/linksxlinks",
+  "whatsapp_prefill_enabled": true,
   "max_swaps_per_24h": 80,
   "warning_swap_threshold": 40,
   "report_threshold": 4,
+  "moderation_approve_quorum": 1,
+  "moderation_deny_quorum": 3,
+  "moderation_deny_reasons": [
+    "spam",
+    "fake_photos",
+    "underage",
+    "offensive",
+    "duplicate",
+    "wrong_number",
+    "other"
+  ],
+  "seed_profiles_visible_before_claim": true,
   "default_language": "es",
   "supported_languages": [
     "es",
@@ -19,7 +32,6 @@
   "track_whatsapp_clicks": true,
   "deep_link_profiles_enabled": true,
   "first_release_date": "2026-07-10T00:00:00Z",
-  "test_mode": false,
   "auth_providers": ["google"],
   "require_auth_for_app": true,
   "require_profile_for_app": true,

@@ -7,11 +7,16 @@ import { TelegramBanner } from '../components/TelegramBanner'
 import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
+import { useNav } from '../context/nav'
+import { getDevFlags, setDevFlags, type DevFlags } from '../lib/devFlags'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { updateOwnProfile } from '../lib/account'
+import { optimizeImage } from '../lib/imageOptimize'
 import { ageFromBirthdate } from '../lib/age'
 import { supabase } from '../lib/supabase'
 import type { Gender, InterestedIn, Profile } from '../types'
+
+const PHOTOS_BUCKET = 'profile-photos'
 
 type Visibility = 'visible' | 'until' | 'hidden'
 
@@ -42,6 +47,8 @@ export function Account() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { session, loading: authLoading } = useAuth()
+  const { role } = useNav()
+  const [devFlags, setDevFlagsState] = useState<DevFlags>(getDevFlags)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loaded, setLoaded] = useState(false)
 
@@ -53,6 +60,8 @@ export function Account() {
   const [visibility, setVisibility] = useState<Visibility>('visible')
   const [hiddenUntil, setHiddenUntil] = useState('')
   const [duration, setDuration] = useState('')
+  const [region, setRegion] = useState('')
+  const [newPhoto, setNewPhoto] = useState<File | null>(null)
   const [editing, setEditing] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [viewPhoto, setViewPhoto] = useState<string | null>(null)
@@ -66,6 +75,8 @@ export function Account() {
     setGender((p.gender as Gender) ?? '')
     setInterestedIn((p.interested_in as InterestedIn) ?? '')
     setInterests(p.interests ?? [])
+    setRegion(p.region ?? '')
+    setNewPhoto(null)
     if (p.self_hidden) setVisibility('hidden')
     else if (p.hidden_until && new Date(p.hidden_until) > new Date()) {
       setVisibility('until')
@@ -97,12 +108,31 @@ export function Account() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('saving')
+
+    // Replace photo (direct, no re-moderation for now): optimize + upload, then
+    // the RPC swaps profiles.photos to the new URL.
+    let newPhotos: string[] | undefined
+    if (newPhoto) {
+      try {
+        const optimized = await optimizeImage(newPhoto)
+        const path = `${crypto.randomUUID()}-${optimized.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        const { error: upErr } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, optimized)
+        if (upErr) throw upErr
+        newPhotos = [supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path).data.publicUrl]
+      } catch {
+        setStatus('error')
+        return
+      }
+    }
+
     const patch = {
       name: name.trim(),
       description: description.trim(),
       gender: (gender || undefined) as Gender | undefined,
       interested_in: (interestedIn || undefined) as InterestedIn | undefined,
       interests,
+      region: region.trim() || undefined,
+      photos: newPhotos,
       self_hidden: visibility === 'hidden',
       hidden_until:
         visibility === 'until' && hiddenUntil ? new Date(hiddenUntil).toISOString() : null,
@@ -123,11 +153,14 @@ export function Account() {
             gender: patch.gender ?? null,
             interested_in: patch.interested_in ?? null,
             interests,
+            region: patch.region ?? prev.region,
+            photos: newPhotos ?? prev.photos,
             self_hidden: patch.self_hidden,
             hidden_until: patch.hidden_until,
           }
         : prev,
     )
+    setNewPhoto(null)
     setStatus('saved')
     setEditing(false)
   }
@@ -197,6 +230,12 @@ export function Account() {
                     </span>
                   </div>
                   <div className="account-view__row">
+                    <span className="account-view__label">{t('profileFields.region')}</span>
+                    <span className="account-view__value">
+                      {profile.region || t('account.notSet')}
+                    </span>
+                  </div>
+                  <div className="account-view__row">
                     <span className="account-view__label">{t('account.interestsLabel')}</span>
                     <span className="account-view__value">
                       {profile.interests && profile.interests.length > 0
@@ -243,10 +282,29 @@ export function Account() {
                   gender={gender}
                   interestedIn={interestedIn}
                   interests={interests}
+                  region={region}
                   onGender={setGender}
                   onInterestedIn={setInterestedIn}
                   onInterests={setInterests}
+                  onRegion={setRegion}
                 />
+
+                <label className="field">
+                  {t('account.replacePhoto')}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setNewPhoto(e.target.files?.[0] ?? null)}
+                  />
+                  <span className="field-help">{t('account.replacePhotoHelp')}</span>
+                  {newPhoto && (
+                    <img
+                      src={URL.createObjectURL(newPhoto)}
+                      alt=""
+                      className="account-photos__thumb"
+                    />
+                  )}
+                </label>
 
                 <fieldset className="visibility">
                   <legend>{t('account.visibilityTitle')}</legend>
@@ -349,6 +407,34 @@ export function Account() {
             )}
           </div>
         </div>
+        )}
+
+        {role === 'admin' && (
+          <fieldset className="dev-panel">
+            <legend>{t('account.devTitle')}</legend>
+            <p className="field-help">{t('account.devHelp')}</p>
+            {(
+              [
+                ['showFakes', 'devShowFakes'],
+                ['bypassRelease', 'devBypassRelease'],
+                ['onlyMigratedUnclaimed', 'devOnlyMigrated'],
+              ] as [keyof DevFlags, string][]
+            ).map(([key, label]) => (
+              <label key={key} className="dev-panel__item">
+                <input
+                  type="checkbox"
+                  checked={devFlags[key]}
+                  onChange={(e) => {
+                    const next = { ...devFlags, [key]: e.target.checked }
+                    setDevFlags(next)
+                    setDevFlagsState(next)
+                  }}
+                />
+                <span>{t(`account.${label}`)}</span>
+              </label>
+            ))}
+            <p className="field-help">{t('account.devReloadHint')}</p>
+          </fieldset>
         )}
 
         <div style={{ marginTop: '2rem', textAlign: 'center' }}>

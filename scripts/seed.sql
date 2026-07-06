@@ -1,0 +1,26 @@
+-- Launch seed: real people that bootstrap the feed on day one.
+--
+-- Run this with the SERVICE ROLE (Supabase SQL editor, or `supabase db` with
+-- the service key) — it inserts directly and bypasses RLS. Do NOT run it from
+-- the client with the anon key; the insert policies require owner_id = auth.uid().
+--
+-- Each row:
+--   owner_id  NULL       — ownerless until the real person claims it
+--   migrated  true       — marks it claimable by phone (claim_migrated_profile)
+--   active    true       — live in the feed immediately (subject to the UI
+--                          toggle seed_profiles_visible_before_claim)
+--   whatsapp  digits only, country code, no "+"  (E.164 without +)
+--   photos    jsonb array of public URLs already uploaded to the
+--             `profile-photos` bucket
+--
+-- When the owner registers with the SAME whatsapp, claim_migrated_profile
+-- assigns the row to them and overwrites the placeholder fields.
+
+-- Fill in real rows, uncomment, and run. Left fully commented so the file is
+-- a safe no-op until you edit it.
+--
+-- insert into public.profiles
+--   (name, description, whatsapp, photos, active, migrated, owner_id, birthdate, gender, interests)
+-- values
+--   ('Ana',  'Bio…', '5350000001', '["https://…/ana.webp"]'::jsonb,  true, true, null, '1998-04-12', 'female', '["music","travel"]'::jsonb),
+--   ('Luis', 'Bio…', '5350000002', '["https://…/luis.webp"]'::jsonb, true, true, null, '1995-09-03', 'male',   '["sports","gaming"]'::jsonb);

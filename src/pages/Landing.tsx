@@ -6,6 +6,7 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { ADMIN_PATH } from '../lib/adminPath'
+import { getDevFlags } from '../lib/devFlags'
 import { WarningBanner } from '../components/WarningBanner'
 import appConfig from '../config/app-config.json'
 
@@ -72,7 +73,10 @@ export function Landing({ lang }: Props) {
 
   const active = i18n.resolvedLanguage
 
-  const isPreRelease = appConfig.first_release_date && new Date() < new Date(appConfig.first_release_date)
+  const isPreRelease =
+    !getDevFlags().bypassRelease &&
+    appConfig.first_release_date &&
+    new Date() < new Date(appConfig.first_release_date)
   const releaseDate = appConfig.first_release_date
     ? new Date(appConfig.first_release_date).toLocaleDateString(i18n.resolvedLanguage, {
         day: 'numeric',
