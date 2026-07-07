@@ -1,38 +1,36 @@
+import appConfig from '../config/app-config.json'
+
 /**
  * Per-device developer overrides (localStorage), replacing the old global
- * `test_mode` config flag. Surfaced only to admins in /account.
+ * `test_mode` config flag. Surfaced only to admins via the floating </> button
+ * (DevFlagsFab).
  *
- * NOT a security boundary: the is_fake filter is applied client-side and RLS
- * returns active profiles regardless of is_fake, so a determined user could
- * flip these in devtools. They exist so devs can QA the app — see fake seed
- * data, bypass the release-date gate, inspect unclaimed migrated rows — without
- * a config change + redeploy. Flags compose: each one that is on adds a
- * constraint to the feed query. All off → the app behaves like it does for
- * everyone else.
+ * The available toggles are declared as a JSON literal in app-config.json
+ * (`dev_flags`: [{ key, labelKey }]). Adding a new toggle = add an entry there
+ * + an i18n label + wire its effect where the flag is read. Defaults are
+ * derived from that list, so this file never needs editing to add one.
+ *
+ * NOT a security boundary: the is_fake filter is client-side and RLS returns
+ * active profiles regardless. All off → the app behaves like for everyone else.
  */
-export interface DevFlags {
-  /** Feed shows fake profiles (is_fake = true) instead of real ones. */
-  showFakes: boolean
-  /** Ignore first_release_date — feed/preview load before launch. */
-  bypassRelease: boolean
-  /** Show only migrated seed rows nobody has claimed yet (migrated, owner_id null). */
-  onlyMigratedUnclaimed: boolean
-}
+export type DevFlags = Record<string, boolean>
 
 const KEY = 'lxl_dev_flags'
-const DEFAULTS: DevFlags = {
-  showFakes: false,
-  bypassRelease: false,
-  onlyMigratedUnclaimed: false,
+
+function defaults(): DevFlags {
+  const d: DevFlags = {}
+  for (const f of appConfig.dev_flags) d[f.key] = false
+  return d
 }
 
 export function getDevFlags(): DevFlags {
+  const base = defaults()
   try {
     const raw = localStorage.getItem(KEY)
-    if (!raw) return DEFAULTS
-    return { ...DEFAULTS, ...(JSON.parse(raw) as Partial<DevFlags>) }
+    if (!raw) return base
+    return { ...base, ...(JSON.parse(raw) as Record<string, boolean>) }
   } catch {
-    return DEFAULTS
+    return base
   }
 }
 

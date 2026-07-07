@@ -17,6 +17,12 @@
     "other"
   ],
   "seed_profiles_visible_before_claim": true,
+  "dev_flags": [
+    { "key": "showFakes", "labelKey": "dev.showFakes" },
+    { "key": "bypassRelease", "labelKey": "dev.bypassRelease" },
+    { "key": "onlyMigratedUnclaimed", "labelKey": "dev.onlyMigrated" },
+    { "key": "bypassLimits", "labelKey": "dev.bypassLimits" }
+  ],
   "default_language": "es",
   "supported_languages": [
     "es",

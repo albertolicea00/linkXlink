@@ -17,6 +17,7 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
 import { getClickCount, recordClick } from '../lib/clickCounter'
+import { getDevFlags } from '../lib/devFlags'
 import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
 
@@ -26,8 +27,10 @@ export function AppPage() {
   const { count, swap } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
   const [clicks, setClicks] = useState(getClickCount)
-  const clickLimitReached = clicks >= appConfig.max_swaps_per_24h
-  const clickNearLimit = !clickLimitReached && clicks >= appConfig.warning_swap_threshold
+  // Dev flag lets admins ignore the soft daily WhatsApp-click limit while testing.
+  const bypassLimits = getDevFlags().bypassLimits
+  const clickLimitReached = !bypassLimits && clicks >= appConfig.max_swaps_per_24h
+  const clickNearLimit = !bypassLimits && !clickLimitReached && clicks >= appConfig.warning_swap_threshold
   const [searchParams] = useSearchParams()
 
   const { session, loading: authLoading } = useAuth()
@@ -121,7 +124,11 @@ export function AppPage() {
   // Gate the instant a blocked visitor has no preview to show.
   const isLoading = previewMode ? previewLoading : loading
   const deckProfiles = previewMode ? preview : orderedProfiles
-  const showGate = gateOpen || (blocked && !previewEnabled)
+  // Only ever show while actually blocked, so signing in (blocked flips false)
+  // hides it the SAME render — no leftover `gateOpen` flashing the modal after
+  // auth. `gateOpen` is the preview "tap to unlock" trigger; `!previewEnabled`
+  // is the hard gate with no preview.
+  const showGate = blocked && (gateOpen || !previewEnabled)
 
   return (
     <div className="page app-page">
@@ -240,7 +247,7 @@ export function AppPage() {
 
         {!isLoading && !previewMode && deckProfiles.length > 0 && appConfig.show_deck_stats && (
           <p className="deck-stats">
-            <span>{t('feed.statsSwipes', { count, max: appConfig.max_swaps_per_24h })}</span>
+            <span>{t('feed.statsSwipes', { count })}</span>
             <span aria-hidden>·</span>
             <span>{t('feed.statsClicks', { count: clicks })}</span>
           </p>
