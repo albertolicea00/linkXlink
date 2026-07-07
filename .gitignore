@@ -62,3 +62,4 @@ plan/
 .claude/
 .continue/
 .agents/
+scripts/data.json
