@@ -56,6 +56,7 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0013_seed_migration.sql` | `profiles.migrated` + `claim_migrated_profile()` RPC (phone-based claim of seed rows) |
 | `0014_ownership_claims.sql` | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed) |
 | `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
+| `0016_timestamps.sql` | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings` |
 
 Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
 with real people and run it **with the service role** (it inserts ownerless,
@@ -83,6 +84,17 @@ The first admin must be created by hand (Supabase Auth user + row in `admins`). 
 
 **Roles:** `admins` = full power (global stats, manage moderators; can switch to the moderator view). `moderators` = approve/skip pending profiles + their own stats (approved-by-me / pending / banned) + share the app. Admin **is** a moderator; a moderator is **not** an admin.
 
+### Create a normal end user (optional)
+
+A "normal user" is nothing special: just an `auth.users` account with **no row** in `admins` or `moderators`. Role is decided purely by table membership — no row = regular user, row in `moderators` = moderator, row in `admins` = admin. All three share the same Supabase Auth.
+
+Two ways to get one:
+
+- **The real path (self sign-up):** open `/app` (or `/register`) and sign up with OAuth/email. The account is a plain user immediately; they then create their one profile through the wizard. This is how actual users join — nothing manual on your side.
+- **By hand (for testing):** **Authentication → Users → Add user** (email + password, enable auto-confirm). Do **not** insert into `admins`/`moderators`. Log in through the app — the account can create one profile, swipe, and report, but the admin path shows "not authorized".
+
+> To later promote this user to moderator, use the panel: **Admin → Moderators** search, or `insert into public.moderators (id, email) values (...)`.
+
 ### 5. Enable auth providers (end users)
 
 End users sign up with OAuth and/or email — buttons shown come from `auth_providers` in `src/config/app-config.json`.
@@ -92,7 +104,7 @@ End users sign up with OAuth and/or email — buttons shown come from `auth_prov
   - **Google** — needs an OAuth client in Google Cloud Console.
   - **Facebook** — needs an app in Meta for Developers.
   - **Apple** — needs a (paid) Apple Developer account. Skip it by removing `"apple"` from `auth_providers`.
-- **Authentication → URL Configuration**: add `http://localhost:5173` and your production domain to **Redirect URLs** (OAuth returns the user to the page they started on).
+- **Authentication → URL Configuration**: add `http://localhost:5173` and your production domain to **Redirect URLs** (OAuth returns the user to the page they started on). The password-reset email links to `<origin>/reset-password`, so make sure that path is covered (a domain-level entry or a `/**` wildcard is enough).
 
 > Deploying before OAuth credentials are ready? Set `"auth_providers": []` — email login still works.
 

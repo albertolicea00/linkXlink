@@ -36,7 +36,7 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 - `DESIGN.md` — architecture and design decisions
 - `TODO.md` — full checklist (incl. known security gaps); check items off as they land
 - `SETUP.md` — Supabase + Vercel step-by-step (migrations, providers, staff creation)
-- `supabase/migrations/` — SQL schema, RLS, triggers (source of truth for DB). Apply in numeric order 0001 → 0015. `supabase/seed.sql` (service-role, run once) bootstraps the launch feed with migrated/claimable people.
+- `supabase/migrations/` — SQL schema, RLS, triggers (source of truth for DB). Apply in numeric order 0001 → 0016. Convention: every table carries `created_at` + `updated_at` (updated_at auto-stamped by the shared `set_updated_at()` BEFORE UPDATE trigger, migration 0016) — new tables must add both + the trigger. `supabase/seed.sql` (service-role, run once) bootstraps the launch feed with migrated/claimable people.
 - `RULES.md` — community & moderation policy (content rules, approve/deny quorum, deny reasons, seed claiming, ownership claims)
 
 ## Commands
