@@ -39,7 +39,7 @@
   },
   "feed": {
     "loading": "Cargando perfiles…",
-    "whatsappMessage": "Hola {{name}} 👋, te vi en Link x Link",
+    "whatsappMessage": "Hola {{name}} 👋, te vi en Link x Link :: https://linkxlink.vercel.app/",
     "empty": "No hay perfiles disponibles por ahora.",
     "emptyDesc": "Estamos en una etapa inicial. Ayúdanos compartiendo la app con tus amigos y regresa en unos días para descubrir a más personas.",
     "shareApp": "Compartir app",
