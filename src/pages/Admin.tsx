@@ -323,8 +323,9 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
           {modMessage && <p className="form-message">{modMessage}</p>}
           <SwipeDeck
             profiles={modQueue}
-            // No drag stamps: every swipe is a skip, so showing "SKIP/SKIP"
-            // stamps is noise. Approve/deny happen via buttons (with badge).
+            // Every swipe is a skip, so both stamps say "skip" and share one
+            // neutral color (not red/green, which would imply reject/approve).
+            overlayLabels={{ left: t('admin.skip'), right: t('admin.skip') }}
             renderCard={(p, swipe) => {
               const maskPhone = (phone: string) => {
                 if (!phone || phone.length < 6) return ''

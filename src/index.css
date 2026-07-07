@@ -489,6 +489,10 @@ a {
   inset: 0;
   pointer-events: none;
   transition: transform 0.25s ease;
+  /* Sized to the top card via inset:0; clip so a taller next-profile card
+     can't spill its content below and read as a mis-placed second card. */
+  overflow: hidden;
+  border-radius: var(--radius);
 }
 
 /* Wash out stacked cards so their content doesn't read as duplicated UI */
@@ -516,15 +520,17 @@ a {
   background: var(--color-surface);
 }
 
+/* Both stamps are "skip" (moderator deck only) → one neutral color, so a
+   right swipe no longer flashes red/green as if it meant reject/approve. */
 .swipe-deck__stamp--left {
   right: 1.25rem;
-  color: var(--color-danger);
+  color: var(--color-text-muted);
   transform: rotate(12deg);
 }
 
 .swipe-deck__stamp--right {
   left: 1.25rem;
-  color: var(--color-whatsapp-dark);
+  color: var(--color-text-muted);
   transform: rotate(-12deg);
 }
 
