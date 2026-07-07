@@ -53,7 +53,9 @@ coverage/
 # PWA generated
 dev-dist/
 
-# Project notes (kept local)
+# Project temp files (kept local)
+scripts/backup/*
+scripts/temp/*
 plan/
 
 # ai stuff
