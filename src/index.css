@@ -615,7 +615,9 @@ a {
 
 /* Admin/dev flags panel in /account */
 .dev-panel {
-  max-width: 420px;
+  /* Full width of the account container (mobile and desktop), unlike the
+     narrow profile card above it. */
+  width: 100%;
   margin: 2rem auto 0;
   padding: 1rem 1.25rem;
   border: 1px dashed var(--color-border);

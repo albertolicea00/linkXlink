@@ -323,8 +323,8 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
           {modMessage && <p className="form-message">{modMessage}</p>}
           <SwipeDeck
             profiles={modQueue}
-            // Any swipe (drag/arrow) is a skip now — both stamps say "skip".
-            overlayLabels={{ left: t('admin.skip'), right: t('admin.skip') }}
+            // No drag stamps: every swipe is a skip, so showing "SKIP/SKIP"
+            // stamps is noise. Approve/deny happen via buttons (with badge).
             renderCard={(p, swipe) => {
               const maskPhone = (phone: string) => {
                 if (!phone || phone.length < 6) return ''
