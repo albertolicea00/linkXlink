@@ -140,7 +140,10 @@ export function SwipeDeck({
         ? 'none'
         : 'transform 0.2s ease',
   }
-  const dragRatio = Math.max(-1, Math.min(1, x / (THRESHOLD_PX * 1.5)))
+  // Stamps are DRAG feedback only. During a button-triggered fly-out `x` is
+  // inflated to shoot the card off-screen, which would flash a stamp at full
+  // opacity (e.g. Approve showing the SKIP stamp) — so force 0 while leaving.
+  const dragRatio = leaving ? 0 : Math.max(-1, Math.min(1, (drag?.x ?? 0) / (THRESHOLD_PX * 1.5)))
   // Behind-the-top cards visible in the stack (visual preload).
   const behind = profiles.slice(index + 1, index + 3)
 

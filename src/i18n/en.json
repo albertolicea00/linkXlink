@@ -3,6 +3,24 @@
     "name": "Link x Link",
     "tagline": "Connect with local people through <wa>WhatsApp</wa>"
   },
+  "common": {
+    "ok": "Got it"
+  },
+  "password": {
+    "ruleLength": "At least {{min}} characters",
+    "ruleUpper": "One uppercase letter",
+    "ruleLower": "One lowercase letter",
+    "ruleDigit": "One number"
+  },
+  "reset": {
+    "title": "Change password",
+    "openLink": "Open the link we emailed you to continue.",
+    "newPassword": "New password",
+    "submit": "Save password",
+    "error": "Could not change the password. Try again.",
+    "doneTitle": "Password updated!",
+    "doneText": "You can now sign in with your new password."
+  },
   "meta": {
     "homeTitle": "Link x Link — Connect with local people on WhatsApp",
     "homeDescription": "Discover profiles of people near you and contact them directly on WhatsApp. No sign-up, no hassle.",
@@ -50,7 +68,7 @@
     "counter": "{{current}} of {{total}}",
     "end": "You've seen all profiles!",
     "restart": "Start over",
-    "statsSwipes": "{{count}}/{{max}} swipes today",
+    "statsSwipes": "{{count}} swipes today",
     "statsClicks": "{{count}} WhatsApp clicks",
     "swipeHint": "Swipe the card to see the next one",
     "undo": "← I changed my mind, go back",
@@ -94,7 +112,12 @@
     "haveAccount": "Already have an account? Log in",
     "checkEmail": "Check your email and confirm your account to continue.",
     "error": "Could not sign in. Check your details.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "forgot": "Forgot your password?",
+    "resetSentTitle": "Check your email",
+    "resetSentText": "We sent you a link to reset your password."
   },
   "gate": {
     "authTitle": "Join Link x Link",
@@ -206,14 +229,30 @@
     "weeks": "{{n}} weeks",
     "months": "{{n}} months",
     "hiddenUntilInfo": "You'll be hidden until {{date}}.",
-    "devTitle": "Developer options",
-    "devHelp": "Admins only. Stored on this device. With everything off, the app behaves like it does for everyone else.",
-    "devShowFakes": "Show only test (fake) profiles",
-    "devBypassRelease": "Bypass the release date",
-    "devOnlyMigrated": "Show only unclaimed migrated profiles",
-    "devReloadHint": "Re-open the app to apply changes.",
     "replacePhoto": "Change photo",
-    "replacePhotoHelp": "Upload a new image to replace the current one."
+    "replacePhotoHelp": "Upload a new image to replace the current one.",
+    "changePassword": "Change password",
+    "newPassword": "New password",
+    "savePassword": "Save password",
+    "pwError": "Could not change the password. Try again.",
+    "pwDoneTitle": "Password changed!",
+    "pwDoneText": "Your password was updated successfully."
+  },
+  "routeError": {
+    "title": "Something went wrong",
+    "text": "An unexpected error occurred. Reload the page or go back home.",
+    "reload": "Reload",
+    "home": "Go home"
+  },
+  "dev": {
+    "title": "Developer options",
+    "help": "Admins only. Stored on this device. With everything off, the app behaves like it does for everyone else.",
+    "reloadHint": "Re-open the app to apply changes.",
+    "close": "Close",
+    "showFakes": "Show only test (fake) profiles",
+    "bypassRelease": "Bypass the release date",
+    "onlyMigrated": "Show only unclaimed migrated profiles",
+    "bypassLimits": "Bypass the daily swap/click limit"
   },
   "admin": {
     "title": "Admin",

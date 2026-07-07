@@ -3,6 +3,24 @@
     "name": "Link x Link",
     "tagline": "Conecta con personas locales por <wa>WhatsApp</wa>"
   },
+  "common": {
+    "ok": "Entendido"
+  },
+  "password": {
+    "ruleLength": "Al menos {{min}} caracteres",
+    "ruleUpper": "Una mayúscula",
+    "ruleLower": "Una minúscula",
+    "ruleDigit": "Un número"
+  },
+  "reset": {
+    "title": "Cambiar contraseña",
+    "openLink": "Abre el enlace que te enviamos por correo para continuar.",
+    "newPassword": "Nueva contraseña",
+    "submit": "Guardar contraseña",
+    "error": "No se pudo cambiar la contraseña. Intenta de nuevo.",
+    "doneTitle": "¡Contraseña actualizada!",
+    "doneText": "Ya puedes entrar con tu nueva contraseña."
+  },
   "meta": {
     "homeTitle": "Link x Link — Conecta por WhatsApp con personas locales",
     "homeDescription": "Descubre perfiles de personas cercanas y contáctalas directo por WhatsApp. Sin registros, sin complicaciones.",
@@ -50,7 +68,7 @@
     "counter": "{{current}} de {{total}}",
     "end": "¡Has visto todos los perfiles!",
     "restart": "Volver a empezar",
-    "statsSwipes": "{{count}}/{{max}} swipes hoy",
+    "statsSwipes": "{{count}} swipes hoy",
     "statsClicks": "{{count}} clicks en WhatsApp",
     "swipeHint": "Desliza la tarjeta para pasar al siguiente",
     "undo": "← Me arrepentí, volver al anterior",
@@ -93,7 +111,12 @@
     "noAccount": "¿No tienes cuenta? Créala aquí",
     "haveAccount": "¿Ya tienes cuenta? Inicia sesión",
     "checkEmail": "Revisa tu correo y confirma la cuenta para continuar.",
-    "error": "No se pudo iniciar sesión. Revisa tus datos."
+    "error": "No se pudo iniciar sesión. Revisa tus datos.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "resetSentTitle": "Revisa tu correo",
+    "resetSentText": "Te enviamos un enlace para restablecer tu contraseña."
   },
   "gate": {
     "authTitle": "Únete a Link x Link",
@@ -205,14 +228,30 @@
     "weeks": "{{n}} semanas",
     "months": "{{n}} meses",
     "hiddenUntilInfo": "Estarás oculto hasta el {{date}}.",
-    "devTitle": "Opciones de desarrollo",
-    "devHelp": "Solo visible para admins. Se guardan en este dispositivo. Con todas apagadas, la app funciona igual que para los demás.",
-    "devShowFakes": "Ver solo perfiles de prueba (fake)",
-    "devBypassRelease": "Saltar la fecha de lanzamiento",
-    "devOnlyMigrated": "Ver solo migradas sin reclamar",
-    "devReloadHint": "Vuelve a entrar a la app para aplicar los cambios.",
     "replacePhoto": "Cambiar foto",
-    "replacePhotoHelp": "Sube una nueva imagen para reemplazar la actual."
+    "replacePhotoHelp": "Sube una nueva imagen para reemplazar la actual.",
+    "changePassword": "Cambiar contraseña",
+    "newPassword": "Nueva contraseña",
+    "savePassword": "Guardar contraseña",
+    "pwError": "No se pudo cambiar la contraseña. Intenta de nuevo.",
+    "pwDoneTitle": "¡Contraseña cambiada!",
+    "pwDoneText": "Tu contraseña se actualizó correctamente."
+  },
+  "routeError": {
+    "title": "Algo salió mal",
+    "text": "Ocurrió un error inesperado. Recarga la página o vuelve al inicio.",
+    "reload": "Recargar",
+    "home": "Ir al inicio"
+  },
+  "dev": {
+    "title": "Opciones de desarrollo",
+    "help": "Solo visible para admins. Se guardan en este dispositivo. Con todas apagadas, la app funciona igual que para los demás.",
+    "reloadHint": "Vuelve a entrar a la app para aplicar los cambios.",
+    "close": "Cerrar",
+    "showFakes": "Ver solo perfiles de prueba (fake)",
+    "bypassRelease": "Saltar la fecha de lanzamiento",
+    "onlyMigrated": "Ver solo migradas sin reclamar",
+    "bypassLimits": "Saltar el límite diario de swaps/clics"
   },
   "admin": {
     "title": "Admin",
