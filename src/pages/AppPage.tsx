@@ -41,11 +41,13 @@ export function AppPage() {
       return
     }
     let cancelled = false
-    void fetchOwnProfile().then((p) => {
-      if (!cancelled) {
-        setOwnProfile(p)
-        setOwnChecked(true)
-      }
+    void fetchOwnProfile(session.user.id).then(({ profile, error }) => {
+      if (cancelled) return
+      // Fail open: a transient read failure must never gate a user who has a
+      // profile. Leave ownChecked=false so a later session refresh retries.
+      if (error) return
+      setOwnProfile(profile)
+      setOwnChecked(true)
     })
     return () => {
       cancelled = true

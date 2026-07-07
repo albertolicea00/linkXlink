@@ -79,9 +79,9 @@ export function Register({ lang }: Props) {
       return
     }
     let cancelled = false
-    void fetchOwnProfile().then((p) => {
+    void fetchOwnProfile(session.user.id).then(({ profile }) => {
       if (!cancelled) {
-        setOwnProfile(p)
+        setOwnProfile(profile)
         setOwnChecked(true)
       }
     })

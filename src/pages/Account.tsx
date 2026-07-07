@@ -94,11 +94,11 @@ export function Account() {
       return
     }
     let cancelled = false
-    void fetchOwnProfile().then((p) => {
+    void fetchOwnProfile(session.user.id).then(({ profile }) => {
       if (cancelled) return
-      setProfile(p)
+      setProfile(profile)
       setLoaded(true)
-      if (p) hydrate(p)
+      if (profile) hydrate(profile)
     })
     return () => {
       cancelled = true
