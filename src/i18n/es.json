@@ -302,6 +302,7 @@
     "moderationError": "No se pudo registrar tu voto. Inténtalo de nuevo.",
     "approvedMsg": "Perfil aprobado.",
     "deniedMsg": "Perfil denegado.",
+    "deniedDeletedMsg": "Perfil migrado sin reclamar denegado y eliminado.",
     "voteRecorded": "Voto registrado ({{votes}}/{{quorum}}). Faltan más moderadores.",
     "denyTitle": "¿Por qué deniegas este perfil?",
     "denyReasonOtherPlaceholder": "Escribe el motivo…",

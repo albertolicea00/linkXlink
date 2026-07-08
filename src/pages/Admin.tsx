@@ -292,6 +292,10 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
         )
         setApprovedByMe((n) => n + 1)
         setModMessage(t('admin.approvedMsg'))
+      } else if (result.deleted) {
+        // Unclaimed migrated (seed) profile — the RPC deleted the row outright.
+        setProfiles((prev) => prev.filter((p) => p.id !== profile.id))
+        setModMessage(t('admin.deniedDeletedMsg'))
       } else {
         setProfiles((prev) =>
           prev.map((p) => (p.id === profile.id ? { ...p, active: false } : p)),

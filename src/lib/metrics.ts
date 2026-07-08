@@ -56,13 +56,19 @@ export interface ModerationResult {
   applied: boolean
   votes: number
   quorum: number
+  /** true when a denied UNCLAIMED migrated (seed) profile was deleted outright
+   *  instead of soft-denied — it has no real registrant, so the row is gone,
+   *  not just deactivated (migration 0017). */
+  deleted: boolean
 }
 
 /**
  * Quorum-aware moderation (migration 0012). Records the caller's vote and, once
  * an admin votes or `quorum` distinct moderators agree, flips the profile:
- *   approve → active; deny → disabled (denied_at set). skip only logs.
- * `reason` is required (free text) for deny. Returns null on RPC error.
+ *   approve → active; deny → disabled (denied_at set), UNLESS the profile is an
+ *   unclaimed migrated seed row, which is deleted instead (see `deleted`).
+ *   skip only logs. `reason` is required (free text) for deny. Returns null on
+ * RPC error.
  */
 export async function moderateProfile(
   profileId: string,

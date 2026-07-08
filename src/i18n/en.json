@@ -303,6 +303,7 @@
     "moderationError": "Could not record your vote. Try again.",
     "approvedMsg": "Profile approved.",
     "deniedMsg": "Profile denied.",
+    "deniedDeletedMsg": "Unclaimed migrated profile denied and deleted.",
     "voteRecorded": "Vote recorded ({{votes}}/{{quorum}}). More moderators needed.",
     "denyTitle": "Why are you denying this profile?",
     "denyReasonOtherPlaceholder": "Type the reason…",
