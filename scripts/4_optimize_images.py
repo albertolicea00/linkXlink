@@ -77,13 +77,19 @@ def main():
     success_count = 0
     error_count = 0
     
-    for file_path in input_dir.iterdir():
+    for file_path in input_dir.rglob('*'):
         if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
+            # Calculate relative path to maintain structure
+            rel_path = file_path.relative_to(input_dir)
+            
             # Change extension to .webp
             output_filename = file_path.stem + '.webp'
-            output_path = output_dir / output_filename
+            output_path = output_dir / rel_path.parent / output_filename
             
-            print(f"Optimizing {file_path.name} -> {output_filename}")
+            # Ensure output subdirectory exists
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            print(f"Optimizing {rel_path} -> {output_path.relative_to(output_dir)}")
             
             if optimize_image(file_path, output_path, max_size=(args.max_width, args.max_width), quality=args.quality):
                 success_count += 1
