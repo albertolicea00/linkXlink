@@ -44,14 +44,28 @@ export function AppPage() {
       return
     }
     let cancelled = false
-    void fetchOwnProfile(session.user.id).then(({ profile, error }) => {
+    // Right after login the auth token may not have propagated to PostgREST
+    // yet, so the first read can come back empty (no error) even though a
+    // profile exists — which would briefly flash the "create your profile"
+    // gate. Treat an empty first result as unsettled and retry once before
+    // trusting it; never mark ownChecked on an errored read (fail open).
+    const check = async () => {
+      const first = await fetchOwnProfile(session.user.id)
       if (cancelled) return
-      // Fail open: a transient read failure must never gate a user who has a
-      // profile. Leave ownChecked=false so a later session refresh retries.
-      if (error) return
-      setOwnProfile(profile)
+      if (first.error) return
+      if (first.profile) {
+        setOwnProfile(first.profile)
+        setOwnChecked(true)
+        return
+      }
+      await new Promise((r) => setTimeout(r, 700))
+      if (cancelled) return
+      const second = await fetchOwnProfile(session.user.id)
+      if (cancelled || second.error) return
+      setOwnProfile(second.profile)
       setOwnChecked(true)
-    })
+    }
+    void check()
     return () => {
       cancelled = true
     }
@@ -174,9 +188,16 @@ export function AppPage() {
             <p style={{ maxWidth: '400px', margin: '0 auto 1.25rem', fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
               {t('feed.emptyDesc')}
             </p>
-            <button type="button" className="btn btn--primary" onClick={handleShare}>
-              {t('feed.shareApp')}
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button type="button" className="btn btn--primary" onClick={handleShare}>
+                {t('feed.shareApp')}
+              </button>
+              {!ownProfile && (
+                <Link to="/register" className="btn">
+                  {t('gate.createProfile')}
+                </Link>
+              )}
+            </div>
           </div>
         )}
 
