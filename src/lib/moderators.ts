@@ -41,3 +41,33 @@ export async function myApprovedCount(): Promise<number> {
   const { data } = await supabase.rpc('my_approved_count')
   return (data as number | null) ?? 0
 }
+
+export async function myDeniedCount(): Promise<number> {
+  const { data } = await supabase.rpc('my_denied_count')
+  return (data as number | null) ?? 0
+}
+
+export interface AdminStats {
+  fake: number
+  migrated: number
+  migratedUnclaimed: number
+  noProfile: number
+}
+
+const EMPTY_ADMIN_STATS: AdminStats = {
+  fake: 0,
+  migrated: 0,
+  migratedUnclaimed: 0,
+  noProfile: 0,
+}
+
+/**
+ * Admin-only global counters (`admin_stats` RPC, migration 0018) — always the
+ * true database totals, never filtered by dev flags or the panel's current
+ * profiles query.
+ */
+export async function fetchAdminStats(): Promise<AdminStats> {
+  const { data, error } = await supabase.rpc('admin_stats')
+  if (error || !data) return EMPTY_ADMIN_STATS
+  return data as AdminStats
+}

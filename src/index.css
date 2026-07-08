@@ -1080,10 +1080,16 @@ a {
   margin-bottom: 2rem;
 }
 
-/* Moderator: 2 stat cards, centered */
+/* Moderator: 4 stat cards in one row; wraps to 2x2 only on narrow screens. */
 .admin-stats--mod {
-  grid-template-columns: repeat(2, minmax(0, 160px));
+  grid-template-columns: repeat(4, minmax(0, 160px));
   justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .admin-stats--mod {
+    grid-template-columns: repeat(2, minmax(0, 160px));
+  }
 }
 
 .stat-card {

@@ -13,14 +13,18 @@ import appConfig from '../config/app-config.json'
 import { ADMIN_PATH } from '../lib/adminPath'
 import { moderateProfile } from '../lib/metrics'
 import { getDevFlags } from '../lib/devFlags'
+import { getSkippedToday, recordSkip } from '../lib/moderatorSkips'
 import {
   listModerators,
   searchUsers,
   addModerator,
   removeModerator,
   myApprovedCount,
+  myDeniedCount,
+  fetchAdminStats,
   type Moderator,
   type UserSearchResult,
+  type AdminStats,
 } from '../lib/moderators'
 import type { Profile } from '../types'
 
@@ -158,9 +162,20 @@ function LoginForm() {
 
 type StatVariant = 'total' | 'pending' | 'active' | 'banned' | 'approved'
 
-function StatCard({ value, label, variant }: { value: number; label: string; variant: StatVariant }) {
+function StatCard({
+  value,
+  label,
+  variant,
+  title,
+}: {
+  value: number | string
+  label: string
+  variant: StatVariant
+  /** Native tooltip — used for cards whose value format needs a hint (e.g. "3/10"). */
+  title?: string
+}) {
   return (
-    <div className={`stat-card stat-card--${variant}`}>
+    <div className={`stat-card stat-card--${variant}`} title={title}>
       <span className="stat-card__value">{value}</span>
       <span className="stat-card__label">{label}</span>
     </div>
@@ -238,6 +253,12 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   const { t } = useTranslation()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [approvedByMe, setApprovedByMe] = useState(0)
+  const [deniedByMe, setDeniedByMe] = useState(0)
+  const [skippedToday, setSkippedToday] = useState(getSkippedToday)
+  // Global counters (fake/migrated/admins/no-profile) — always the true DB
+  // totals, deliberately independent of the panel's dev-flag-filtered profiles
+  // query. Admin view only.
+  const [adminStats, setAdminStats] = useState<AdminStats | null>(null)
 
   // Frozen snapshot for the moderation deck: stats update live, but the deck
   // must keep a stable list so skipped cards don't reappear mid-session.
@@ -263,7 +284,9 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
   useEffect(() => {
     void loadProfiles()
     void myApprovedCount().then(setApprovedByMe)
-  }, [])
+    void myDeniedCount().then(setDeniedByMe)
+    if (view === 'admin') void fetchAdminStats().then(setAdminStats)
+  }, [view])
 
   const total = profiles.length
   const pending = profiles.filter((p) => !p.active && p.report_count === 0 && !p.denied_at).length
@@ -277,7 +300,10 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
     const action = meta?.action ?? 'skip'
     const result = await moderateProfile(profile.id, action, meta?.reason)
 
-    if (action === 'skip') return
+    if (action === 'skip') {
+      setSkippedToday(recordSkip())
+      return
+    }
     if (!result) {
       setModMessage(t('admin.moderationError'))
       return
@@ -295,11 +321,13 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
       } else if (result.deleted) {
         // Unclaimed migrated (seed) profile — the RPC deleted the row outright.
         setProfiles((prev) => prev.filter((p) => p.id !== profile.id))
+        setDeniedByMe((n) => n + 1)
         setModMessage(t('admin.deniedDeletedMsg'))
       } else {
         setProfiles((prev) =>
           prev.map((p) => (p.id === profile.id ? { ...p, active: false } : p)),
         )
+        setDeniedByMe((n) => n + 1)
         setModMessage(t('admin.deniedMsg'))
       }
     } else {
@@ -316,6 +344,8 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
         <div className="admin-stats admin-stats--mod">
           <StatCard value={approvedByMe} label={t('admin.statsApprovedByMe')} variant="approved" />
           <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
+          <StatCard value={deniedByMe} label={t('admin.statsDeniedByMe')} variant="banned" />
+          <StatCard value={skippedToday} label={t('admin.statsSkippedToday')} variant="total" />
         </div>
 
         <TelegramBanner />
@@ -399,6 +429,18 @@ function AdminPanel({ view }: { view: 'admin' | 'moderator' }) {
         <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
         <StatCard value={active} label={t('admin.statusActive')} variant="active" />
         <StatCard value={banned} label={t('admin.statsBanned')} variant="banned" />
+      </div>
+
+      {/* Global counters — always true DB totals, never filtered by dev flags. */}
+      <div className="admin-stats">
+        <StatCard value={adminStats?.fake ?? 0} label={t('admin.statsFake')} variant="total" />
+        <StatCard value={adminStats?.migrated ?? 0} label={t('admin.statsMigrated')} variant="pending" />
+        <StatCard
+          value={adminStats?.migratedUnclaimed ?? 0}
+          label={t('admin.statsMigratedUnclaimed')}
+          variant="active"
+        />
+        <StatCard value={adminStats?.noProfile ?? 0} label={t('admin.statsNoProfile')} variant="banned" />
       </div>
 
       <ModeratorsManager />
@@ -529,7 +571,9 @@ function ModeratorsManager() {
         </ul>
       )}
 
-      <h3 className="moderators__subtitle">{t('admin.currentModerators')}</h3>
+      <h3 className="moderators__subtitle">
+        {t('admin.currentModerators')} ({moderators.length})
+      </h3>
       {loadingMods ? (
         <Loader text={t('feed.loading')} />
       ) : moderators.length === 0 ? (
