@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Profile } from '../types'
-import { whatsappUrl } from '../lib/whatsapp'
+import { whatsappUrl, isStandalone } from '../lib/whatsapp'
 import { ageFromBirthdate } from '../lib/age'
 import appConfig from '../config/app-config.json'
 import { PhotoCarousel } from './PhotoCarousel'
@@ -63,7 +63,10 @@ export function ProfileCard({
             <a
               className={`btn btn--whatsapp${whatsappDisabled ? ' btn--disabled' : ''}`}
               href={whatsappDisabled ? undefined : whatsappUrl(profile.whatsapp, waMessage)}
-              target="_blank"
+              // Installed PWA: same tab, so the OS hands off to WhatsApp with no
+              // visible tab-spawn. Regular browser tab: keep target="_blank" so
+              // leaving for wa.me never loses the visitor's place in the deck.
+              target={isStandalone() ? undefined : '_blank'}
               rel="noopener noreferrer"
               onClick={(e) => {
                 if (whatsappDisabled) {
