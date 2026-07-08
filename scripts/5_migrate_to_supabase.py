@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--input', default='scripts/data.json', help="Path to data.json")
     parser.add_argument('--images-dir', default='public/images', help="Path to the optimized images directory")
     parser.add_argument('--bucket', default='profiles', help="Supabase storage bucket name for photos")
+    parser.add_argument('--dry-run', action='store_true', help="Simulate migration without making any changes")
     args = parser.parse_args()
 
     url = os.environ.get("SUPABASE_URL")
@@ -67,6 +68,8 @@ def main():
         if item.get('valid') and not item.get('nsfw', False)
     ]
     print(f"Found {len(valid_data)} valid & safe profiles to migrate.")
+    if args.dry_run:
+        print(f"🏁 DRY RUN — no changes will be made.\n")
     
     nsfw_count = sum(1 for item in data if item.get('valid') and item.get('nsfw', False))
     if nsfw_count > 0:
@@ -100,20 +103,23 @@ def main():
         print(f"Processing {phone}...")
         
         # 1. Upload image to Supabase Storage
-        try:
-            with open(img_path, 'rb') as f:
-                image_bytes = f.read()
-                
-            # x-upsert ensures it overwrites if you run the script multiple times
-            supabase.storage.from_(args.bucket).upload(
-                path=image_ref,
-                file=image_bytes,
-                file_options={"content-type": "image/webp", "x-upsert": "true"}
-            )
-        except Exception as e:
-            # If the library version doesn't support x-upsert, it might throw an error if the file exists.
-            # We can safely catch it and continue.
-            pass
+        if not args.dry_run:
+            try:
+                with open(img_path, 'rb') as f:
+                    image_bytes = f.read()
+                    
+                # x-upsert ensures it overwrites if you run the script multiple times
+                supabase.storage.from_(args.bucket).upload(
+                    path=image_ref,
+                    file=image_bytes,
+                    file_options={"content-type": "image/webp", "x-upsert": "true"}
+                )
+            except Exception as e:
+                # If the library version doesn't support x-upsert, it might throw an error if the file exists.
+                # We can safely catch it and continue.
+                pass
+        else:
+            print(f"   🔍 [DRY RUN] Would upload '{image_ref}' to bucket '{args.bucket}'")
 
         # 2. Insert into Database
         # Since we don't know their real name, we give them a generic placeholder
@@ -137,18 +143,22 @@ def main():
         if region and region != "Unknown":
             profile_data["region"] = region[:80] # Schema limit is 80 chars
 
-        try:
-            supabase.table('profiles').insert(profile_data).execute()
+        if not args.dry_run:
+            try:
+                supabase.table('profiles').insert(profile_data).execute()
+                success_count += 1
+                print(f"   ✅ Successfully migrated!")
+            except Exception as e:
+                error_msg = str(e).lower()
+                if "23505" in error_msg or "duplicate key" in error_msg:
+                    print(f"   ⏭️  Already exists in database. Skipped.")
+                    skip_count += 1
+                else:
+                    print(f"   ❌ DB Error: {e}")
+                    error_count += 1
+        else:
+            print(f"   🔍 [DRY RUN] Would insert profile (whatsapp={whatsapp})")
             success_count += 1
-            print(f"   ✅ Successfully migrated!")
-        except Exception as e:
-            error_msg = str(e).lower()
-            if "23505" in error_msg or "duplicate key" in error_msg:
-                print(f"   ⏭️  Already exists in database. Skipped.")
-                skip_count += 1
-            else:
-                print(f"   ❌ DB Error: {e}")
-                error_count += 1
 
     print(f"\n=============================")
     print(f"   MIGRATION RESULTS         ")
