@@ -58,6 +58,8 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
 | `0016_timestamps.sql` | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings` |
 | `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number |
+| `0018_admin_stats.sql` | `admin_stats()` RPC — global counters (fake profiles, migrated total/unclaimed, accounts with no profile), always DB-wide regardless of dev flags |
+| `0019_my_denied_count.sql` | `my_denied_count()` RPC — mirrors `my_approved_count()` for the moderator's "Denied by me" stat |
 
 Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
 with real people and run it **with the service role** (it inserts ownerless,
