@@ -19,6 +19,7 @@ If you want to extract images and contacts directly from a WhatsApp Web session 
 - **`3_merge_data.py`**: Merges the `extracted_data.json` into your main master `data.json`, resolving duplicates and updating existing contacts with newer messages.
 
 ### Global Tools
+- **`populate_data.sh`**: An automated shell script that executes the entire extraction pipeline. It empties `data.json`, extracts from your mobile TXT backup, and loops through multiple `whatsapp_dump_X.json` web exports, merging everything into one unified, deduplicated database and moving all images to the temp folder.
 - **`4_optimize_images.py`**: Takes any folder with images and compresses them into high-performance `.webp` format, resizing them if necessary. Perfect for serving on a website.
 - **`5_migrate_to_supabase.py`**: Reads your final `data.json` and automatically uploads the optimized images to your Supabase Storage bucket, inserting the contacts into your `profiles` table as "migrated/seed" profiles (ready to be claimed by users).
 
@@ -63,6 +64,13 @@ Takes the partial JSON created by the unpack script and merges it into your mast
 python3 scripts/3_merge_data.py --input ~/Downloads/whatsapp_dump/extracted_data.json --main scripts/data.json
 ```
 *(Optional: Use `--prepend-folder "whatsapp_dump/"` if you intend to keep images inside subfolders permanently).*
+
+### `populate_data.sh`
+This is an automated pipeline script that resets your `data.json` and repopulates it by automatically extracting your Mobile TXT backup and unpacking/merging all 5 web dumps (`whatsapp_dump_1.json` to `5`), centralizing all images into `scripts/temp/images/`.
+
+```bash
+./scripts/populate_data.sh
+```
 
 ### `4_optimize_images.py`
 Batch resizes and optimizes images to `.webp` using the `Pillow` library (`pip install Pillow`).
