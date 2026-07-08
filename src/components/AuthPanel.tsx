@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { isStrongPassword, PASSWORD_MIN } from '../lib/password'
+import { fireConfetti } from './Confetti'
 import { PasswordChecklist } from './PasswordChecklist'
 import { SuccessModal } from './SuccessModal'
 import appConfig from '../config/app-config.json'
@@ -133,10 +134,13 @@ export function AuthPanel() {
     if (error) {
       const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password })
       if (loginErr) setError(true)
-    } else if (!data.session) {
-      // Email-confirmation projects return no session on signUp: tell the user
-      // to check their inbox instead of silently doing nothing.
-      setNotice(true)
+    } else {
+      fireConfetti()
+      if (!data.session) {
+        // Email-confirmation projects return no session on signUp: tell the user
+        // to check their inbox instead of silently doing nothing.
+        setNotice(true)
+      }
     }
     setBusy(false)
   }

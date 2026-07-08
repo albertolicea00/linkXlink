@@ -34,3 +34,20 @@ export function recordClick(): number {
   }
   return timestamps.length
 }
+
+const FIRST_CLICK_KEY = 'lxl_first_wa_click_done'
+
+/**
+ * True exactly once, ever, per device — separate from the rolling 24h counter
+ * above (which resets daily and isn't "have they ever clicked"). Used to fire
+ * a one-time celebration on the very first WhatsApp click.
+ */
+export function isFirstWhatsappClick(): boolean {
+  try {
+    if (localStorage.getItem(FIRST_CLICK_KEY)) return false
+    localStorage.setItem(FIRST_CLICK_KEY, '1')
+    return true
+  } catch {
+    return false
+  }
+}

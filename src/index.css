@@ -1292,6 +1292,10 @@ a {
 }
 
 .status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 0.15rem 0.6rem;
@@ -1840,6 +1844,64 @@ a.landing__brand {
   border-radius: 10px;
   background: var(--color-surface);
   font-size: 0.9rem;
+}
+
+.moderators__result-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Compact buttons for staff management rows — the default .btn is sized for
+   large public touch targets, too big for a dense admin-only list. */
+.btn--sm {
+  min-height: 32px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn--icon {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.btn--icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.moderators__section {
+  margin-top: 0.5rem;
+}
+
+.moderators__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.moderators__toggle .moderators__subtitle {
+  margin-top: 0;
+}
+
+.moderators__chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  color: var(--color-text-muted);
+}
+
+.moderators__chevron--open {
+  transform: rotate(90deg);
 }
 
 .stat-card--approved .stat-card__value {

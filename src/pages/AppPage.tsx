@@ -16,7 +16,8 @@ import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
-import { getClickCount, recordClick } from '../lib/clickCounter'
+import { getClickCount, recordClick, isFirstWhatsappClick } from '../lib/clickCounter'
+import { fireConfetti } from '../components/Confetti'
 import { getDevFlags } from '../lib/devFlags'
 import appConfig from '../config/app-config.json'
 import type { Profile } from '../types'
@@ -220,6 +221,7 @@ export function AppPage() {
                     }
                     setClicks(recordClick())
                     trackProfileEvent(p.id, 'whatsapp_click')
+                    if (isFirstWhatsappClick()) fireConfetti()
                   }}
                   onReportClick={() => (previewMode ? setGateOpen(true) : setReporting(p))}
                 />

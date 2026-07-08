@@ -16,6 +16,7 @@ import { ResetPassword } from './pages/ResetPassword'
 import { RouteError } from './pages/RouteError'
 import { NavBar } from './components/NavBar'
 import { DevFlagsFab } from './components/DevFlagsFab'
+import { ConfettiRoot } from './components/Confetti'
 import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
 import { ADMIN_PATH } from './lib/adminPath'
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <NavStateProvider>
+      <ConfettiRoot />
       <RouterProvider router={router} />
     </NavStateProvider>
   </StrictMode>,

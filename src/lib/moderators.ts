@@ -37,6 +37,26 @@ export async function removeModerator(id: string): Promise<{ error: boolean }> {
   return { error: !!error }
 }
 
+/** Admin-only: current admins (RLS lets admins read the whole list — migration 0020). */
+export async function listAdmins(): Promise<Moderator[]> {
+  const { data } = await supabase
+    .from('admins')
+    .select('*')
+    .order('created_at', { ascending: false })
+  return (data ?? []) as Moderator[]
+}
+
+/** Promote a user to admin. RLS restricts the insert to admins (migration 0020). */
+export async function addAdmin(id: string, email: string): Promise<{ error: boolean }> {
+  const { error } = await supabase.from('admins').insert({ id, email })
+  return { error: !!error }
+}
+
+export async function removeAdmin(id: string): Promise<{ error: boolean }> {
+  const { error } = await supabase.from('admins').delete().eq('id', id)
+  return { error: !!error }
+}
+
 export async function myApprovedCount(): Promise<number> {
   const { data } = await supabase.rpc('my_approved_count')
   return (data as number | null) ?? 0

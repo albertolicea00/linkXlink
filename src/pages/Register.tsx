@@ -17,6 +17,7 @@ import { optimizeImage } from '../lib/imageOptimize'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
+import { fireConfetti } from '../components/Confetti'
 import appConfig from '../config/app-config.json'
 import type { Gender, InterestedIn, Profile } from '../types'
 
@@ -201,6 +202,7 @@ export function Register({ lang }: Props) {
           if (claim?.claimed) {
             if (!alreadyAccepted) acceptTerms()
             setDone(true)
+            fireConfetti()
             return
           }
           // Owned by someone else — offer the "it's mine" ownership claim.
@@ -213,6 +215,7 @@ export function Register({ lang }: Props) {
 
       if (!alreadyAccepted) acceptTerms()
       setDone(true)
+      fireConfetti()
     } catch {
       setMessage(t('register.error'))
     } finally {
