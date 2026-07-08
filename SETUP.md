@@ -60,6 +60,7 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number |
 | `0018_admin_stats.sql` | `admin_stats()` RPC — global counters (fake profiles, migrated total/unclaimed, accounts with no profile), always DB-wide regardless of dev flags |
 | `0019_my_denied_count.sql` | `my_denied_count()` RPC — mirrors `my_approved_count()` for the moderator's "Denied by me" stat |
+| `0020_admin_management.sql` | RLS: admins can read the full `admins` list and insert/delete rows — promoting/demoting other admins from the panel (previously SQL-editor only) |
 
 Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
 with real people and run it **with the service role** (it inserts ownerless,
