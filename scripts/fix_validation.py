@@ -11,6 +11,7 @@ This script checks all phone numbers in the master `data.json` file.
 
 Usage:
 ------
+$ pip install phonenumbers
 $ python3 scripts/fix_validation.py --input scripts/data.json --images-dir scripts/temp/images
 """
 import json
