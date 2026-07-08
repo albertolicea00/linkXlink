@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Gender Detection Utility
-========================
+Gender Detection Utility (HuggingFace Edition)
+==============================================
 
-This script uses the `deepface` library to analyze the primary face in each 
-image and attempts to classify the person's gender (male/female).
+This script uses a modern Vision Transformer model to analyze the primary 
+face in each image and attempts to classify the person's gender (male/female).
 It adds a `"gender"` field to each profile in `data.json`.
 
 If a face cannot be detected with confidence, or if the library throws an 
@@ -12,7 +12,7 @@ error, it defaults to `"other"`.
 
 Dependencies:
 -------------
-$ pip install deepface opencv-python pillow
+$ pip install transformers torch pillow
 
 Usage:
 ------
@@ -23,15 +23,17 @@ import argparse
 from pathlib import Path
 
 try:
-    from deepface import DeepFace
+    from transformers import pipeline
+    from PIL import Image
+    import torch
 except ImportError:
     print("Error: Required libraries are missing.")
     print("Please install them by running:")
-    print("pip install deepface opencv-python pillow tf-keras")
+    print("pip install transformers torch pillow")
     exit(1)
 
 def main():
-    parser = argparse.ArgumentParser(description="Detect gender from images using DeepFace")
+    parser = argparse.ArgumentParser(description="Detect gender from images using Transformers")
     parser.add_argument('--input', default='scripts/data.json', help="Path to data.json")
     parser.add_argument('--images-dir', default='scripts/temp/images', help="Path to images directory")
     args = parser.parse_args()
@@ -50,44 +52,48 @@ def main():
     # We only care about checking valid profiles with existing images
     valid_profiles = [p for p in data if p.get('valid')]
     
-    print(f"Preparing to analyze {len(valid_profiles)} profiles for gender...")
-    print("🧠 Booting up DeepFace... (First run will download the facial models)")
+    profile_refs = []
     
-    male_count = 0
-    female_count = 0
-    other_count = 0
-
     for item in valid_profiles:
         img_ref = item.get('imageRef')
         if not img_ref:
             continue
-            
+        
         img_path = images_dir / img_ref
-        if not img_path.exists():
-            continue
+        if img_path.exists():
+            profile_refs.append((item, img_path))
 
+    if not profile_refs:
+        print("No physical images found to analyze.")
+        return
+
+    print(f"Preparing to analyze {len(profile_refs)} valid profiles for gender...")
+    print("🧠 Booting up Vision Transformer model (rizvandwiki/gender-classification-2)...")
+    print("⏳ This might take a few minutes. Downloading model if first run...")
+    
+    try:
+        # Load the pipeline
+        classifier = pipeline("image-classification", model="rizvandwiki/gender-classification-2")
+    except Exception as e:
+        print(f"Failed to load model: {e}")
+        return
+
+    male_count = 0
+    female_count = 0
+    other_count = 0
+
+    for item, img_path in profile_refs:
         try:
-            # We set enforce_detection=False so it doesn't crash if no face is perfectly aligned
-            result = DeepFace.analyze(
-                img_path=str(img_path), 
-                actions=['gender'], 
-                enforce_detection=False,
-                silent=True # Prevent spamming the console
-            )
+            # Predict
+            results = classifier(str(img_path))
             
-            # DeepFace >= 0.0.75 returns a list of dicts if multiple faces are found
-            if isinstance(result, list):
-                face = result[0]
-            else:
-                face = result
-                
-            dominant_gender = face.get('dominant_gender', '')
+            # Extract top label
+            dominant_gender = results[0]['label'].lower()
             
-            # DeepFace returns 'Man' or 'Woman'
-            if dominant_gender == 'Man':
+            if dominant_gender == 'male':
                 item['gender'] = 'male'
                 male_count += 1
-            elif dominant_gender == 'Woman':
+            elif dominant_gender == 'female':
                 item['gender'] = 'female'
                 female_count += 1
             else:
@@ -95,7 +101,6 @@ def main():
                 other_count += 1
                 
         except Exception as e:
-            # Fallback if an error occurs (e.g. image completely unreadable)
             item['gender'] = 'other'
             other_count += 1
 
@@ -108,7 +113,7 @@ def main():
     print("=============================")
     print(f"👨 Male   : {male_count}")
     print(f"👩 Female : {female_count}")
-    print(f"👤 Other  : {other_count} (No clear face detected)")
+    print(f"👤 Other  : {other_count} (Fallback)")
     print("=============================")
     
 if __name__ == '__main__':

@@ -98,8 +98,8 @@ python3 scripts/nsfw_filter.py --input scripts/data.json --images-dir scripts/te
 ```
 
 ### `gender_detector.py`
-Uses `deepface` to analyze the primary face in each image and classify the person's gender (male/female). If a face cannot be detected, it defaults to "other".
-*Requires `pip install deepface opencv-python pillow`*
+Uses a modern HuggingFace Vision Transformer (`rizvandwiki/gender-classification-2`) to analyze the primary face in each image and classify the person's gender (male/female). If a face cannot be detected, it defaults to "other".
+*Requires `pip install transformers torch pillow`*
 
 ```bash
 python3 scripts/gender_detector.py --input scripts/data.json --images-dir scripts/temp/images
