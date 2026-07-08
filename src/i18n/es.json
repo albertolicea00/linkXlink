@@ -324,10 +324,9 @@
     "statsTotal": "Totales",
     "statsPending": "Pendientes",
     "statsBanned": "Baneados",
-    "statsFake": "Perfiles de prueba",
-    "statsMigrated": "Perfiles migrados",
-    "statsMigratedUnclaimed": "Migrados sin reclamar",
-    "statsNoProfile": "Cuentas sin perfil",
+    "statsFake": "Test Fakes",
+    "statsMigrated": "Migrados",
+    "statsNoProfile": "Sin perfil",
     "shareTitle": "Comparte la app",
     "shareDesc": "Comparte este enlace para que la gente descubra perfiles y se registre:",
     "shareCopied": "¡Copiado!"

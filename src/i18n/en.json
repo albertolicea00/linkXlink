@@ -325,10 +325,9 @@
     "statsTotal": "Total",
     "statsPending": "Pending",
     "statsBanned": "Banned",
-    "statsFake": "Test profiles",
-    "statsMigrated": "Migrated profiles",
-    "statsMigratedUnclaimed": "Unclaimed migrated",
-    "statsNoProfile": "Without a profile",
+    "statsFake": "Test Fakes",
+    "statsMigrated": "Migrated",
+    "statsNoProfile": "No profile",
     "shareTitle": "Share the app",
     "shareDesc": "Share this link so people can discover profiles and register:",
     "shareCopied": "Copied!"
