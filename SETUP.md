@@ -57,6 +57,7 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0014_ownership_claims.sql` | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed) |
 | `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
 | `0016_timestamps.sql` | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings` |
+| `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number |
 
 Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
 with real people and run it **with the service role** (it inserts ownerless,
