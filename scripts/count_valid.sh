@@ -28,9 +28,13 @@ VALID_COUNT=$(grep -c '"valid": true' "$JSON_FILE" || echo "0")
 INVALID_COUNT=$(grep -c '"valid": false' "$JSON_FILE" || echo "0")
 TOTAL=$(($VALID_COUNT + $INVALID_COUNT))
 
-# Use python to quickly check image references, duplicates, and NSFW flags
-IFS=';' read MISSING_IMAGES DUPLICATES NSFW_IMAGES MALES FEMALES OTHERS <<< $(python3 -c "
-import json, os
+# Use python to quickly check image references, duplicates, and NSFW flags.
+# Capture output into a plain variable FIRST, then split it — feeding a live
+# unquoted command substitution straight into `<<<` under a prefix-scoped IFS
+# is fragile across shells (bash vs zsh, or invocation via `sh`) and can land
+# everything in the first field with the rest blank.
+PY_STATS=$(python3 -c "
+import json, os, sys
 from collections import Counter
 try:
     data = json.load(open('$JSON_FILE', 'r', encoding='utf-8'))
@@ -44,8 +48,10 @@ try:
     others = sum(1 for item in data if item.get('gender') == 'other')
     print(f'{missing};{duplicates};{nsfw};{males};{females};{others}')
 except Exception as e:
-    print('Error;Error;Error;Error;Error;Error')
+    print(f'Error: {e}', file=sys.stderr)
+    print('0;0;0;0;0;0')
 ")
+IFS=';' read -r MISSING_IMAGES DUPLICATES NSFW_IMAGES MALES FEMALES OTHERS <<< "$PY_STATS"
 
 echo "============================="
 echo "   CONTACT VALIDATION STATS  "
