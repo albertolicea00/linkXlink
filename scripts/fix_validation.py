@@ -18,6 +18,7 @@ import json
 import os
 import re
 import argparse
+import uuid
 from pathlib import Path
 
 try:
@@ -35,6 +36,13 @@ def get_clean_phone(phone_str):
     digits = re.sub(r'[^\d]', '', phone_str)
     if not digits:
         return "", False
+        
+    # CUBAN FALLBACK RULE:
+    # Cuban mobile numbers are exactly 8 digits long and start with '5' (e.g. 56551628).
+    # If the user saved it without a country code (or it was wrongly extracted as +56...), 
+    # we prepend the +53 country code automatically so it validates correctly.
+    if len(digits) == 8 and digits.startswith('5'):
+        digits = '53' + digits
         
     # All our numbers should be international (starting with +)
     clean_str = '+' + digits
@@ -107,23 +115,27 @@ def main():
         # We keep the old phone if there are no digits at all, otherwise use the clean one
         new_phone = clean_phone if clean_phone else old_phone
 
+        # Always rename image to a random UUID to ensure clean, standard naming
+        # rather than using the messy ones from WhatsApp (-PHOTO-2026-...)
+        old_ref = item.get('imageRef', '')
+        if old_ref:
+            old_path = Path(old_ref)
+            # Only rename if it's not already a UUID (36 chars)
+            if len(old_path.stem) != 36:
+                new_ref = f"{uuid.uuid4()}{old_path.suffix}"
+                
+                old_img_path = images_dir / old_ref
+                new_img_path = images_dir / new_ref
+                
+                if old_img_path.exists():
+                    os.rename(old_img_path, new_img_path)
+                
+                item['imageRef'] = new_ref
+
         # Handle malformed but fixed numbers
         if old_phone != new_phone:
             item['key'] = new_phone
             item['phone'] = new_phone
-            
-            old_ref = item.get('imageRef', '')
-            # Replace exactly the old phone prefix in the image filename
-            new_ref = old_ref.replace(old_phone, new_phone)
-            item['imageRef'] = new_ref
-            
-            # Physically rename the image file if it exists
-            old_img_path = images_dir / old_ref
-            new_img_path = images_dir / new_ref
-            
-            if old_img_path.exists() and old_ref != new_ref:
-                os.rename(old_img_path, new_img_path)
-                
             fixed_count += 1
 
         # Resolve any duplicates after renaming
