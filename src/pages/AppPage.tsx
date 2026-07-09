@@ -5,7 +5,7 @@ import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
 import { useAuth } from '../hooks/useAuth'
 import { fetchOwnProfile } from '../lib/ownProfile'
-import { fetchPreviewProfiles } from '../lib/previewProfiles'
+import { fetchPreviewProfiles, removePreviewProfile } from '../lib/previewProfiles'
 import { SwipeDeck } from '../components/SwipeDeck'
 import { ProfileCard } from '../components/ProfileCard'
 import { ReportModal } from '../components/ReportModal'
@@ -228,7 +228,10 @@ export function AppPage() {
               )}
               onSwipe={() => !previewMode && swap()}
               onTopChange={(p) => {
-                if (previewMode) return
+                if (previewMode) {
+                  removePreviewProfile(p.id)
+                  return
+                }
                 markSeen(p.id)
                 trackProfileEvent(p.id, 'view')
               }}
