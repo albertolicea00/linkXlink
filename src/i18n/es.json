@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Link x Link",
-    "tagline": "Conecta con personas locales por <wa>WhatsApp</wa>"
+    "tagline": "Conecta con personas locales por <wa>WhatsApp</wa>",
+    "offline": "Estás sin conexión. Mostrando versión guardada."
   },
   "meta": {
     "homeTitle": "Link x Link — Conecta por WhatsApp con personas locales",

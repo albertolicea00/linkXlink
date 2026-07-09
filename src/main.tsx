@@ -16,6 +16,9 @@ import { NavBar } from './components/NavBar'
 import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
 import { ADMIN_PATH } from './lib/adminPath'
+import { useOffline } from './hooks/useOffline'
+import { WarningBanner } from './components/WarningBanner'
+import { useTranslation } from 'react-i18next'
 
 function RequireTerms({ children }: { children: ReactNode }) {
   if (!hasAcceptedTerms()) return <Navigate to="/" replace />
@@ -26,8 +29,16 @@ function RequireTerms({ children }: { children: ReactNode }) {
 // ONCE here, so navigating between these pages (or flipping the admin view)
 // never remounts or re-fetches it. Landing/legal sit outside → no nav bar.
 function ChromeLayout() {
+  const isOffline = useOffline()
+  const { t } = useTranslation()
+
   return (
     <>
+      {isOffline && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
+          <WarningBanner variant="warning" message={t('app.offline')} />
+        </div>
+      )}
       <Outlet />
       <NavBar />
     </>
