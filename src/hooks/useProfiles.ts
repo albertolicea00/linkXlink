@@ -12,15 +12,7 @@ export function useProfiles() {
   const fetchProfiles = useCallback(async () => {
     const dev = getDevFlags()
 
-    if (
-      !dev.bypassRelease &&
-      appConfig.first_release_date &&
-      new Date() < new Date(appConfig.first_release_date)
-    ) {
-      setProfiles([])
-      setLoading(false)
-      return
-    }
+
 
     setLoading(true)
     setError(null)

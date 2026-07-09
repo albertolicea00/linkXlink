@@ -73,17 +73,7 @@ export function Landing({ lang }: Props) {
 
   const active = i18n.resolvedLanguage
 
-  const isPreRelease =
-    !getDevFlags().bypassRelease &&
-    appConfig.first_release_date &&
-    new Date() < new Date(appConfig.first_release_date)
-  const releaseDate = appConfig.first_release_date
-    ? new Date(appConfig.first_release_date).toLocaleDateString(i18n.resolvedLanguage, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : ''
+
 
   return (
     <div className="page landing">
@@ -104,11 +94,6 @@ export function Landing({ lang }: Props) {
 
       <main className="landing__main">
         <section className="landing__hero">
-          {isPreRelease && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <WarningBanner variant="info" message={t('landing.releaseBanner', { date: releaseDate })} />
-            </div>
-          )}
           <h1>{t('app.name')}</h1>
           <p className="landing__tagline">
             <Trans i18nKey="app.tagline" components={WA_COMPONENTS} />
@@ -116,30 +101,28 @@ export function Landing({ lang }: Props) {
           <p className="landing__description">
             <Trans i18nKey="landing.description" components={WA_COMPONENTS} />
           </p>
-          {!session && (
-            <label className="terms-check">
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => setChecked(e.target.checked)}
+          <label className="terms-check">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={(e) => setChecked(e.target.checked)}
+            />
+            <span>
+              <Trans
+                i18nKey="landing.acceptTerms"
+                components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
               />
-              <span>
-                <Trans
-                  i18nKey="landing.acceptTerms"
-                  components={{ eula: <Link to="/eula" />, privacy: <Link to="/privacy" />, data: <Link to="/data" /> }}
-                />
-              </span>
-            </label>
-          )}
+            </span>
+          </label>
           <div className="landing__cta">
             {/* Signed out: accept terms → enter, plus register.
                 Signed in: enter the app, moderate (staff), and edit/create profile. */}
             <button
               type="button"
               className="btn btn--primary btn--large"
-              disabled={!session && !checked}
+              disabled={!checked}
               onClick={() => {
-                if (!session) acceptTerms()
+                if (checked) acceptTerms()
                 void navigate('/app')
               }}
             >

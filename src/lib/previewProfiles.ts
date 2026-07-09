@@ -18,13 +18,7 @@ const CACHE_KEY = 'lxl_preview_cache'
  */
 export async function fetchPreviewProfiles(): Promise<Profile[]> {
   const dev = getDevFlags()
-  if (
-    !dev.bypassRelease &&
-    appConfig.first_release_date &&
-    new Date() < new Date(appConfig.first_release_date)
-  ) {
-    return []
-  }
+
 
   try {
     const cached = localStorage.getItem(CACHE_KEY)
@@ -56,3 +50,17 @@ export async function fetchPreviewProfiles(): Promise<Profile[]> {
 
   return profiles
 }
+
+export function removePreviewProfile(profileId: string): void {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY)
+    if (cached) {
+      const profiles = JSON.parse(cached) as Profile[]
+      const updated = profiles.filter((p) => p.id !== profileId)
+      localStorage.setItem(CACHE_KEY, JSON.stringify(updated))
+    }
+  } catch {
+    // storage unavailable
+  }
+}
+
