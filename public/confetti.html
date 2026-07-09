@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Massive Burst Confetti</title>
+
+    <style>
+      .confetti {
+        position: fixed;
+        background: hsl(var(--hue), 100%, 50%);
+        opacity: 0;
+        transform: translate(0, 0) rotate(0deg);
+        animation: pop var(--duration) ease-out forwards;
+        pointer-events: none;
+      }
+
+      @keyframes pop {
+        0% {
+          opacity: 1;
+          transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(var(--dx), var(--dy)) rotate(720deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <button
+      onclick="
+        launchConfetti({
+          corners: ['bottom-left', 'bottom-right'],
+          duration: 1.2,
+          count: 150,
+          spread: 800,
+          size: 10,
+          bursts: 10,
+        })
+      "
+      style="margin: 20px; padding: 10px 20px"
+    >
+      Trigger Confetti
+    </button>
+
+    <script>
+      function launchConfetti({
+        corners = ["top-left", "top-right"],
+        duration = 1.2,
+        count = 100,
+        spread = 600,
+        size = 8,
+        bursts = 1,
+        burstDelay = 80, // << delay pequeño para no bloquear
+        batchSize = 1, // << cuántos bursts por batch
+      } = {}) {
+        const w = document.documentElement.clientWidth;
+        const h = document.documentElement.clientHeight;
+
+        const cornerMap = {
+          "top-left": { x: 0, y: 0 },
+          "top-right": { x: w, y: 0 },
+          "bottom-left": { x: 0, y: h },
+          "bottom-right": { x: w, y: h },
+        };
+
+        function singleBurst() {
+          for (let i = 0; i < count; i++) {
+            const piece = document.createElement("div");
+            piece.className = "confetti";
+
+            const corner =
+              cornerMap[corners[Math.floor(Math.random() * corners.length)]];
+            piece.style.left = corner.x + "px";
+            piece.style.top = corner.y + "px";
+
+            const dx = (Math.random() - 0.5) * spread;
+            const dy = (Math.random() - 1) * spread;
+
+            piece.style.width = size + "px";
+            piece.style.height = size + "px";
+
+            piece.style.setProperty("--dx", dx + "px");
+            piece.style.setProperty("--dy", dy + "px");
+            piece.style.setProperty("--hue", Math.floor(Math.random() * 360));
+            piece.style.setProperty("--duration", duration + "s");
+
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), duration * 1000);
+          }
+        }
+
+        // Ejecuta bursts en batches para evitar bloqueo
+        let executed = 0;
+
+        function runBatch() {
+          for (let i = 0; i < batchSize && executed < bursts; i++) {
+            singleBurst();
+            executed++;
+          }
+          if (executed < bursts) {
+            setTimeout(runBatch, burstDelay);
+          }
+        }
+
+        runBatch();
+      }
+    </script>
+  </body>
+</html>
