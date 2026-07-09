@@ -9,6 +9,7 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 - [Prerequisites](#prerequisites)
 - [A. Supabase (backend)](#a-supabase-backend)
 - [B. Vercel (deploy)](#b-vercel-deploy)
+- [C. Brevo email sync (optional)](#c-brevo-email-sync-optional)
 
 ---
 
@@ -222,6 +223,59 @@ Or add it now in the repo before pushing — Vercel will pick it up automaticall
 
 - Go to **Project → Settings → Domains** in Vercel dashboard
 - Add your domain and follow DNS instructions
+
+---
+
+## C. Brevo email sync (optional)
+
+Every user who completes their profile has already accepted the mandatory
+terms checkbox at account creation, which bundles in consent to receive email
+updates (see `landing.acceptTerms` — the checkbox text says so explicitly).
+`supabase/functions/sync-brevo-contact/` upserts that user as a Brevo contact
+whenever their profile is created or updated. The sync runs **server-side
+only** (Database Webhook → Edge Function → Brevo) — the Brevo API key is
+never exposed to the browser.
+
+### 1. Get your Brevo API key and list ID
+
+- Brevo dashboard → **Settings → SMTP & API → API Keys** → copy your key.
+- **Contacts → Lists** → open the target list → note its numeric ID (visible
+  in the URL, or via the Brevo API).
+
+### 2. Deploy the Edge Function
+
+Requires the [Supabase CLI](https://supabase.com/docs/guides/cli), logged in
+and linked to this project (`supabase link`).
+
+```bash
+supabase secrets set BREVO_API_KEY=<your-brevo-api-key>
+supabase secrets set BREVO_LIST_ID=<your-list-id>
+supabase functions deploy sync-brevo-contact
+```
+
+### 3. Wire the Database Webhook
+
+- Supabase Dashboard → **Database → Webhooks** → **Create a new webhook**
+- Table: `profiles` — Events: **Insert** and **Update**
+- Type: **Supabase Edge Functions** — select `sync-brevo-contact`
+- Save.
+
+### 4. Test
+
+- Complete a profile in the app (or update an existing one).
+- Check **Brevo → Contacts** — the email should appear on the list within a
+  few seconds, with `NAME`, `WHATSAPP`, and `REGION` attributes set.
+- If it doesn't show up, check **Supabase Dashboard → Edge Functions →
+  sync-brevo-contact → Logs** for the error (commonly a wrong list ID, or the
+  webhook firing before the profile row is fully committed — rare).
+
+> Seed/migrated profiles (`owner_id IS NULL`) are skipped until claimed — no
+> email exists to sync yet. Once claimed, the same row triggers an UPDATE and
+> gets synced normally.
+>
+> Not implemented: removing a contact from Brevo when a profile is deleted or
+> denied. Add a webhook on `DELETE` calling Brevo's contact-delete endpoint if
+> that's needed later.
 
 ---
 

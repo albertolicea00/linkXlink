@@ -32,6 +32,12 @@ export function Privacy() {
               identifiquen a quien reporta.
             </p>
             <p>Las imágenes se alojan en Supabase Storage y se sirven mediante URLs públicas.</p>
+            <p>
+              Al crear tu cuenta y aceptar estos términos, tu correo electrónico se añade a
+              nuestra lista de difusión de correo (gestionada por Brevo) para recibir novedades y
+              comunicaciones de la app. Puedes darte de baja en cualquier momento desde el enlace
+              incluido en esos correos.
+            </p>
           </>
         ) : (
           <>
@@ -49,6 +55,11 @@ export function Privacy() {
               the reporter.
             </p>
             <p>Images are hosted on Supabase Storage and served through public URLs.</p>
+            <p>
+              By creating an account and accepting these terms, your email address is added to
+              our email broadcast list (managed by Brevo) to receive app news and updates. You can
+              unsubscribe at any time via the link included in those emails.
+            </p>
           </>
         )}
         <div className="legal-page__actions">

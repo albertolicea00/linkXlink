@@ -271,6 +271,31 @@ export function AuthPanel() {
         </span>
       </label>
 
+      {/*
+        Email marketing consent is currently BUNDLED into the terms checkbox
+        above (see the trailing clause in the `landing.acceptTerms` i18n key)
+        — every account gets synced to the Brevo list on profile completion,
+        no separate opt-in. To switch to a separate, optional, revocable
+        opt-in instead (recommended if this ever needs to comply with
+        GDPR/CAN-SPAM-style marketing-consent rules):
+          1. Add `const [marketingOptIn, setMarketingOptIn] = useState(false)`
+             above.
+          2. Uncomment the checkbox below and remove the trailing clause from
+             `landing.acceptTerms` (both es.json and en.json).
+          3. Thread `marketingOptIn` through to wherever the profile gets
+             created (Register.tsx) and store it (e.g. a new
+             `profiles.marketing_opt_in` column) so the Brevo sync only fires
+             for opted-in users instead of unconditionally on every insert.
+
+        <label className="terms-check" style={{ margin: '0.5rem 0 0' }}>
+          <input
+            type="checkbox"
+            checked={marketingOptIn}
+            onChange={(e) => setMarketingOptIn(e.target.checked)}
+          />
+          <span>{t('auth.marketingOptIn')}</span>
+        </label>
+      */}
     </div>
   )
 }

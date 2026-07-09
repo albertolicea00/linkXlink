@@ -47,7 +47,7 @@
     "how4": "¿Te interesa alguien? Pulsa el botón de WhatsApp.",
     "how5": "¿Algo no funciona? Repórtalo y ayuda a la comunidad.",
     "how6": "Únete a nuestra <tg>comunidad de Telegram</tg> para ayudar a mantener la app, reportar fallos y pedir ayuda.",
-    "acceptTerms": "Acepto los <eula>términos y condiciones</eula>, la <privacy>política de privacidad</privacy> y el <data>uso de datos</data>"
+    "acceptTerms": "Acepto los <eula>términos y condiciones</eula>, la <privacy>política de privacidad</privacy> y el <data>uso de datos</data>, e incluir mi correo en la lista de novedades por email"
   },
   "profile": {
     "openWhatsApp": "Abrir WhatsApp",
@@ -115,6 +115,7 @@
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
     "forgot": "¿Olvidaste tu contraseña?",
+    "marketingOptIn": "Quiero recibir novedades y promociones por correo",
     "resetSentTitle": "Revisa tu correo",
     "resetSentText": "Te enviamos un enlace para restablecer tu contraseña."
   },

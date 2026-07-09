@@ -6,7 +6,7 @@ PWA for local users: browse people profiles (photos, name, description) with a d
 
 - Frontend: Vite + React + TypeScript, single app (no monorepo — one app, shared packages not justified yet)
 - Routing: react-router
-- Backend: Supabase (Postgres, Storage, Auth)
+- Backend: Supabase (Postgres, Storage, Auth), + a Supabase Edge Function (`supabase/functions/sync-brevo-contact/`) syncing completed profiles to a Brevo email list via a Database Webhook — server-side only, never exposes the Brevo API key to the client. See `SETUP.md` §C.
 - Auth: Supabase Auth for everyone — end users (OAuth Google/Facebook/Apple + email+password) and staff (email+password on the admin route)
 - Phone validation: `libphonenumber-js/max` (full per-country patterns; `min` metadata is not precise enough)
 - PWA: vite-plugin-pwa (autoUpdate SW; runtime caching: Supabase REST StaleWhileRevalidate, Storage images CacheFirst)
