@@ -91,7 +91,7 @@ python3 scripts/5_migrate_to_supabase.py --input scripts/data.json --images-dir 
 
 ### `nsfw_filter.py`
 Runs a modern HuggingFace Vision Transformer to scan all downloaded images for NSFW/pornographic content and flags them in your JSON, protecting your database from inappropriate content.
-*Requires `pip install transformers torch pillow`*
+*Requires `pip install transformers torch pillow tqdm`*
 
 ```bash
 python3 scripts/nsfw_filter.py --input scripts/data.json --images-dir scripts/temp/images
@@ -99,7 +99,7 @@ python3 scripts/nsfw_filter.py --input scripts/data.json --images-dir scripts/te
 
 ### `gender_detector.py`
 Uses a modern HuggingFace Vision Transformer (`rizvandwiki/gender-classification-2`) to analyze the primary face in each image and classify the person's gender (male/female). If a face cannot be detected, it defaults to "other".
-*Requires `pip install transformers torch pillow`*
+*Requires `pip install transformers torch pillow tqdm`*
 
 ```bash
 python3 scripts/gender_detector.py --input scripts/data.json --images-dir scripts/temp/images

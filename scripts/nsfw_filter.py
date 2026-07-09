@@ -79,16 +79,21 @@ def main():
         print(f"Failed to load model: {e}")
         return
 
+    try:
+        from tqdm import tqdm
+    except ImportError:
+        print("Please install tqdm: pip install tqdm")
+        exit(1)
+
     nsfw_count = 0
     safe_count = 0
 
-    for item, img_path in profile_refs:
+    for item, img_path in tqdm(profile_refs, desc="🔞 Scanning for NSFW", unit="img"):
         try:
             # Predict
             results = classifier(str(img_path))
             
             # Extract the NSFW score from the results array
-            # Format is usually: [{'label': 'nsfw', 'score': 0.99}, {'label': 'normal', 'score': 0.01}]
             nsfw_score = 0.0
             for res in results:
                 if res['label'].lower() == 'nsfw':
@@ -102,12 +107,12 @@ def main():
             
             if is_nsfw:
                 nsfw_count += 1
-                print(f"   🔴 NSFW Detected: {item.get('key')} (Score: {nsfw_score:.2f})")
+                tqdm.write(f"🔴 NSFW Detected: {item.get('key')} (Score: {nsfw_score:.2f})")
             else:
                 safe_count += 1
                 
         except Exception as e:
-            print(f"   ⚠️ Error scanning image {img_path.name}: {e}")
+            tqdm.write(f"⚠️ Error scanning image {img_path.name}: {e}")
 
     # Save results
     with open(input_path, 'w', encoding='utf-8') as f:

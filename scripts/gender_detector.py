@@ -78,11 +78,17 @@ def main():
         print(f"Failed to load model: {e}")
         return
 
+    try:
+        from tqdm import tqdm
+    except ImportError:
+        print("Please install tqdm: pip install tqdm")
+        exit(1)
+
     male_count = 0
     female_count = 0
     other_count = 0
 
-    for item, img_path in profile_refs:
+    for item, img_path in tqdm(profile_refs, desc="👥 Scanning Gender", unit="img"):
         try:
             # Predict
             results = classifier(str(img_path))
