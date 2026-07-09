@@ -47,7 +47,7 @@
     "how4": "Interested in someone? Tap the WhatsApp button.",
     "how5": "Something wrong? Report it and help the community.",
     "how6": "Join our <tg>Telegram community</tg> to help keep the app running, report bugs and get support.",
-    "acceptTerms": "I accept the <eula>terms and conditions</eula>, the <privacy>privacy policy</privacy> and the <data>data usage policy</data>, and to be added to the email news list"
+    "acceptTerms": "I accept the <eula>terms and conditions</eula>, the <privacy>privacy policy</privacy> and the <data>data usage policy</data>."
   },
   "profile": {
     "openWhatsApp": "Open WhatsApp",
@@ -59,7 +59,7 @@
     "loading": "Loading profiles…",
     "whatsappMessage": "Hi {{name}} 👋, I saw you on Link x Link :: https://linkxlink.vercel.app/",
     "empty": "No profiles available right now.",
-    "emptyDesc": "We're in the early stages. Help us by sharing the app with your friends, and come back in a few days to discover more people.",
+    "emptyDesc": "No more profiles for now. Come back later or share the app to discover more people.",
     "shareApp": "Share app",
     "error": "Could not load profiles. Check your connection.",
     "retry": "Retry",

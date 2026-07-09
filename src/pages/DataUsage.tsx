@@ -62,6 +62,15 @@ export function DataUsage() {
               compartimos datos personales con terceros ni vendemos información.
             </p>
 
+            <h2>Comunicaciones por correo</h2>
+            <p>
+              Al utilizar nuestra aplicación y aceptar estos términos, das tu consentimiento
+              expreso para que tu dirección de correo electrónico sea añadida a nuestra lista
+              de novedades y notificaciones. Utilizamos este medio para enviarte actualizaciones
+              importantes y noticias. Puedes desuscribirte de estas comunicaciones en cualquier
+              momento utilizando el enlace correspondiente en los correos que recibas.
+            </p>
+
             <h2>Tus derechos</h2>
             <p>
               Puedes borrar los datos almacenados en tu navegador en cualquier momento desde la
@@ -112,6 +121,14 @@ export function DataUsage() {
               Profile images are hosted on Supabase Storage and served through public URLs.
               Contact links open WhatsApp directly on your device. We do not share personal data
               with third parties or sell information.
+            </p>
+
+            <h2>Email communications</h2>
+            <p>
+              By using our application and accepting these terms, you give your express consent
+              for your email address to be added to our news and notifications list. We use this
+              to send you important updates and news. You can unsubscribe from these communications
+              at any time using the link provided in the emails you receive.
             </p>
 
             <h2>Your rights</h2>

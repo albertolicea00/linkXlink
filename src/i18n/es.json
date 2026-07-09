@@ -47,7 +47,7 @@
     "how4": "¿Te interesa alguien? Pulsa el botón de WhatsApp.",
     "how5": "¿Algo no funciona? Repórtalo y ayuda a la comunidad.",
     "how6": "Únete a nuestra <tg>comunidad de Telegram</tg> para ayudar a mantener la app, reportar fallos y pedir ayuda.",
-    "acceptTerms": "Acepto los <eula>términos y condiciones</eula>, la <privacy>política de privacidad</privacy> y el <data>uso de datos</data>, e incluir mi correo en la lista de novedades por email"
+    "acceptTerms": "Acepto los <eula>términos y condiciones</eula>, la <privacy>política de privacidad</privacy> y el <data>uso de datos</data>."
   },
   "profile": {
     "openWhatsApp": "Abrir WhatsApp",
@@ -59,7 +59,7 @@
     "loading": "Cargando perfiles…",
     "whatsappMessage": "Hola {{name}} 👋, te vi en Link x Link :: https://linkxlink.vercel.app/",
     "empty": "No hay perfiles disponibles por ahora.",
-    "emptyDesc": "Estamos en una etapa inicial. Ayúdanos compartiendo la app con tus amigos y regresa en unos días para descubrir a más personas.",
+    "emptyDesc": "No hay más perfiles por ahora. Vuelve más tarde y comparte la app para descubrir a más personas.",
     "shareApp": "Compartir app",
     "error": "No se pudieron cargar los perfiles. Revisa tu conexión.",
     "retry": "Reintentar",
