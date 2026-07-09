@@ -6,8 +6,6 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { ADMIN_PATH } from '../lib/adminPath'
-import { getDevFlags } from '../lib/devFlags'
-import { WarningBanner } from '../components/WarningBanner'
 import appConfig from '../config/app-config.json'
 
 interface Props {
