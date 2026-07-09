@@ -144,10 +144,16 @@ export function ModeratorDashboard() {
             ) : (
               <div className="app-page__status">
                 <img src="/icons/icon.svg" alt="" className="preview-end__logo" />
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{t('admin.pendingEmpty')}</h3>
-                <button type="button" className="btn btn--primary" onClick={handleShare}>
-                  {t('feed.shareApp')}
-                </button>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{t('admin.pendingEmpty')}</h3>
+                <p style={{ maxWidth: '400px', margin: '0 auto 1.25rem', fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: '1.5' }}>
+                  {t('feed.emptyDesc')}
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button type="button" className="btn btn--primary" onClick={handleShare}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+                    {t('feed.shareApp')}
+                  </button>
+                </div>
               </div>
             )
           }
