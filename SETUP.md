@@ -242,11 +242,21 @@ never exposed to the browser.
 - **Contacts → Lists** → open the target list → note its numeric ID (visible
   in the URL, or via the Brevo API).
 
-### 2. Deploy the Edge Function
+### 2. Configure Secrets and Deploy the Edge Function
 
-Requires the [Supabase CLI](https://supabase.com/docs/guides/cli), logged in
-and linked to this project (`supabase link`).
+**Option A: Via Supabase Dashboard (Recommended)**
+1. Go to your Supabase project dashboard.
+2. Navigate to **Edge Functions** (left sidebar) → **Secrets**.
+3. Click **Add new secret** and add two secrets:
+   - `BREVO_API_KEY`: `<your-brevo-api-key>`
+   - `BREVO_LIST_ID`: `<your-list-id>`
+4. Deploy the function using the [Supabase CLI](https://supabase.com/docs/guides/cli) (make sure you are logged in and linked with `supabase link`):
+   ```bash
+   supabase functions deploy sync-brevo-contact
+   ```
 
+**Option B: Via Supabase CLI**
+Requires the Supabase CLI logged in and linked to this project.
 ```bash
 supabase secrets set BREVO_API_KEY=<your-brevo-api-key>
 supabase secrets set BREVO_LIST_ID=<your-list-id>
