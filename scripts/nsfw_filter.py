@@ -20,6 +20,7 @@ $ python3 scripts/nsfw_filter.py --input scripts/data.json --images-dir scripts/
 """
 import json
 import argparse
+import os
 from pathlib import Path
 
 try:
@@ -73,8 +74,25 @@ def main():
     print("⏳ This might take a few minutes. Downloading model if first run...")
     
     try:
-        # Load the pipeline
-        classifier = pipeline("image-classification", model="Falconsai/nsfw_image_detection")
+        from huggingface_hub import snapshot_download
+        
+        model_dir = Path("scripts/models/nsfw_image_detection")
+        print(f"Downloading/Verifying model at {model_dir}...")
+        
+        kwargs = {
+            "repo_id": "Falconsai/nsfw_image_detection",
+            "local_dir": str(model_dir)
+        }
+        
+        # Make token completely optional
+        hf_token = os.getenv("HF_TOKEN")
+        if hf_token:
+            kwargs["token"] = hf_token
+            
+        snapshot_download(**kwargs)
+        
+        # Load the pipeline from local dir
+        classifier = pipeline("image-classification", model=str(model_dir))
     except Exception as e:
         print(f"Failed to load model: {e}")
         return

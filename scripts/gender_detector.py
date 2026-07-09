@@ -20,6 +20,7 @@ $ python3 scripts/gender_detector.py --input scripts/data.json --images-dir scri
 """
 import json
 import argparse
+import os
 from pathlib import Path
 
 try:
@@ -67,13 +68,27 @@ def main():
         print("No physical images found to analyze.")
         return
 
-    print(f"Preparing to analyze {len(profile_refs)} valid profiles for gender...")
-    print("🧠 Booting up Vision Transformer model (rizvandwiki/gender-classification-2)...")
-    print("⏳ This might take a few minutes. Downloading model if first run...")
-    
     try:
-        # Load the pipeline
-        classifier = pipeline("image-classification", model="rizvandwiki/gender-classification-2")
+        from huggingface_hub import snapshot_download
+        
+        # Explicitly download the model to a local directory
+        model_dir = Path("scripts/models/gender-classification-2")
+        print(f"Downloading/Verifying model at {model_dir}...")
+        
+        kwargs = {
+            "repo_id": "rizvandwiki/gender-classification-2",
+            "local_dir": str(model_dir)
+        }
+        
+        # Make token completely optional
+        hf_token = os.getenv("HF_TOKEN")
+        if hf_token:
+            kwargs["token"] = hf_token
+            
+        snapshot_download(**kwargs)
+        
+        # Load the pipeline from the local directory
+        classifier = pipeline("image-classification", model=str(model_dir))
     except Exception as e:
         print(f"Failed to load model: {e}")
         return

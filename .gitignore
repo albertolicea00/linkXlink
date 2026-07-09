@@ -56,10 +56,12 @@ dev-dist/
 # Project temp files (kept local)
 scripts/backup/*
 scripts/temp/*
+scripts/data.json
+scripts/models
 plan/
 
 # ai stuff
 .claude/
 .continue/
 .agents/
-scripts/data.json
+

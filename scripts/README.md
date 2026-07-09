@@ -91,19 +91,30 @@ python3 scripts/5_migrate_to_supabase.py --input scripts/data.json --images-dir 
 
 ### `nsfw_filter.py`
 Runs a modern HuggingFace Vision Transformer to scan all downloaded images for NSFW/pornographic content and flags them in your JSON, protecting your database from inappropriate content.
-*Requires `pip install transformers torch pillow tqdm`*
+*Requires `pip install transformers torch pillow tqdm huggingface_hub`*
 
 ```bash
+# Optional: Set your HuggingFace token to avoid rate limits and anonymous download warnings
+export HF_TOKEN="hf_tu_token_aqui"
 python3 scripts/nsfw_filter.py --input scripts/data.json --images-dir scripts/temp/images
 ```
 
 ### `gender_detector.py`
 Uses a modern HuggingFace Vision Transformer (`rizvandwiki/gender-classification-2`) to analyze the primary face in each image and classify the person's gender (male/female). If a face cannot be detected, it defaults to "other".
-*Requires `pip install transformers torch pillow tqdm`*
+*Requires `pip install transformers torch pillow tqdm huggingface_hub`*
 
 ```bash
+# Optional: Set your HuggingFace token to avoid rate limits and anonymous download warnings
+export HF_TOKEN="hf_tu_token_aqui"
 python3 scripts/gender_detector.py --input scripts/data.json --images-dir scripts/temp/images
 ```
+
+> **💡 HuggingFace Token (Opcional pero recomendado)**
+> Para evitar advertencias de *unauthenticated requests* o límites de descarga al bajar los modelos de IA, puedes crear un token de acceso:
+> 1. Ve a [Hugging Face Settings](https://huggingface.co/settings/tokens) y créate una cuenta gratuita.
+> 2. Crea un **New Token** (con permisos de lectura / "Read").
+> 3. Ejecuta `export HF_TOKEN="tu_token"` en la terminal antes de correr los scripts.
+> *Si no pones el token, los scripts de todas formas funcionarán, solo que descargarán de forma anónima.*
 
 ### `fix_validation.py`
 Run this whenever you want to sanitize, fix malformed numbers, and flag invalid entries in your database.
