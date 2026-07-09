@@ -103,7 +103,7 @@ export function fireConfetti(options: ConfettiOptions = {}): void {
 /** Mount once near the app root. Renders its own styles — nothing else to import. */
 export function ConfettiRoot() {
   useEffect(() => {
-    if (document.getElementById(CONTAINER_ID)) {
+    if (document.querySelectorAll(`#${CONTAINER_ID}`).length > 1) {
       // eslint-disable-next-line no-console
       console.warn('<ConfettiRoot /> mounted more than once — only mount it one time.')
     }
