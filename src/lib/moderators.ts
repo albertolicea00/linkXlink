@@ -72,6 +72,7 @@ export interface AdminStats {
   migrated: number
   migratedUnclaimed: number
   noProfile: number
+  totalUsers: number
 }
 
 const EMPTY_ADMIN_STATS: AdminStats = {
@@ -79,6 +80,7 @@ const EMPTY_ADMIN_STATS: AdminStats = {
   migrated: 0,
   migratedUnclaimed: 0,
   noProfile: 0,
+  totalUsers: 0,
 }
 
 /**

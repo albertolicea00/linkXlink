@@ -7,7 +7,7 @@ import { AdminsManager } from './AdminsManager'
 
 export function AdminDashboard() {
   const { t } = useTranslation()
-  const { total, pending, active, banned } = useAdminProfiles()
+  const { pending, active, banned } = useAdminProfiles()
   // Global counters (fake/migrated/no-profile) — always the true DB totals,
   // deliberately independent of the panel's dev-flag-filtered profiles query.
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null)
@@ -19,7 +19,7 @@ export function AdminDashboard() {
   return (
     <div className="admin-panel">
       <div className="admin-stats">
-        <StatCard value={total} label={t('admin.statsTotal')} variant="total" />
+        <StatCard value={adminStats?.totalUsers ?? 0} label={t('admin.statsTotal')} variant="total" />
         <StatCard value={active} label={t('admin.statusActive')} variant="active" />
         <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
         <StatCard value={banned} label={t('admin.statsBanned')} variant="banned" />

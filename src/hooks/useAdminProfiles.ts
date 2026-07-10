@@ -18,12 +18,23 @@ export function useAdminProfiles() {
 
   const reload = async () => {
     setLoadingProfiles(true)
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('is_fake', getDevFlags().showFakes)
-      .order('created_at', { ascending: false })
-    const list = (data ?? []) as Profile[]
+    // PostgREST caps a single response at 1000 rows. With more profiles than
+    // that the derived counters (total/pending/...) and the moderator deck were
+    // silently truncated, so page through every row instead of one bounded read.
+    const PAGE = 1000
+    const list: Profile[] = []
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('is_fake', getDevFlags().showFakes)
+        .order('created_at', { ascending: false })
+        .range(from, from + PAGE - 1)
+      if (error) break
+      const chunk = (data ?? []) as Profile[]
+      list.push(...chunk)
+      if (chunk.length < PAGE) break
+    }
     setProfiles(list)
     setModQueue(list.filter(isPending))
     setLoadingProfiles(false)
