@@ -102,8 +102,14 @@ def main():
         if isinstance(desc, str) and re.search(r'\bcontenido\b', desc, re.IGNORECASE):
             is_safe_text = False
 
-        # Final validity requires both a valid phone and safe text
-        is_valid = is_valid_phone and is_safe_text
+        # Image existence check — if the file isn't on disk it can't be migrated
+        has_image = False
+        img_ref = item.get('imageRef', '')
+        if img_ref:
+            has_image = (images_dir / img_ref).exists()
+
+        # Final validity requires a valid phone, safe text, and a physical image
+        is_valid = is_valid_phone and is_safe_text and has_image
 
         # Update the flag
         item['valid'] = is_valid
@@ -122,15 +128,12 @@ def main():
             old_path = Path(old_ref)
             # Only rename if it's not already a UUID (36 chars)
             if len(old_path.stem) != 36:
-                new_ref = f"{uuid.uuid4()}{old_path.suffix}"
-                
                 old_img_path = images_dir / old_ref
-                new_img_path = images_dir / new_ref
-                
                 if old_img_path.exists():
+                    new_ref = f"{uuid.uuid4()}{old_path.suffix}"
+                    new_img_path = images_dir / new_ref
                     os.rename(old_img_path, new_img_path)
-                
-                item['imageRef'] = new_ref
+                    item['imageRef'] = new_ref
 
         # Handle malformed but fixed numbers
         if old_phone != new_phone:
