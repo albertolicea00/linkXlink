@@ -9,7 +9,7 @@ images to your Supabase Storage bucket, and inserts the contacts into the
 
 By design (as per your CLAUDE.md):
 - They are inserted with `migrated = true` and `owner_id = NULL`.
-- They are immediately `active = true`.
+- They are still `active = false`.
 - They can be claimed later by real users via the `claim_migrated_profile` RPC.
 
 Idempotent — safe to re-run:
@@ -38,6 +38,7 @@ import os
 import json
 import argparse
 import re
+import time
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from supabase import create_client, Client
@@ -56,7 +57,8 @@ def main():
     # NOTE: must match the frontend bucket (`PHOTOS_BUCKET = 'profile-photos'` in
     # Register.tsx / Account.tsx). Wrong bucket = images upload nowhere the app looks.
     parser.add_argument('--bucket', default='profile-photos', help="Supabase storage bucket name for photos")
-    parser.add_argument('--workers', type=int, default=8, help="Parallel image-upload workers")
+    parser.add_argument('--workers', type=int, default=4, help="Parallel image-upload workers (keep low; HTTP/2 stream resets appear if too high)")
+    parser.add_argument('--max-retries', type=int, default=4, help="Per-image upload retries on transient network errors")
     parser.add_argument('--batch-size', type=int, default=200, help="Rows per bulk DB upsert / lookup")
     parser.add_argument('--dry-run', action='store_true', help="Simulate migration without making any changes")
     args = parser.parse_args()
@@ -194,23 +196,29 @@ def main():
     def upload_one(it):
         if args.dry_run:
             return it, True, None
-        try:
-            with open(it['img_path'], 'rb') as fh:
-                image_bytes = fh.read()
-            # x-upsert overwrites if the object already exists (re-runs).
-            supabase.storage.from_(args.bucket).upload(
-                path=it['image_ref'],
-                file=image_bytes,
-                file_options={"content-type": "image/webp", "x-upsert": "true"},
-            )
-            return it, True, None
-        except Exception as e:
-            # A genuine "already exists" (older clients w/o x-upsert) is fine;
-            # anything else is a real failure we must NOT hide.
-            msg = str(e).lower()
-            if "exists" in msg or "duplicate" in msg or "409" in msg:
+        with open(it['img_path'], 'rb') as fh:
+            image_bytes = fh.read()
+        last_err = None
+        # HTTP/2 stream resets (StreamReset) and connection blips are transient
+        # under concurrency — retry with exponential backoff before giving up.
+        for attempt in range(args.max_retries + 1):
+            try:
+                # x-upsert overwrites if the object already exists (re-runs).
+                supabase.storage.from_(args.bucket).upload(
+                    path=it['image_ref'],
+                    file=image_bytes,
+                    file_options={"content-type": "image/webp", "x-upsert": "true"},
+                )
                 return it, True, None
-            return it, False, str(e)
+            except Exception as e:
+                msg = str(e).lower()
+                # A genuine "already exists" (older clients w/o x-upsert) is fine.
+                if "exists" in msg or "duplicate" in msg or "409" in msg:
+                    return it, True, None
+                last_err = str(e)
+                if attempt < args.max_retries:
+                    time.sleep(0.5 * (2 ** attempt))  # 0.5s, 1s, 2s, 4s
+        return it, False, last_err
 
     ok_items = []
     with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
