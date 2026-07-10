@@ -265,7 +265,7 @@ supabase functions deploy sync-brevo-contact
 
 ### 3. Wire the Database Webhook
 
-- Supabase Dashboard → **Database → Webhooks** → **Create a new webhook**
+- Supabase Dashboard → **Integrations** → **Webhooks** → **Create a new webhook**
 - Table: `profiles` — Events: **Insert** and **Update**
 - Type: **Supabase Edge Functions** — select `sync-brevo-contact`
 - Save.
