@@ -2,7 +2,9 @@
   "app": {
     "name": "Link x Link",
     "tagline": "Conecta con personas locales por <wa>WhatsApp</wa>",
-    "offline": "Estás sin conexión. Mostrando versión guardada."
+    "offline": "Estás sin conexión. Mostrando versión guardada.",
+    "updateAvailable": "Hay una nueva versión disponible.",
+    "updateReload": "Recargar"
   },
   "common": {
     "ok": "Entendido"
@@ -387,7 +389,8 @@
     "admin": "Admin",
     "moderator": "Moderar",
     "app": "Explorar",
-    "share": "Compartir"
+    "share": "Compartir",
+    "install": "Instalar"
   },
   "footer": {
     "eula": "Términos",

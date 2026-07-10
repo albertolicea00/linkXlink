@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useNav } from '../context/nav'
 import { AuthGateModal } from './AuthGateModal'
 import { ADMIN_PATH } from '../lib/adminPath'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
 import appConfig from '../config/app-config.json'
 
 /**
@@ -18,6 +19,7 @@ import appConfig from '../config/app-config.json'
 export function NavBar() {
   const { t } = useTranslation()
   const { session, role, loading } = useNav()
+  const { canInstall, promptInstall } = useInstallPrompt()
   const { pathname, search } = useLocation()
   // Logged-out visitors still see "Account" — tapping it opens the login/
   // register modal instead of blocking.
@@ -93,6 +95,13 @@ export function NavBar() {
         </Link>
       )}
 
+      {canInstall && (
+        <button type="button" className="navbar__item" onClick={() => void promptInstall()}>
+          <Icon.Install />
+          <span>{t('nav.install')}</span>
+        </button>
+      )}
+
       {authOpen && <AuthGateModal mode="auth" onClose={() => setAuthOpen(false)} />}
     </nav>
   )
@@ -140,6 +149,13 @@ const Icon = {
       <circle cx="18" cy="19" r="3" />
       <line x1="8.6" y1="13.5" x2="15.4" y2="17.5" />
       <line x1="15.4" y1="6.5" x2="8.6" y2="10.5" />
+    </svg>
+  ),
+  Install: () => (
+    <svg {...svg}>
+      <path d="M12 3v12" />
+      <path d="M7 10l5 5 5-5" />
+      <path d="M4 19h16" />
     </svg>
   ),
 }

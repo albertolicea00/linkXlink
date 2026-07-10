@@ -2,7 +2,9 @@
   "app": {
     "name": "Link x Link",
     "tagline": "Connect with local people through <wa>WhatsApp</wa>",
-    "offline": "You're offline. Showing saved version."
+    "offline": "You're offline. Showing saved version.",
+    "updateAvailable": "A new version is available.",
+    "updateReload": "Reload"
   },
   "common": {
     "ok": "Got it"
@@ -388,7 +390,8 @@
     "admin": "Admin",
     "moderator": "Moderate",
     "app": "Explore",
-    "share": "Share"
+    "share": "Share",
+    "install": "Install"
   },
   "footer": {
     "eula": "Terms",

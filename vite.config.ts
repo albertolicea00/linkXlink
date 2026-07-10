@@ -7,7 +7,13 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' + injectRegister:false: the auto-injected script would call
+      // register() silently and swap in updates without telling the user
+      // mid-session, which is risky here (RPC signatures keep changing) —
+      // useRegisterSW() in UpdatePrompt.tsx controls registration instead, so
+      // updates surface as a "reload to update" toast.
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['icons/icon.svg'],
       manifest: {
         name: 'Link x Link',
@@ -26,6 +32,20 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Ver perfiles',
+            short_name: 'Perfiles',
+            url: '/app',
+            icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Mi cuenta',
+            short_name: 'Cuenta',
+            url: '/account',
+            icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
         ],
       },

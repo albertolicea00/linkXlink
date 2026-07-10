@@ -18,6 +18,7 @@ import { NavBar } from './components/NavBar'
 import { DevFlagsFab } from './components/DevFlagsFab'
 import { ConfettiRoot } from './components/Confetti'
 import { ToastRoot } from './components/Toast'
+import { UpdatePrompt } from './components/UpdatePrompt'
 import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
 import { ADMIN_PATH } from './lib/adminPath'
@@ -100,6 +101,7 @@ createRoot(document.getElementById('root')!).render(
     <NavStateProvider>
       <ConfettiRoot />
       <ToastRoot />
+      <UpdatePrompt />
       <RouterProvider router={router} />
     </NavStateProvider>
   </StrictMode>,
