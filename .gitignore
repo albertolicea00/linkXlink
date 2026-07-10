@@ -58,6 +58,7 @@ scripts/backup/
 scripts/temp/
 scripts/models/
 scripts/data.json
+scripts/data.json.bak
 scripts/extracted_data.json
 
 # Raw dumps from WhatsApp
