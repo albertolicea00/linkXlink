@@ -21,6 +21,13 @@ const CONTAINER_ID = 'confetti-root-container'
 
 export interface ConfettiOptions {
   corners?: Array<'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'>
+  /** Fire from a specific point instead of a random corner — percentages of
+   *  viewport width/height (0-100). Takes priority over `corners` when set. */
+  origin?: { xPercent: number; yPercent: number }
+  /** Which way pieces travel vertically from the origin: 'up' (fireworks from
+   *  the bottom, the default — matches the original corner-burst look), 'down'
+   *  (falling away from a top origin, e.g. a toast), or 'random' (both). */
+  direction?: 'up' | 'down' | 'random'
   /** Seconds each piece takes to fly out and fade. */
   duration?: number
   /** Pieces per burst. */
@@ -47,6 +54,8 @@ export function fireConfetti(options: ConfettiOptions = {}): void {
 
   const {
     corners = ['bottom-left', 'bottom-right'],
+    origin,
+    direction = 'up',
     duration = 1.2,
     count = 80,
     spread = 600,
@@ -64,18 +73,24 @@ export function fireConfetti(options: ConfettiOptions = {}): void {
     'bottom-left': { x: 0, y: h },
     'bottom-right': { x: w, y: h },
   }
+  const originPoint = origin ? { x: (origin.xPercent / 100) * w, y: (origin.yPercent / 100) * h } : null
 
   const singleBurst = () => {
     for (let i = 0; i < count; i++) {
       const piece = document.createElement('div')
       piece.className = 'confetti-piece'
 
-      const corner = cornerMap[corners[Math.floor(Math.random() * corners.length)]]
-      piece.style.left = `${corner.x}px`
-      piece.style.top = `${corner.y}px`
+      const point = originPoint ?? cornerMap[corners[Math.floor(Math.random() * corners.length)]]
+      piece.style.left = `${point.x}px`
+      piece.style.top = `${point.y}px`
 
       const dx = (Math.random() - 0.5) * spread
-      const dy = (Math.random() - 1) * spread
+      const dy =
+        direction === 'down'
+          ? Math.random() * spread
+          : direction === 'random'
+            ? (Math.random() - 0.5) * 2 * spread
+            : (Math.random() - 1) * spread
 
       piece.style.width = `${size}px`
       piece.style.height = `${size}px`
