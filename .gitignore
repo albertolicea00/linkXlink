@@ -54,6 +54,7 @@ coverage/
 dev-dist/
 
 # Project temp files (kept local)
+scripts/__pycache__/*
 scripts/backup/
 scripts/temp/
 scripts/models/
