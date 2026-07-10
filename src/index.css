@@ -936,6 +936,7 @@ a {
 }
 
 .profile-card__description {
+  overflow-wrap: anywhere;
   color: var(--color-text-muted);
 }
 
