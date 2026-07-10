@@ -92,6 +92,7 @@ export function Landing({ lang }: Props) {
 
       <main className="landing__main">
         <section className="landing__hero">
+          <img src="/icons/icon.svg" alt="" className="landing__hero-logo" />
           <h1>{t('app.name')}</h1>
           <p className="landing__tagline">
             <Trans i18nKey="app.tagline" components={WA_COMPONENTS} />
@@ -190,12 +191,52 @@ export function Landing({ lang }: Props) {
             </li>
           </ol>
         </section>
+
+        <section className="landing__faq" style={{ marginTop: '3rem' }}>
+          <h2>{t('landing.faqTitle')}</h2>
+          <div className="faq-grid">
+            <details className="faq-item">
+              <summary>{t('landing.faq1Q')}</summary>
+              <p>{t('landing.faq1A')}</p>
+            </details>
+            <details className="faq-item">
+              <summary>{t('landing.faq2Q')}</summary>
+              <p>{t('landing.faq2A')}</p>
+            </details>
+            <details className="faq-item">
+              <summary>{t('landing.faq3Q')}</summary>
+              <p>{t('landing.faq3A')}</p>
+            </details>
+            <details className="faq-item">
+              <summary>{t('landing.faq4Q')}</summary>
+              <p>{t('landing.faq4A')}</p>
+            </details>
+          </div>
+        </section>
+
+        <section className="landing__support">
+          <h2>{t('landing.supportTitle')}</h2>
+          <p>{t('landing.supportText')}</p>
+          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
+            ☕ {t('landing.footerCoffee')}
+          </a>
+        </section>
       </main>
 
       <footer className="landing__footer">
-        <Link to="/eula">{t('footer.eula')}</Link>
-        <Link to="/privacy">{t('footer.privacy')}</Link>
-        <Link to="/data">{t('footer.data')}</Link>
+        <div className="landing__footer-links">
+          <Link to="/eula">{t('footer.eula')}</Link>
+          <Link to="/privacy">{t('footer.privacy')}</Link>
+          <Link to="/data">{t('footer.data')}</Link>
+        </div>
+        <div className="landing__footer-credits">
+          <p>
+            {t('landing.footerMadeWith')}
+            <a href="https://github.com/albertolicea00" target="_blank" rel="noopener noreferrer">
+              @albertolicea00
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
   )

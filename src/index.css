@@ -264,7 +264,7 @@ a {
 .landing__hero::before {
   content: "";
   position: absolute;
-  inset: -40px -60px auto;
+  inset: -160px -350px auto;
   height: 260px;
   background: radial-gradient(
     closest-side,
@@ -276,6 +276,12 @@ a {
 
 .landing__hero > * {
   position: relative;
+}
+
+.landing__hero-logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
 }
 
 .landing__hero h1 {
@@ -407,12 +413,130 @@ a {
   font-weight: 700;
 }
 
+.landing__faq h2 {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.faq-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.faq-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+}
+
+.faq-item summary {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-primary);
+  font-weight: 400;
+}
+
+.faq-item[open] summary::after {
+  content: "−";
+}
+
+.faq-item p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin: 1rem 0 0;
+}
+
+.landing__support {
+  margin-top: 3.5rem;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.landing__support h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.landing__support p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  max-width: 48ch;
+  margin: 0 auto 1.5rem;
+}
+
 .landing__footer {
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   padding: 1.25rem;
   border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.landing__footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.landing__footer-credits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.landing__footer-credits p {
+  margin: 0;
+}
+
+.landing__footer-credits a {
+  font-weight: 600;
+}
+
+.btn--coffee {
+  font-size: 0.8rem;
+  min-height: auto;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background-color: #ffdd00;
+  border-color: #ffdd00;
+  color: #000;
+}
+
+.btn--coffee:hover:not(:disabled) {
+  filter: brightness(0.9);
 }
 
 /* App page */
@@ -456,6 +580,7 @@ a {
 
 /* Swipe deck (Tinder-style stack) */
 .swipe-deck--empty {
+  padding-top: 2em;
   text-align: center;
 }
 
