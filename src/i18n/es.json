@@ -330,7 +330,7 @@
     "validationPhotos": "Sube entre 1 y 3 fotos.",
     "profilesTitle": "Perfiles",
     "pendingTitle": "Perfiles pendientes de aprobar",
-    "pendingEmpty": "No hay perfiles pendientes.",
+    "pendingEmpty": "No hay perfiles pendientes por ahora.",
     "approve": "Aprobar",
     "deny": "Denegar",
     "skip": "Saltar",
