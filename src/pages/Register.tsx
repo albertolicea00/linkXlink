@@ -494,9 +494,19 @@ export function Register({ lang }: Props) {
       </main>
 
       <footer className="landing__footer">
-        <Link to="/eula">{t('footer.eula')}</Link>
-        <Link to="/privacy">{t('footer.privacy')}</Link>
-        <Link to="/data">{t('footer.data')}</Link>
+        <div className="landing__footer-links">
+          <Link to="/eula">{t('footer.eula')}</Link>
+          <Link to="/privacy">{t('footer.privacy')}</Link>
+          <Link to="/data">{t('footer.data')}</Link>
+        </div>
+        <div className="landing__footer-credits">
+          <p>
+            {t('landing.footerMadeWith')}
+            <a href="https://github.com/albertolicea00" target="_blank" rel="noopener noreferrer">
+              @albertolicea00
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
   )

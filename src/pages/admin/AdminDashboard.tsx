@@ -29,7 +29,7 @@ export function AdminDashboard() {
       <div className="admin-stats">
         <StatCard value={adminStats?.fake ?? 0} label={t('admin.statsFake')} variant="total" />
         <StatCard
-          value={`${adminStats?.migratedUnclaimed ?? 0}/${adminStats?.migrated ?? 0}`}
+          value={`${(adminStats?.migrated ?? 0) - (adminStats?.migratedUnclaimed ?? 0)}/${adminStats?.migrated ?? 0}`}
           label={t('admin.statsMigrated')}
           title={t('admin.statsMigratedHint')}
           variant="pending"
