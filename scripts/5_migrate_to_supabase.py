@@ -175,7 +175,7 @@ def main():
             "description": desc,
             "whatsapp": whatsapp,
             "photos": [image_url],
-            "active": True,
+            "active": False,
             "migrated": True,
             "gender": detected_gender,
         }
