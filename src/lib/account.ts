@@ -7,6 +7,9 @@ export interface OwnProfileUpdate {
   gender?: Gender
   interested_in?: InterestedIn
   interests?: string[]
+  region?: string
+  /** New photo URLs (already uploaded to the bucket) to replace the current set. */
+  photos?: string[]
   self_hidden?: boolean
   /** ISO timestamp to stay hidden until; pass clearHiddenUntil to unset. */
   hidden_until?: string | null
@@ -28,6 +31,8 @@ export async function updateOwnProfile(patch: OwnProfileUpdate): Promise<{ error
     p_self_hidden: patch.self_hidden ?? null,
     p_hidden_until: patch.hidden_until ?? null,
     p_clear_hidden_until: patch.clearHiddenUntil ?? false,
+    p_region: patch.region ?? null,
+    p_photos: patch.photos ?? null,
   })
   return { error: !!error }
 }

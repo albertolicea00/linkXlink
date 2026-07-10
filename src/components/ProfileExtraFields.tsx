@@ -9,9 +9,11 @@ interface Props {
   gender: Gender | ''
   interestedIn: InterestedIn | ''
   interests: string[]
+  region: string
   onGender: (g: Gender) => void
   onInterestedIn: (i: InterestedIn) => void
   onInterests: (list: string[]) => void
+  onRegion: (r: string) => void
 }
 
 /**
@@ -23,9 +25,11 @@ export function ProfileExtraFields({
   gender,
   interestedIn,
   interests,
+  region,
   onGender,
   onInterestedIn,
   onInterests,
+  onRegion,
 }: Props) {
   const { t } = useTranslation()
   const max = appConfig.max_interests
@@ -73,6 +77,18 @@ export function ProfileExtraFields({
         </label>
       </div>
       <span className="field-help">{t('profileFields.interestedInHelp')}</span>
+
+      <label className="field">
+        {t('profileFields.region')}
+        <input
+          type="text"
+          maxLength={80}
+          value={region}
+          placeholder={t('profileFields.regionPlaceholder')}
+          onChange={(e) => onRegion(e.target.value)}
+        />
+        <span className="field-help">{t('profileFields.regionHelp')}</span>
+      </label>
 
       <div className="field">
         <span>{t('profileFields.interests', { max })}</span>

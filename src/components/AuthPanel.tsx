@@ -3,7 +3,19 @@ import { useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
+import { isStrongPassword, PASSWORD_MIN } from '../lib/password'
+import { fireConfetti } from './Confetti'
+import { PasswordChecklist } from './PasswordChecklist'
+import { SuccessModal } from './SuccessModal'
+import { notify } from './Toast'
 import appConfig from '../config/app-config.json'
+
+/** OAuth returns to the current origin locally, to the configured site in prod. */
+function redirectBase(): string {
+  const h = window.location.hostname
+  const isLocal = h === 'localhost' || h === '127.0.0.1' || h.startsWith('192.168.')
+  return isLocal ? window.location.origin : appConfig.site_url
+}
 
 type Provider = 'google' | 'apple' | 'facebook'
 
@@ -65,21 +77,46 @@ const PROVIDER_NAMES: Record<Provider, string> = {
  */
 export function AuthPanel() {
   const { t } = useTranslation()
-  const [mode, setMode] = useState<'signup' | 'login'>('signup')
+  const [mode, setMode] = useState<'signup' | 'login'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
   const [notice, setNotice] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
   const [checked, setChecked] = useState(hasAcceptedTerms)
 
   const providers = appConfig.auth_providers as Provider[]
+  // Block sign-up on weak passwords; login accepts whatever the account has.
+  const signupBlocked = mode === 'signup' && !isStrongPassword(password)
 
   const handleOAuth = (provider: Provider) => {
     void supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin + window.location.pathname },
+      options: { redirectTo: redirectBase() },
     })
+  }
+
+  // Forgot password: emails a recovery link that lands on /reset-password.
+  const handleForgot = async () => {
+    if (!email) {
+      setError(true)
+      return
+    }
+    setBusy(true)
+    setError(false)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${redirectBase()}/reset-password`,
+    })
+    setBusy(false)
+    if (error) {
+      setError(true)
+      notify('error', t('auth.error'))
+    } else {
+      setResetSent(true)
+      notify('info', t('auth.resetSentTitle'))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,14 +126,34 @@ export function AuthPanel() {
     setBusy(true)
     setError(false)
     setNotice(false)
-    const { data, error } =
-      mode === 'login'
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password })
-    if (error) setError(true)
-    // Email-confirmation projects return no session on signUp: tell the
-    // user to check their inbox instead of silently doing nothing.
-    else if (mode === 'signup' && !data.session) setNotice(true)
+
+    if (mode === 'login') {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setError(true)
+        notify('error', t('auth.error'))
+      }
+      setBusy(false)
+      return
+    }
+
+    // Sign up. Emails are unique — if the account already exists, don't create
+    // a duplicate: fall back to logging the user in with the same credentials.
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error) {
+      const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password })
+      if (loginErr) {
+        setError(true)
+        notify('error', t('auth.error'))
+      }
+    } else {
+      fireConfetti()
+      if (!data.session) {
+        // Email-confirmation projects return no session on signUp: tell the user
+        // to check their inbox instead of silently doing nothing.
+        setNotice(true)
+      }
+    }
     setBusy(false)
   }
 
@@ -140,21 +197,65 @@ export function AuthPanel() {
         </label>
         <label className="field">
           {t('auth.password')}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          />
+          <span className="field-password">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === 'login' ? undefined : PASSWORD_MIN}
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+            />
+            <button
+              type="button"
+              className="field-password__toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </span>
         </label>
+        {mode === 'signup' && password.length > 0 && <PasswordChecklist password={password} />}
+        {mode === 'login' && (
+          <button
+            type="button"
+            className="auth-panel__forgot"
+            onClick={() => void handleForgot()}
+            disabled={busy}
+          >
+            {t('auth.forgot')}
+          </button>
+        )}
         {error && <p className="form-error">{t('auth.error')}</p>}
         {notice && <p className="form-message">{t('auth.checkEmail')}</p>}
-        <button type="submit" className="btn btn--primary" disabled={busy || !checked}>
+        <button
+          type="submit"
+          className="btn btn--primary"
+          disabled={busy || !checked || signupBlocked}
+        >
           {mode === 'login' ? t('auth.login') : t('auth.signup')}
         </button>
       </form>
+      {resetSent && (
+        <SuccessModal
+          title={t('auth.resetSentTitle')}
+          message={t('auth.resetSentText')}
+          onClose={() => setResetSent(false)}
+        />
+      )}
 
       <button
         type="button"
@@ -182,6 +283,31 @@ export function AuthPanel() {
         </span>
       </label>
 
+      {/*
+        Email marketing consent is currently BUNDLED into the terms checkbox
+        above (see the trailing clause in the `landing.acceptTerms` i18n key)
+        — every account gets synced to the Brevo list on profile completion,
+        no separate opt-in. To switch to a separate, optional, revocable
+        opt-in instead (recommended if this ever needs to comply with
+        GDPR/CAN-SPAM-style marketing-consent rules):
+          1. Add `const [marketingOptIn, setMarketingOptIn] = useState(false)`
+             above.
+          2. Uncomment the checkbox below and remove the trailing clause from
+             `landing.acceptTerms` (both es.json and en.json).
+          3. Thread `marketingOptIn` through to wherever the profile gets
+             created (Register.tsx) and store it (e.g. a new
+             `profiles.marketing_opt_in` column) so the Brevo sync only fires
+             for opted-in users instead of unconditionally on every insert.
+
+        <label className="terms-check" style={{ margin: '0.5rem 0 0' }}>
+          <input
+            type="checkbox"
+            checked={marketingOptIn}
+            onChange={(e) => setMarketingOptIn(e.target.checked)}
+          />
+          <span>{t('auth.marketingOptIn')}</span>
+        </label>
+      */}
     </div>
   )
 }

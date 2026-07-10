@@ -53,10 +53,22 @@ coverage/
 # PWA generated
 dev-dist/
 
-# Project notes (kept local)
+# Project temp files (kept local)
+scripts/backup/
+scripts/temp/
+scripts/models/
+scripts/data.json
+scripts/extracted_data.json
+
+# Raw dumps from WhatsApp
+whatsapp_dump*.json
+_chat.txt
+*WhatsApp*Chat*
+
 plan/
 
 # ai stuff
 .claude/
 .continue/
 .agents/
+

@@ -13,11 +13,11 @@ export function PageHeader({ section }: { section: string }) {
   return (
     <header className="app-page__header">
       <h1 className="page-title">
+        <span className="page-title__section">{section}</span>
+        <span className="page-title__sep">&nbsp;&nbsp;::&nbsp;&nbsp;</span>
         <Link to="/app" className="page-title__brand">
           {t('app.name')}
         </Link>
-        <span className="page-title__sep">&nbsp;&nbsp;::&nbsp;&nbsp;</span>
-        <span className="page-title__section">{section}</span>
       </h1>
       <div className="app-page__controls">
         <LanguageSwitcher />

@@ -9,6 +9,7 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 - [Prerequisites](#prerequisites)
 - [A. Supabase (backend)](#a-supabase-backend)
 - [B. Vercel (deploy)](#b-vercel-deploy)
+- [C. Brevo email sync (optional)](#c-brevo-email-sync-optional)
 
 ---
 
@@ -52,6 +53,19 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 | `0009_profile_fields.sql` | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC |
 | `0010_more_genders.sql` | Expanded gender options in database check constraints |
 | `0011_test_profiles.sql` | Adds `is_fake` column and test mode support to `preview_profiles()` RPC |
+| `0012_moderation_quorum.sql` | Quorum-gated approve/deny (`moderate_profile` RPC), deny `reason`, `profiles.denied_at`, `approve_quorum`/`deny_quorum` settings |
+| `0013_seed_migration.sql` | `profiles.migrated` + `claim_migrated_profile()` RPC (phone-based claim of seed rows) |
+| `0014_ownership_claims.sql` | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed) |
+| `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
+| `0016_timestamps.sql` | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings` |
+| `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number |
+| `0018_admin_stats.sql` | `admin_stats()` RPC — global counters (fake profiles, migrated total/unclaimed, accounts with no profile), always DB-wide regardless of dev flags |
+| `0019_my_denied_count.sql` | `my_denied_count()` RPC — mirrors `my_approved_count()` for the moderator's "Denied by me" stat |
+| `0020_admin_management.sql` | RLS: admins can read the full `admins` list and insert/delete rows — promoting/demoting other admins from the panel (previously SQL-editor only) |
+
+Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
+with real people and run it **with the service role** (it inserts ownerless,
+`migrated = true` rows that their owners later claim by phone).
 
 ### 3. Verify the schema
 
@@ -75,6 +89,17 @@ The first admin must be created by hand (Supabase Auth user + row in `admins`). 
 
 **Roles:** `admins` = full power (global stats, manage moderators; can switch to the moderator view). `moderators` = approve/skip pending profiles + their own stats (approved-by-me / pending / banned) + share the app. Admin **is** a moderator; a moderator is **not** an admin.
 
+### Create a normal end user (optional)
+
+A "normal user" is nothing special: just an `auth.users` account with **no row** in `admins` or `moderators`. Role is decided purely by table membership — no row = regular user, row in `moderators` = moderator, row in `admins` = admin. All three share the same Supabase Auth.
+
+Two ways to get one:
+
+- **The real path (self sign-up):** open `/app` (or `/register`) and sign up with OAuth/email. The account is a plain user immediately; they then create their one profile through the wizard. This is how actual users join — nothing manual on your side.
+- **By hand (for testing):** **Authentication → Users → Add user** (email + password, enable auto-confirm). Do **not** insert into `admins`/`moderators`. Log in through the app — the account can create one profile, swipe, and report, but the admin path shows "not authorized".
+
+> To later promote this user to moderator, use the panel: **Admin → Moderators** search, or `insert into public.moderators (id, email) values (...)`.
+
 ### 5. Enable auth providers (end users)
 
 End users sign up with OAuth and/or email — buttons shown come from `auth_providers` in `src/config/app-config.json`.
@@ -84,7 +109,7 @@ End users sign up with OAuth and/or email — buttons shown come from `auth_prov
   - **Google** — needs an OAuth client in Google Cloud Console.
   - **Facebook** — needs an app in Meta for Developers.
   - **Apple** — needs a (paid) Apple Developer account. Skip it by removing `"apple"` from `auth_providers`.
-- **Authentication → URL Configuration**: add `http://localhost:5173` and your production domain to **Redirect URLs** (OAuth returns the user to the page they started on).
+- **Authentication → URL Configuration**: add `http://localhost:5173` and your production domain to **Redirect URLs** (OAuth returns the user to the page they started on). The password-reset email links to `<origin>/reset-password`, so make sure that path is covered (a domain-level entry or a `/**` wildcard is enough).
 
 > Deploying before OAuth credentials are ready? Set `"auth_providers": []` — email login still works.
 
@@ -198,6 +223,69 @@ Or add it now in the repo before pushing — Vercel will pick it up automaticall
 
 - Go to **Project → Settings → Domains** in Vercel dashboard
 - Add your domain and follow DNS instructions
+
+---
+
+## C. Brevo email sync (optional)
+
+Every user who completes their profile has already accepted the mandatory
+terms checkbox at account creation, which bundles in consent to receive email
+updates (see `landing.acceptTerms` — the checkbox text says so explicitly).
+`supabase/functions/sync-brevo-contact/` upserts that user as a Brevo contact
+whenever their profile is created or updated. The sync runs **server-side
+only** (Database Webhook → Edge Function → Brevo) — the Brevo API key is
+never exposed to the browser.
+
+### 1. Get your Brevo API key and list ID
+
+- Brevo dashboard → **Settings → SMTP & API → API Keys** → copy your key.
+- **Contacts → Lists** → open the target list → note its numeric ID (visible
+  in the URL, or via the Brevo API).
+
+### 2. Configure Secrets and Deploy the Edge Function
+
+**Option A: Via Supabase Dashboard (Recommended)**
+1. Go to your Supabase project dashboard.
+2. Navigate to **Edge Functions** (left sidebar) → **Secrets**.
+3. Click **Add new secret** and add two secrets:
+   - `BREVO_API_KEY`: `<your-brevo-api-key>`
+   - `BREVO_LIST_ID`: `<your-list-id>`
+4. Deploy the function using the [Supabase CLI](https://supabase.com/docs/guides/cli) (make sure you are logged in and linked with `supabase link`):
+   ```bash
+   supabase functions deploy sync-brevo-contact
+   ```
+
+**Option B: Via Supabase CLI**
+Requires the Supabase CLI logged in and linked to this project.
+```bash
+supabase secrets set BREVO_API_KEY=<your-brevo-api-key>
+supabase secrets set BREVO_LIST_ID=<your-list-id>
+supabase functions deploy sync-brevo-contact
+```
+
+### 3. Wire the Database Webhook
+
+- Supabase Dashboard → **Database → Webhooks** → **Create a new webhook**
+- Table: `profiles` — Events: **Insert** and **Update**
+- Type: **Supabase Edge Functions** — select `sync-brevo-contact`
+- Save.
+
+### 4. Test
+
+- Complete a profile in the app (or update an existing one).
+- Check **Brevo → Contacts** — the email should appear on the list within a
+  few seconds, with `NAME`, `WHATSAPP`, and `REGION` attributes set.
+- If it doesn't show up, check **Supabase Dashboard → Edge Functions →
+  sync-brevo-contact → Logs** for the error (commonly a wrong list ID, or the
+  webhook firing before the profile row is fully committed — rare).
+
+> Seed/migrated profiles (`owner_id IS NULL`) are skipped until claimed — no
+> email exists to sync yet. Once claimed, the same row triggers an UPDATE and
+> gets synced normally.
+>
+> Not implemented: removing a contact from Brevo when a profile is deleted or
+> denied. Add a webhook on `DELETE` calling Brevo's contact-delete endpoint if
+> that's needed later.
 
 ---
 

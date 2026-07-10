@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNav } from '../context/nav'
@@ -22,6 +22,15 @@ export function NavBar() {
   // Logged-out visitors still see "Account" — tapping it opens the login/
   // register modal instead of blocking.
   const [authOpen, setAuthOpen] = useState(false)
+
+  // This modal always opens as mode="auth" (only reachable while signed out).
+  // Its `mode` prop never updates on its own, so a successful login inside it
+  // must close it explicitly — otherwise it keeps showing "Join Link x Link"
+  // even after `session` flips true. Any profile-completion gate is handled
+  // downstream by the page itself (e.g. AppPage), not here.
+  useEffect(() => {
+    if (session) setAuthOpen(false)
+  }, [session])
 
   if (loading) return null
 

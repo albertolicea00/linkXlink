@@ -17,6 +17,8 @@ import { optimizeImage } from '../lib/imageOptimize'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
+import { fireConfetti } from '../components/Confetti'
+import { notify } from '../components/Toast'
 import appConfig from '../config/app-config.json'
 import type { Gender, InterestedIn, Profile } from '../types'
 
@@ -54,11 +56,15 @@ export function Register({ lang }: Props) {
   const [gender, setGender] = useState<Gender | ''>('')
   const [interestedIn, setInterestedIn] = useState<InterestedIn | ''>('')
   const [interests, setInterests] = useState<string[]>([])
+  const [region, setRegion] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({})
   const [message, setMessage] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const [busy, setBusy] = useState(false)
+  // When the number is already owned by someone else, offer an ownership claim.
+  const [duplicateWhatsapp, setDuplicateWhatsapp] = useState<string | null>(null)
+  const [ownershipFiled, setOwnershipFiled] = useState(false)
 
   const active = i18n.resolvedLanguage
 
@@ -75,9 +81,9 @@ export function Register({ lang }: Props) {
       return
     }
     let cancelled = false
-    void fetchOwnProfile().then((p) => {
+    void fetchOwnProfile(session.user.id).then(({ profile }) => {
       if (!cancelled) {
-        setOwnProfile(p)
+        setOwnProfile(profile)
         setOwnChecked(true)
       }
     })
@@ -147,6 +153,7 @@ export function Register({ lang }: Props) {
     if (hasErrors) return
     setBusy(true)
     setMessage(null)
+    setDuplicateWhatsapp(null)
     try {
       const photoUrls: string[] = []
       for (const file of files) {
@@ -175,17 +182,60 @@ export function Register({ lang }: Props) {
         gender: gender || null,
         interested_in: interestedIn || null,
         interests,
+        region: region.trim() || null,
       })
-      if (error) throw error
+
+      if (error) {
+        // Number already registered. If it belongs to a claimable seed row
+        // (migrated, ownerless), take it over instead of erroring.
+        if (error.code === '23505') {
+          const { data: claim } = await supabase.rpc('claim_migrated_profile', {
+            p_whatsapp: whatsapp,
+            p_name: name.trim(),
+            p_description: description.trim(),
+            p_photos: photoUrls,
+            p_birthdate: birthdate,
+            p_gender: gender || null,
+            p_interested_in: interestedIn || null,
+            p_interests: interests,
+            p_region: region.trim() || null,
+          })
+          if (claim?.claimed) {
+            if (!alreadyAccepted) acceptTerms()
+            setDone(true)
+            fireConfetti()
+            notify('success', t('register.success'))
+            return
+          }
+          // Owned by someone else — offer the "it's mine" ownership claim.
+          setDuplicateWhatsapp(whatsapp)
+          setMessage(t('register.duplicate'))
+          return
+        }
+        throw error
+      }
 
       if (!alreadyAccepted) acceptTerms()
       setDone(true)
-    } catch (err) {
-      const code = (err as { code?: string }).code
-      setMessage(code === '23505' ? t('register.duplicate') : t('register.error'))
+      fireConfetti()
+      notify('success', t('register.success'))
+    } catch {
+      setMessage(t('register.error'))
+      notify('error', t('register.error'))
     } finally {
       setBusy(false)
     }
+  }
+
+  const handleOwnershipClaim = async () => {
+    if (!duplicateWhatsapp) return
+    setBusy(true)
+    const { data } = await supabase.rpc('claim_ownership', {
+      p_whatsapp: duplicateWhatsapp,
+      p_note: null,
+    })
+    setBusy(false)
+    if ((data as { filed?: boolean } | null)?.filed) setOwnershipFiled(true)
   }
 
   const steps: { n: Step; label: string }[] = [
@@ -353,6 +403,8 @@ export function Register({ lang }: Props) {
                     }}
                     onInterestedIn={setInterestedIn}
                     onInterests={setInterests}
+                    region={region}
+                    onRegion={setRegion}
                   />
                   {fieldError('gender') && (
                     <span className="field-error">{fieldError('gender')}</span>
@@ -411,6 +463,22 @@ export function Register({ lang }: Props) {
                     </span>
                   </label>
                   {message && <p className="form-error">{message}</p>}
+                  {duplicateWhatsapp && !ownershipFiled && (
+                    <div className="register__ownership">
+                      <p className="field-help">{t('register.ownershipPrompt')}</p>
+                      <button
+                        type="button"
+                        className="btn"
+                        disabled={busy}
+                        onClick={() => void handleOwnershipClaim()}
+                      >
+                        {t('register.ownershipClaim')}
+                      </button>
+                    </div>
+                  )}
+                  {ownershipFiled && (
+                    <p className="form-message">{t('register.ownershipFiled')}</p>
+                  )}
                   <button
                     type="submit"
                     className="btn btn--primary"

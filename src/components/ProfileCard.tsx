@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Profile } from '../types'
-import { whatsappUrl } from '../lib/whatsapp'
+import { whatsappUrl, isStandalone } from '../lib/whatsapp'
 import { ageFromBirthdate } from '../lib/age'
 import appConfig from '../config/app-config.json'
 import { PhotoCarousel } from './PhotoCarousel'
@@ -25,6 +25,9 @@ export function ProfileCard({
   const { t } = useTranslation()
   const age = ageFromBirthdate(profile.birthdate)
   const interests = profile.interests ?? []
+  const waMessage = appConfig.whatsapp_prefill_enabled
+    ? t('feed.whatsappMessage', { name: profile.name })
+    : undefined
 
   return (
     <article className="profile-card">
@@ -36,6 +39,11 @@ export function ProfileCard({
             <span className="profile-card__age">, {age}</span>
           )}
         </h2>
+        {profile.region && (
+          <p className="profile-card__region">
+            <span aria-hidden>📍</span> {profile.region}
+          </p>
+        )}
         <p className="profile-card__description">{profile.description}</p>
         {interests.length > 0 && (
           <ul className="profile-card__interests">
@@ -54,8 +62,11 @@ export function ProfileCard({
           <>
             <a
               className={`btn btn--whatsapp${whatsappDisabled ? ' btn--disabled' : ''}`}
-              href={whatsappDisabled ? undefined : whatsappUrl(profile.whatsapp)}
-              target="_blank"
+              href={whatsappDisabled ? undefined : whatsappUrl(profile.whatsapp, waMessage)}
+              // Installed PWA: same tab, so the OS hands off to WhatsApp with no
+              // visible tab-spawn. Regular browser tab: keep target="_blank" so
+              // leaving for wa.me never loses the visitor's place in the deck.
+              target={isStandalone() ? undefined : '_blank'}
               rel="noopener noreferrer"
               onClick={(e) => {
                 if (whatsappDisabled) {

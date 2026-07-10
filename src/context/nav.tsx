@@ -38,10 +38,10 @@ export function NavStateProvider({ children }: { children: ReactNode }) {
     }
     let cancelled = false
     setResolved(false)
-    void Promise.all([fetchStaffRole(), fetchOwnProfile()]).then(([r, p]) => {
+    void Promise.all([fetchStaffRole(), fetchOwnProfile(session.user.id)]).then(([r, p]) => {
       if (cancelled) return
       setRole(r)
-      setHasProfile(!!p)
+      setHasProfile(!!p.profile)
       setResolved(true)
     })
     return () => {

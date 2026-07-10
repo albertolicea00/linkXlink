@@ -1,0 +1,7 @@
+transformers 
+torch 
+pillow
+deepface 
+opencv-python 
+pillow
+phonenumbers

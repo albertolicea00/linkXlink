@@ -138,3 +138,12 @@ SPA, no SSR — metadata is set client-side; Googlebot executes JS and picks it 
 - Supabase project not yet provisioned — migrations written in `supabase/migrations/`, need MCP or dashboard to apply
 - Domain: SEO files use `https://linkxlink.vercel.app` (index.html, robots.txt, sitemap.xml, app-config.json) — update all four if the domain changes
 - Rate-limiting report spam: basic client throttle only; server-side needs Edge Function (future)
+- Dev flags (`lib/devFlags.ts`) are client-side localStorage, not a security boundary — a savvy user could view fake seed data. Acceptable for test data; if fakes ever hold sensitive info, gate `is_fake` server-side.
+- Deny quorum vs report auto-disable are two independent disable paths (`denied_at` vs `report_count >= threshold`) — keep them distinct when reasoning about "why is this profile off".
+
+## 9. Moderation quorum, seed claiming & dev flags
+
+- **Quorum** (migration 0012, `moderate_profile` RPC): approve/deny apply on one admin vote OR N distinct moderator votes (`app.settings.approve_quorum` / `deny_quorum`, mirrored in config). Votes are idempotent (unique partial index on `moderation_actions`). Deny stores a text reason from the config pick-list. The moderator deck treats every swipe as skip; approve/deny are buttons that pass `SwipeMeta` through `SwipeDeck`.
+- **Seed + claim** (migration 0013): launch feed seeded via `supabase/seed.sql` with `migrated = true`, ownerless, active rows. Registering with a matching number claims the row (`claim_migrated_profile`) instead of hitting the duplicate-number error. `seed_profiles_visible_before_claim` controls feed visibility of unclaimed seed rows.
+- **Ownership claims** (migration 0014): a duplicate number owned by a non-seed profile lets the registrant file `ownership_claims` via `claim_ownership` ("Es mío"). Recorded only; moderators reassign manually if warranted.
+- **Dev flags** replaced the old global `test_mode`: `showFakes`, `bypassRelease`, `onlyMigratedUnclaimed`, per-device in localStorage, toggled from an admin-only panel in `/account`.

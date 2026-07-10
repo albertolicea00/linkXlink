@@ -9,9 +9,16 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { updateOwnProfile } from '../lib/account'
+import { optimizeImage } from '../lib/imageOptimize'
+import { isStrongPassword } from '../lib/password'
+import { PasswordChecklist } from '../components/PasswordChecklist'
+import { SuccessModal } from '../components/SuccessModal'
+import { notify } from '../components/Toast'
 import { ageFromBirthdate } from '../lib/age'
 import { supabase } from '../lib/supabase'
 import type { Gender, InterestedIn, Profile } from '../types'
+
+const PHOTOS_BUCKET = 'profile-photos'
 
 type Visibility = 'visible' | 'until' | 'hidden'
 
@@ -53,6 +60,13 @@ export function Account() {
   const [visibility, setVisibility] = useState<Visibility>('visible')
   const [hiddenUntil, setHiddenUntil] = useState('')
   const [duration, setDuration] = useState('')
+  const [region, setRegion] = useState('')
+  const [photoStatus, setPhotoStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [showPwForm, setShowPwForm] = useState(false)
+  const [newPw, setNewPw] = useState('')
+  const [pwBusy, setPwBusy] = useState(false)
+  const [pwError, setPwError] = useState(false)
+  const [pwDone, setPwDone] = useState(false)
   const [editing, setEditing] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [viewPhoto, setViewPhoto] = useState<string | null>(null)
@@ -66,6 +80,7 @@ export function Account() {
     setGender((p.gender as Gender) ?? '')
     setInterestedIn((p.interested_in as InterestedIn) ?? '')
     setInterests(p.interests ?? [])
+    setRegion(p.region ?? '')
     if (p.self_hidden) setVisibility('hidden')
     else if (p.hidden_until && new Date(p.hidden_until) > new Date()) {
       setVisibility('until')
@@ -83,11 +98,11 @@ export function Account() {
       return
     }
     let cancelled = false
-    void fetchOwnProfile().then((p) => {
+    void fetchOwnProfile(session.user.id).then(({ profile }) => {
       if (cancelled) return
-      setProfile(p)
+      setProfile(profile)
       setLoaded(true)
-      if (p) hydrate(p)
+      if (profile) hydrate(profile)
     })
     return () => {
       cancelled = true
@@ -97,12 +112,14 @@ export function Account() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('saving')
+
     const patch = {
       name: name.trim(),
       description: description.trim(),
       gender: (gender || undefined) as Gender | undefined,
       interested_in: (interestedIn || undefined) as InterestedIn | undefined,
       interests,
+      region: region.trim() || undefined,
       self_hidden: visibility === 'hidden',
       hidden_until:
         visibility === 'until' && hiddenUntil ? new Date(hiddenUntil).toISOString() : null,
@@ -111,6 +128,7 @@ export function Account() {
     const { error } = await updateOwnProfile(patch)
     if (error) {
       setStatus('error')
+      notify('error', t('account.saveError'))
       return
     }
     // Reflect saved values locally so the read view is up to date, then exit.
@@ -123,6 +141,7 @@ export function Account() {
             gender: patch.gender ?? null,
             interested_in: patch.interested_in ?? null,
             interests,
+            region: patch.region ?? prev.region,
             self_hidden: patch.self_hidden,
             hidden_until: patch.hidden_until,
           }
@@ -130,6 +149,46 @@ export function Account() {
     )
     setStatus('saved')
     setEditing(false)
+    notify('success', t('account.saved'))
+  }
+
+  // Photo replace lives in the photos box (not the edit form): pick a file →
+  // optimize + upload + save immediately. Direct swap, no re-moderation for now.
+  const handlePhotoReplace = async (file: File) => {
+    setPhotoStatus('saving')
+    try {
+      const optimized = await optimizeImage(file)
+      const path = `${crypto.randomUUID()}-${optimized.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+      const { error: upErr } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, optimized)
+      if (upErr) throw upErr
+      const url = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path).data.publicUrl
+      const { error } = await updateOwnProfile({ photos: [url] })
+      if (error) throw error
+      setProfile((prev) => (prev ? { ...prev, photos: [url] } : prev))
+      setPhotoStatus('saved')
+      notify('success', t('account.saved'))
+    } catch {
+      setPhotoStatus('error')
+      notify('error', t('account.saveError'))
+    }
+  }
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!isStrongPassword(newPw)) return
+    setPwBusy(true)
+    setPwError(false)
+    const { error } = await supabase.auth.updateUser({ password: newPw })
+    setPwBusy(false)
+    if (error) {
+      setPwError(true)
+      notify('error', t('account.pwError'))
+      return
+    }
+    setNewPw('')
+    setShowPwForm(false)
+    setPwDone(true)
+    notify('success', t('account.pwDoneTitle'))
   }
 
   const age = ageFromBirthdate(profile?.birthdate)
@@ -197,6 +256,12 @@ export function Account() {
                     </span>
                   </div>
                   <div className="account-view__row">
+                    <span className="account-view__label">{t('profileFields.region')}</span>
+                    <span className="account-view__value">
+                      {profile.region || t('account.notSet')}
+                    </span>
+                  </div>
+                  <div className="account-view__row">
                     <span className="account-view__label">{t('account.interestsLabel')}</span>
                     <span className="account-view__value">
                       {profile.interests && profile.interests.length > 0
@@ -243,10 +308,13 @@ export function Account() {
                   gender={gender}
                   interestedIn={interestedIn}
                   interests={interests}
+                  region={region}
                   onGender={setGender}
                   onInterestedIn={setInterestedIn}
                   onInterests={setInterests}
+                  onRegion={setRegion}
                 />
+
 
                 <fieldset className="visibility">
                   <legend>{t('account.visibilityTitle')}</legend>
@@ -347,11 +415,69 @@ export function Account() {
             ) : (
               <p className="account-photos__empty">{t('account.notSet')}</p>
             )}
+            <label className="btn account-photos__replace">
+              {photoStatus === 'saving' ? t('register.submitting') : t('account.replacePhoto')}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                disabled={photoStatus === 'saving'}
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void handlePhotoReplace(file)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            {photoStatus === 'saved' && <p className="form-message">{t('account.saved')}</p>}
+            {photoStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
           </div>
         </div>
         )}
 
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        {showPwForm && (
+          <form className="register__form account-password__form" onSubmit={handleChangePassword}>
+            <label className="field">
+              {t('account.newPassword')}
+              <input
+                type="password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
+            </label>
+            {newPw.length > 0 && <PasswordChecklist password={newPw} />}
+            {pwError && <p className="form-error">{t('account.pwError')}</p>}
+            <div className="modal__actions">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setShowPwForm(false)
+                  setNewPw('')
+                  setPwError(false)
+                }}
+              >
+                {t('account.cancel')}
+              </button>
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={pwBusy || !isStrongPassword(newPw)}
+              >
+                {pwBusy ? t('register.submitting') : t('account.savePassword')}
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="account-actions">
+          {!showPwForm && (
+            <button type="button" className="btn" onClick={() => setShowPwForm(true)}>
+              {t('account.changePassword')}
+            </button>
+          )}
           <button
             type="button"
             className="btn btn--secondary auth-panel__toggle"
@@ -360,12 +486,27 @@ export function Account() {
             {t('admin.logout')}
           </button>
         </div>
+
+        <section className="landing__support" style={{ marginTop: '3rem', marginBottom: '1rem' }}>
+          <h2>{t('landing.supportTitle')}</h2>
+          <p>{t('landing.supportText')}</p>
+          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
+            ☕ {t('landing.footerCoffee')}
+          </a>
+        </section>
       </main>
 
       {viewPhoto && (
         <div className="photo-viewer" onClick={() => setViewPhoto(null)}>
           <img src={viewPhoto} alt="Full screen" />
         </div>
+      )}
+      {pwDone && (
+        <SuccessModal
+          title={t('account.pwDoneTitle')}
+          message={t('account.pwDoneText')}
+          onClose={() => setPwDone(false)}
+        />
       )}
     </div>
   )

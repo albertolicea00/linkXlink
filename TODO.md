@@ -215,6 +215,18 @@ Tracking checklist derived from `plan/plan.md`. Check items off as they land.
 - [x] Moderator stats: approved-by-me + pending, centered; banned card removed (moderator view)
 - [ ] Dedicated in-app bug/feature form (today it's just the Telegram link)
 
+## 20. Moderation quorum, seed claiming & dev flags
+
+- [x] Quorum-gated approve/deny (`moderate_profile` RPC): 1 admin OR N moderators (`approve_quorum` / `deny_quorum`)
+- [x] Deny requires a reason — config pick-list (`moderation_deny_reasons`), stored as text; `denied_at` on profiles
+- [x] Moderator deck: any swipe = skip; approve/deny are explicit buttons (`SwipeMeta` through `SwipeDeck`)
+- [x] `RULES.md` — community & moderation policy
+- [x] Seed migration: `profiles.migrated` + `claim_migrated_profile()` + `supabase/seed.sql` template
+- [x] Phone claim on register: migrated number → claim; owned number → "Es mío" ownership claim (`ownership_claims`)
+- [x] Replace `test_mode` with admin-only dev flags in `/account` (`lib/devFlags.ts`)
+- [ ] Moderator UI to review `ownership_claims` (currently DB-only; no panel view yet)
+- [ ] Optional: revoke a vote / show who voted in the deck
+
 ## Future (out of MVP scope)
 
 - [ ] Referral validation: per-profile referral code in the shared link (`?ref=<code>`), track who joined through whose link, count only verified joins toward the share gate (replaces the localStorage tap counter)

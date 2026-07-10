@@ -49,3 +49,37 @@ export async function logModeration(profileId: string, action: ModerationAction)
     .from('moderation_actions')
     .insert({ profile_id: profileId, moderator_id: data.user.id, action })
 }
+
+export interface ModerationResult {
+  /** true when the vote reached quorum (or the caller is an admin) and the
+   *  profile state actually changed. */
+  applied: boolean
+  votes: number
+  quorum: number
+  /** true when a denied UNCLAIMED migrated (seed) profile was deleted outright
+   *  instead of soft-denied — it has no real registrant, so the row is gone,
+   *  not just deactivated (migration 0017). */
+  deleted: boolean
+}
+
+/**
+ * Quorum-aware moderation (migration 0012). Records the caller's vote and, once
+ * an admin votes or `quorum` distinct moderators agree, flips the profile:
+ *   approve → active; deny → disabled (denied_at set), UNLESS the profile is an
+ *   unclaimed migrated seed row, which is deleted instead (see `deleted`).
+ *   skip only logs. `reason` is required (free text) for deny. Returns null on
+ * RPC error.
+ */
+export async function moderateProfile(
+  profileId: string,
+  action: 'approve' | 'deny' | 'skip',
+  reason?: string,
+): Promise<ModerationResult | null> {
+  const { data, error } = await supabase.rpc('moderate_profile', {
+    p_profile_id: profileId,
+    p_action: action,
+    p_reason: reason ?? null,
+  })
+  if (error) return null
+  return data as ModerationResult
+}
