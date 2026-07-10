@@ -20,7 +20,7 @@ Usage:
 ------
 $ export SUPABASE_URL="https://your-project.supabase.co"
 $ export SUPABASE_SERVICE_KEY="your-service-role-key"
-$ python3 scripts/5_migrate_to_supabase.py --input scripts/data.json --images-dir script/temp/images
+$ python3 scripts/5_migrate_to_supabase.py --input scripts/data.json --images-dir scripts/temp/images
 """
 import os
 import json
@@ -32,7 +32,7 @@ from supabase import create_client, Client
 def main():
     parser = argparse.ArgumentParser(description="Migrate profiles and images to Supabase")
     parser.add_argument('--input', default='scripts/data.json', help="Path to data.json")
-    parser.add_argument('--images-dir', default='script/temp/images', help="Path to the optimized images directory")
+    parser.add_argument('--images-dir', default='scripts/temp/images', help="Path to the optimized images directory")
     parser.add_argument('--bucket', default='profiles', help="Supabase storage bucket name for photos")
     parser.add_argument('--dry-run', action='store_true', help="Simulate migration without making any changes")
     args = parser.parse_args()
