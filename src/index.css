@@ -1488,8 +1488,8 @@ a.landing__brand {
 }
 
 .register__card {
-  max-width: 420px;
-  margin: 0 auto;
+  /* max-width: 420px; */
+  /* margin: 0 auto; */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 16px;
@@ -2283,6 +2283,11 @@ a.landing__brand {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.account-layout > .register__card {
+  max-width: none;
+  margin: 0;
 }
 
 .account-photos {

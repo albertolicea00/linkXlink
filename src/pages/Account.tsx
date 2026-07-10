@@ -435,6 +435,14 @@ export function Account() {
         </div>
         )}
 
+        <section className="landing__support" style={{ marginTop: '3rem', marginBottom: '1rem' }}>
+          <h2>{t('landing.supportTitle')}</h2>
+          <p>{t('landing.supportText')}</p>
+          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
+            ☕ {t('landing.footerCoffee')}
+          </a>
+        </section>
+
         {showPwForm && (
           <form className="register__form account-password__form" onSubmit={handleChangePassword}>
             <label className="field">
@@ -486,14 +494,6 @@ export function Account() {
             {t('admin.logout')}
           </button>
         </div>
-
-        <section className="landing__support" style={{ marginTop: '3rem', marginBottom: '1rem' }}>
-          <h2>{t('landing.supportTitle')}</h2>
-          <p>{t('landing.supportText')}</p>
-          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
-            ☕ {t('landing.footerCoffee')}
-          </a>
-        </section>
       </main>
 
       {viewPhoto && (
