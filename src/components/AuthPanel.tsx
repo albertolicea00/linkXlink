@@ -7,6 +7,7 @@ import { isStrongPassword, PASSWORD_MIN } from '../lib/password'
 import { fireConfetti } from './Confetti'
 import { PasswordChecklist } from './PasswordChecklist'
 import { SuccessModal } from './SuccessModal'
+import { notify } from './Toast'
 import appConfig from '../config/app-config.json'
 
 /** OAuth returns to the current origin locally, to the configured site in prod. */
@@ -109,8 +110,13 @@ export function AuthPanel() {
       redirectTo: `${redirectBase()}/reset-password`,
     })
     setBusy(false)
-    if (error) setError(true)
-    else setResetSent(true)
+    if (error) {
+      setError(true)
+      notify('error', t('auth.error'))
+    } else {
+      setResetSent(true)
+      notify('info', t('auth.resetSentTitle'))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,7 +129,10 @@ export function AuthPanel() {
 
     if (mode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) setError(true)
+      if (error) {
+        setError(true)
+        notify('error', t('auth.error'))
+      }
       setBusy(false)
       return
     }
@@ -133,7 +142,10 @@ export function AuthPanel() {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {
       const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password })
-      if (loginErr) setError(true)
+      if (loginErr) {
+        setError(true)
+        notify('error', t('auth.error'))
+      }
     } else {
       fireConfetti()
       if (!data.session) {

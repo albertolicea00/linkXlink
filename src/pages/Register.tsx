@@ -18,6 +18,7 @@ import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/registerShares'
 import { fireConfetti } from '../components/Confetti'
+import { notify } from '../components/Toast'
 import appConfig from '../config/app-config.json'
 import type { Gender, InterestedIn, Profile } from '../types'
 
@@ -203,6 +204,7 @@ export function Register({ lang }: Props) {
             if (!alreadyAccepted) acceptTerms()
             setDone(true)
             fireConfetti()
+            notify('success', t('register.success'))
             return
           }
           // Owned by someone else — offer the "it's mine" ownership claim.
@@ -216,8 +218,10 @@ export function Register({ lang }: Props) {
       if (!alreadyAccepted) acceptTerms()
       setDone(true)
       fireConfetti()
+      notify('success', t('register.success'))
     } catch {
       setMessage(t('register.error'))
+      notify('error', t('register.error'))
     } finally {
       setBusy(false)
     }

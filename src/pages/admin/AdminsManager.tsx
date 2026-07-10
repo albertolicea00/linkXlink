@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader } from '../../components/Loader'
 import { ConfirmModal } from '../../components/ConfirmModal'
+import { notify } from '../../components/Toast'
 import { useNav } from '../../context/nav'
 import {
   listModerators,
@@ -105,14 +106,24 @@ export function AdminsManager() {
         break
     }
     setBusy(false)
+    const kind = confirmAction.kind
     setConfirmAction(null)
-    if (!error) {
-      if (confirmAction.kind === 'promote-mod' || confirmAction.kind === 'promote-admin') {
-        setTerm('')
-        setResults([])
-      }
-      loadStaff()
+    if (error) {
+      notify('error', t('admin.staffActionError'))
+      return
     }
+    if (kind === 'promote-mod' || kind === 'promote-admin') {
+      setTerm('')
+      setResults([])
+    }
+    const successKey = {
+      'promote-mod': 'admin.promotedModMsg',
+      'promote-admin': 'admin.promotedAdminMsg',
+      'remove-mod': 'admin.removedModMsg',
+      'remove-admin': 'admin.removedAdminMsg',
+    }[kind]
+    notify('success', t(successKey))
+    loadStaff()
   }
 
   const confirmCopy = (): { title: string; message: string; danger: boolean } | null => {

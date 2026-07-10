@@ -13,6 +13,7 @@ import { optimizeImage } from '../lib/imageOptimize'
 import { isStrongPassword } from '../lib/password'
 import { PasswordChecklist } from '../components/PasswordChecklist'
 import { SuccessModal } from '../components/SuccessModal'
+import { notify } from '../components/Toast'
 import { ageFromBirthdate } from '../lib/age'
 import { supabase } from '../lib/supabase'
 import type { Gender, InterestedIn, Profile } from '../types'
@@ -127,6 +128,7 @@ export function Account() {
     const { error } = await updateOwnProfile(patch)
     if (error) {
       setStatus('error')
+      notify('error', t('account.saveError'))
       return
     }
     // Reflect saved values locally so the read view is up to date, then exit.
@@ -147,6 +149,7 @@ export function Account() {
     )
     setStatus('saved')
     setEditing(false)
+    notify('success', t('account.saved'))
   }
 
   // Photo replace lives in the photos box (not the edit form): pick a file →
@@ -163,8 +166,10 @@ export function Account() {
       if (error) throw error
       setProfile((prev) => (prev ? { ...prev, photos: [url] } : prev))
       setPhotoStatus('saved')
+      notify('success', t('account.saved'))
     } catch {
       setPhotoStatus('error')
+      notify('error', t('account.saveError'))
     }
   }
 
@@ -177,11 +182,13 @@ export function Account() {
     setPwBusy(false)
     if (error) {
       setPwError(true)
+      notify('error', t('account.pwError'))
       return
     }
     setNewPw('')
     setShowPwForm(false)
     setPwDone(true)
+    notify('success', t('account.pwDoneTitle'))
   }
 
   const age = ageFromBirthdate(profile?.birthdate)
@@ -479,6 +486,14 @@ export function Account() {
             {t('admin.logout')}
           </button>
         </div>
+
+        <section className="landing__support" style={{ marginTop: '3rem', marginBottom: '1rem' }}>
+          <h2>{t('landing.supportTitle')}</h2>
+          <p>{t('landing.supportText')}</p>
+          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
+            ☕ {t('landing.footerCoffee')}
+          </a>
+        </section>
       </main>
 
       {viewPhoto && (

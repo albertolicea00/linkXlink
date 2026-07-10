@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ReportReason } from '../types'
 import { hasReported, submitReport } from '../lib/reports'
+import { notify } from './Toast'
 
 const REASONS: ReportReason[] = ['link_not_found', 'wrong_number', 'fraudulent']
 
@@ -25,9 +26,11 @@ export function ReportModal({ profileId, onClose, onReported }: Props) {
     const { error } = await submitReport(profileId, reason, comment)
     if (error) {
       setStatus('error')
+      notify('error', t('report.error'))
     } else {
       setStatus('sent')
       onReported()
+      notify('success', t('report.success'))
     }
   }
 

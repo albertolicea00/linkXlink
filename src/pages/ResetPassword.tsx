@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { isStrongPassword } from '../lib/password'
 import { PasswordChecklist } from '../components/PasswordChecklist'
 import { SuccessModal } from '../components/SuccessModal'
+import { notify } from '../components/Toast'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 /**
@@ -41,8 +42,13 @@ export function ResetPassword() {
     setError(false)
     const { error } = await supabase.auth.updateUser({ password })
     setBusy(false)
-    if (error) setError(true)
-    else setDone(true)
+    if (error) {
+      setError(true)
+      notify('error', t('reset.error'))
+    } else {
+      setDone(true)
+      notify('success', t('reset.doneTitle'))
+    }
   }
 
   return (

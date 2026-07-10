@@ -10,6 +10,7 @@ import { myApprovedCount, myDeniedCount } from '../../lib/moderators'
 import { useAdminProfiles } from '../../hooks/useAdminProfiles'
 import { DenyReasonModal } from './DenyReasonModal'
 import { fireConfetti } from '../../components/Confetti'
+import { notify } from '../../components/Toast'
 import appConfig from '../../config/app-config.json'
 import type { Profile } from '../../types'
 
@@ -53,6 +54,7 @@ export function ModeratorDashboard() {
     }
     if (!result) {
       setModMessage(t('admin.moderationError'))
+      notify('error', t('admin.moderationError'))
       return
     }
 
@@ -69,19 +71,24 @@ export function ModeratorDashboard() {
         if (approvedByMe === 0) fireConfetti()
         setApprovedByMe((n) => n + 1)
         setModMessage(t('admin.approvedMsg'))
+        notify('success', t('admin.approvedMsg'))
       } else if (result.deleted) {
         // Unclaimed migrated (seed) profile — the RPC deleted the row outright.
         setProfiles((prev) => prev.filter((p) => p.id !== profile.id))
         setDeniedByMe((n) => n + 1)
         setModMessage(t('admin.deniedDeletedMsg'))
+        notify('warning', t('admin.deniedDeletedMsg'))
       } else {
         setProfiles((prev) => prev.map((p) => (p.id === profile.id ? { ...p, active: false } : p)))
         setDeniedByMe((n) => n + 1)
         setModMessage(t('admin.deniedMsg'))
+        notify('warning', t('admin.deniedMsg'))
       }
     } else {
       // Vote recorded, quorum not yet reached.
-      setModMessage(t('admin.voteRecorded', { votes: result.votes, quorum: result.quorum }))
+      const msg = t('admin.voteRecorded', { votes: result.votes, quorum: result.quorum })
+      setModMessage(msg)
+      notify('info', msg)
     }
   }
 
