@@ -1,12 +1,22 @@
 import { supabase } from './supabase'
 import appConfig from '../config/app-config.json'
+import { idbAdd, idbGetAll, idbClear } from './idb'
 
 /**
  * Anonymous usage metrics (profile_events table) and moderation audit trail
  * (moderation_actions table). Event inserts are fire-and-forget: metrics
- * must never break or slow down the UI, and they silently no-op offline.
+ * must never break or slow down the UI. Ones that fail (offline, flaky
+ * network) queue in IndexedDB and flush automatically on reconnect — see
+ * `flushPendingEvents` / the `online` listener wired in main.tsx.
  */
 const DEVICE_KEY = 'lxl_device_id'
+const PENDING_STORE = 'pending-events'
+
+interface PendingEvent {
+  profile_id: string
+  event: ProfileEvent
+  device_id: string
+}
 
 export function getDeviceId(): string {
   try {
@@ -30,13 +40,41 @@ const EVENT_ENABLED: Record<ProfileEvent, boolean> = {
 
 export function trackProfileEvent(profileId: string, event: ProfileEvent): void {
   if (!EVENT_ENABLED[event]) return
+  const payload: PendingEvent = { profile_id: profileId, event, device_id: getDeviceId() }
   void supabase
     .from('profile_events')
-    .insert({ profile_id: profileId, event, device_id: getDeviceId() })
+    .insert(payload)
     .then(
       () => undefined,
-      () => undefined,
+      // Offline or the request otherwise failed — queue it instead of losing
+      // it outright; flushPendingEvents() retries on reconnect.
+      () => void idbAdd(PENDING_STORE, payload),
     )
+}
+
+/**
+ * Retries every queued profile_events row, then clears the queue regardless
+ * of individual failures (best-effort metrics — a stale event isn't worth
+ * holding onto forever). Wired to the `online` window event in main.tsx.
+ *
+ * This is a pragmatic app-level retry, NOT the Background Sync API: true
+ * background sync (via a service worker `sync` event) would also flush
+ * queued events if the user closes the tab before reconnecting, but requires
+ * switching vite-plugin-pwa from `generateSW` to `injectManifest` with a
+ * custom service worker — a bigger, riskier change. This covers the common
+ * case (still has the tab open when connectivity returns) with far less risk.
+ */
+export async function flushPendingEvents(): Promise<void> {
+  const pending = await idbGetAll<PendingEvent>(PENDING_STORE)
+  if (pending.length === 0) return
+  await Promise.allSettled(
+    pending.map((p) =>
+      supabase
+        .from('profile_events')
+        .insert({ profile_id: p.profile_id, event: p.event, device_id: p.device_id }),
+    ),
+  )
+  await idbClear(PENDING_STORE)
 }
 
 export type ModerationAction = 'approve' | 'skip' | 'ban' | 'reactivate'

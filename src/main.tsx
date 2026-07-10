@@ -24,6 +24,7 @@ import { ADMIN_PATH } from './lib/adminPath'
 import { useOffline } from './hooks/useOffline'
 import { WarningBanner } from './components/WarningBanner'
 import { useTranslation } from 'react-i18next'
+import { flushPendingEvents } from './lib/metrics'
 
 function RequireTerms({ children }: { children: ReactNode }) {
   if (!hasAcceptedTerms()) return <Navigate to="/" replace />
@@ -87,6 +88,12 @@ const router = createBrowserRouter([
     ],
   },
 ])
+
+// Global, not tied to any page's lifecycle: retry queued profile_events the
+// instant connectivity returns, and once on boot in case events queued in a
+// previous session are still waiting from before the tab was last closed.
+window.addEventListener('online', () => void flushPendingEvents())
+void flushPendingEvents()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
