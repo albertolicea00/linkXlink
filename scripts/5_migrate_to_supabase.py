@@ -101,13 +101,13 @@ def main():
             continue
 
         print(f"Processing {phone}...")
-        
+
         # 1. Upload image to Supabase Storage
         if not args.dry_run:
             try:
                 with open(img_path, 'rb') as f:
                     image_bytes = f.read()
-                    
+
                 # x-upsert ensures it overwrites if you run the script multiple times
                 supabase.storage.from_(args.bucket).upload(
                     path=image_ref,
@@ -121,6 +121,11 @@ def main():
         else:
             print(f"   🔍 [DRY RUN] Would upload '{image_ref}' to bucket '{args.bucket}'")
 
+        # The frontend renders `photos[i]` straight into <img src>, so it needs a
+        # full public URL — NOT the bare object path. Build it the same way the
+        # register/account flows do (getPublicUrl), otherwise images 404.
+        image_url = supabase.storage.from_(args.bucket).get_public_url(image_ref)
+
         # 2. Insert into Database
         # Since we don't know their real name, we give them a generic placeholder
         name_placeholder = f"Usuario {whatsapp[-4:]}" if len(whatsapp) >= 4 else "Anónimo"
@@ -133,7 +138,7 @@ def main():
             "name": name_placeholder,
             "description": desc,
             "whatsapp": whatsapp,
-            "photos": [image_ref],
+            "photos": [image_url],
             "active": False,
             "migrated": True,
             "gender": detected_gender,
