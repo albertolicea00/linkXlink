@@ -10,11 +10,16 @@ import { SuccessModal } from './SuccessModal'
 import { notify } from './Toast'
 import appConfig from '../config/app-config.json'
 
-/** OAuth returns to the current origin locally, to the configured site in prod. */
+/** OAuth and recovery links always return to the current origin, so preview and
+ *  production Vercel domains each redirect back to themselves. Each origin must be
+ *  listed in Supabase Auth → URL Configuration → Redirect URLs or Supabase falls
+ *  back to its Site URL. */
 function redirectBase(): string {
-  const h = window.location.hostname
-  const isLocal = h === 'localhost' || h === '127.0.0.1' || h.startsWith('192.168.')
-  return isLocal ? window.location.origin : appConfig.site_url
+  // const h = window.location.hostname
+  // const isLocal = h === 'localhost' || h === '127.0.0.1' || h.startsWith('192.168.')
+  // return isLocal ? window.location.origin : appConfig.site_url
+  return window.location.origin
+
 }
 
 type Provider = 'google' | 'apple' | 'facebook'
