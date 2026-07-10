@@ -12,6 +12,14 @@ By design (as per your CLAUDE.md):
 - They are immediately `active = true`.
 - They can be claimed later by real users via the `claim_migrated_profile` RPC.
 
+Idempotent — safe to re-run:
+- Matches existing rows by the unique `whatsapp` number.
+- New number      -> INSERT.
+- Unclaimed seed  -> UPDATE (refreshes photos/active/etc; keeps owner_id, created_at).
+- Claimed seed (owner_id set) or a real non-seed profile -> SKIPPED, never touched.
+- Images re-upload with x-upsert (overwrite), but claimed rows are skipped before
+  the upload, so a real user's storage is never overwritten.
+
 Dependencies:
 -------------
 $ pip install supabase
@@ -76,6 +84,7 @@ def main():
         print(f"⚠️  Filtered out {nsfw_count} profiles flagged as NSFW.")
 
     success_count = 0
+    update_count = 0
     error_count = 0
     skip_count = 0
 
@@ -102,7 +111,34 @@ def main():
 
         print(f"Processing {phone}...")
 
-        # 1. Upload image to Supabase Storage
+        # 1. Look up any existing row FIRST (the `whatsapp` column is uniquely
+        # indexed). This makes the whole script idempotent and — critically —
+        # lets us bail out BEFORE re-uploading an image or overwriting data for
+        # a profile a real person already owns.
+        try:
+            existing = (
+                supabase.table('profiles')
+                .select('id, owner_id, migrated')
+                .eq('whatsapp', whatsapp)
+                .limit(1)
+                .execute()
+            )
+            row = existing.data[0] if existing.data else None
+        except Exception as e:
+            print(f"   ❌ Lookup error: {e}")
+            error_count += 1
+            continue
+
+        # A claimed seed (owner_id set) or a real self-registered profile
+        # (migrated = false) belongs to a real person — NEVER touch it. Leaving
+        # early also means we don't re-upload the image over their storage.
+        if row and (row.get('owner_id') is not None or not row.get('migrated', True)):
+            reason = "claimed by a user" if row.get('owner_id') else "real (non-seed) profile"
+            print(f"   ⏭️  Exists & {reason} — left untouched.")
+            skip_count += 1
+            continue
+
+        # 2. Upload image to Supabase Storage (x-upsert overwrites on re-run).
         if not args.dry_run:
             try:
                 with open(img_path, 'rb') as f:
@@ -115,8 +151,8 @@ def main():
                     file_options={"content-type": "image/webp", "x-upsert": "true"}
                 )
             except Exception as e:
-                # If the library version doesn't support x-upsert, it might throw an error if the file exists.
-                # We can safely catch it and continue.
+                # Older client versions without x-upsert raise if the object
+                # already exists — safe to ignore, the bytes are already there.
                 pass
         else:
             print(f"   🔍 [DRY RUN] Would upload '{image_ref}' to bucket '{args.bucket}'")
@@ -126,10 +162,10 @@ def main():
         # register/account flows do (getPublicUrl), otherwise images 404.
         image_url = supabase.storage.from_(args.bucket).get_public_url(image_ref)
 
-        # 2. Insert into Database
-        # Since we don't know their real name, we give them a generic placeholder
-        name_placeholder = f"Usuario {whatsapp[-4:]}" if len(whatsapp) >= 4 else "Anónimo"
-        
+        # 3. Insert (new) or update (existing unclaimed seed).
+        # Since we don't know their real name, we give them a generic placeholder.
+        name_placeholder = f"Usuario {whatsapp[-4:]}" if len(whatsapp) >= 4 else "Unknow"
+
         # Gender was detected by deepface. Schema accepts 'male', 'female', 'other'.
         # We default to 'other' if it hasn't been run or was undetected.
         detected_gender = item.get('gender', 'other')
@@ -139,38 +175,52 @@ def main():
             "description": desc,
             "whatsapp": whatsapp,
             "photos": [image_url],
-            "active": False,
+            "active": True,
             "migrated": True,
             "gender": detected_gender,
         }
-        
+
         # Only attach region if we have it and it's not "Unknown"
         if region and region != "Unknown":
-            profile_data["region"] = region[:80] # Schema limit is 80 chars
+            profile_data["region"] = region[:80]  # Schema limit is 80 chars
 
-        if not args.dry_run:
-            try:
+        if args.dry_run:
+            action = "update seed" if row else "insert"
+            print(f"   🔍 [DRY RUN] Would {action} (whatsapp={whatsapp})")
+            if row:
+                update_count += 1
+            else:
+                success_count += 1
+            continue
+
+        try:
+            if row:
+                # Unclaimed seed — refresh its fields (fixes bad photos / active
+                # from earlier runs). owner_id and created_at are untouched.
+                supabase.table('profiles').update(profile_data).eq('id', row['id']).execute()
+                update_count += 1
+                print(f"   🔁 Updated existing seed.")
+            else:
                 supabase.table('profiles').insert(profile_data).execute()
                 success_count += 1
                 print(f"   ✅ Successfully migrated!")
-            except Exception as e:
-                error_msg = str(e).lower()
-                if "23505" in error_msg or "duplicate key" in error_msg:
-                    print(f"   ⏭️  Already exists in database. Skipped.")
-                    skip_count += 1
-                else:
-                    print(f"   ❌ DB Error: {e}")
-                    error_count += 1
-        else:
-            print(f"   🔍 [DRY RUN] Would insert profile (whatsapp={whatsapp})")
-            success_count += 1
+        except Exception as e:
+            error_msg = str(e).lower()
+            if "23505" in error_msg or "duplicate key" in error_msg:
+                # Row appeared between our lookup and the insert (race). Skip.
+                print(f"   ⏭️  Already exists in database. Skipped.")
+                skip_count += 1
+            else:
+                print(f"   ❌ DB Error: {e}")
+                error_count += 1
 
     print(f"\n=============================")
     print(f"   MIGRATION RESULTS         ")
     print(f"=============================")
-    print(f"✅ Successfully inserted : {success_count}")
-    print(f"⏭️  Skipped (duplicates)  : {skip_count}")
-    print(f"❌ Errors (missing images): {error_count}")
+    print(f"✅ Inserted (new)         : {success_count}")
+    print(f"🔁 Updated (unclaimed seed): {update_count}")
+    print(f"⏭️  Skipped (claimed/real) : {skip_count}")
+    print(f"❌ Errors                 : {error_count}")
     print(f"=============================")
 
 if __name__ == '__main__':
