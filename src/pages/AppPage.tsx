@@ -24,7 +24,7 @@ import type { Profile } from '../types'
 
 export function AppPage() {
   const { t } = useTranslation()
-  const { profiles, loading, error, refetch } = useProfiles()
+  const { profiles, loading, error, servingCached, refetch } = useProfiles()
   const { count, swap } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
   const [clicks, setClicks] = useState(getClickCount)
@@ -172,6 +172,12 @@ export function AppPage() {
 
       <main className="app-page__main">
         {isLoading && <Loader text={t('feed.loading')} />}
+
+        {!isLoading && !previewMode && servingCached && deckProfiles.length > 0 && (
+          <p className="app-page__status" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+            {t('app.offline')}
+          </p>
+        )}
 
         {!isLoading && !previewMode && error && (
           <div className="app-page__status">

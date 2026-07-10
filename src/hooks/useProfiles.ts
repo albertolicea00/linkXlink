@@ -2,18 +2,21 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import appConfig from '../config/app-config.json'
 import { getDevFlags } from '../lib/devFlags'
+import { idbGetAll, idbReplaceAll } from '../lib/idb'
 import type { Profile } from '../types'
+
+const CACHE_STORE = 'profiles-cache'
 
 export function useProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const CACHE_KEY = 'cache_feedProfiles'
+  // True when what's on screen came from the IndexedDB cache (offline/network
+  // failure) rather than a fresh fetch — lets the UI be honest about it.
+  const [servingCached, setServingCached] = useState(false)
 
   const fetchProfiles = useCallback(async () => {
     const dev = getDevFlags()
-
-
 
     setLoading(true)
     setError(null)
@@ -35,21 +38,22 @@ export function useProfiles() {
     const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) {
-      const cached = localStorage.getItem(CACHE_KEY)
-      if (cached) {
-        try {
-          setProfiles(JSON.parse(cached) as Profile[])
-          setLoading(false)
-          return
-        } catch {
-          // ignore parse errors and fallback to error state
-        }
+      // Network/offline failure — fall back to the last successfully fetched
+      // feed (IndexedDB), so the app stays usable without a connection.
+      const cached = await idbGetAll<Profile>(CACHE_STORE)
+      if (cached.length > 0) {
+        setProfiles(cached)
+        setServingCached(true)
+        setLoading(false)
+        return
       }
       setError(error.message)
+      setServingCached(false)
     } else {
       const fetchedProfiles = (data ?? []) as Profile[]
       setProfiles(fetchedProfiles)
-      localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedProfiles))
+      setServingCached(false)
+      void idbReplaceAll(CACHE_STORE, fetchedProfiles)
     }
     setLoading(false)
   }, [])
@@ -58,5 +62,5 @@ export function useProfiles() {
     void fetchProfiles()
   }, [fetchProfiles])
 
-  return { profiles, loading, error, refetch: fetchProfiles }
+  return { profiles, loading, error, servingCached, refetch: fetchProfiles }
 }
