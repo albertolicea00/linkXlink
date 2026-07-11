@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../components/PageHeader'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { ProfileExtraFields } from '../components/ProfileExtraFields'
 import { TelegramBanner } from '../components/TelegramBanner'
+import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
@@ -15,6 +18,7 @@ import { PasswordChecklist } from '../components/PasswordChecklist'
 import { SuccessModal } from '../components/SuccessModal'
 import { notify } from '../components/Toast'
 import { ageFromBirthdate } from '../lib/age'
+import { whatsappUrl } from '../lib/whatsapp'
 import { supabase } from '../lib/supabase'
 import type { Gender, InterestedIn, Profile } from '../types'
 
@@ -69,11 +73,28 @@ export function Account() {
   const [pwDone, setPwDone] = useState(false)
   const [editing, setEditing] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [visEditing, setVisEditing] = useState(false)
+  const [visStatus, setVisStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [viewPhoto, setViewPhoto] = useState<string | null>(null)
 
   usePageMeta({ title: `${t('account.title')} | Link x Link`, path: '/account', noindex: true })
 
-  // Populate the editable fields from a profile row (used on load and cancel).
+  // Reset the visibility radios from a profile row (used on load and on cancel
+  // of the standalone visibility card).
+  const hydrateVisibility = (p: Profile) => {
+    if (p.self_hidden) {
+      setVisibility('hidden')
+      setHiddenUntil('')
+    } else if (p.hidden_until && new Date(p.hidden_until) > new Date()) {
+      setVisibility('until')
+      setHiddenUntil(p.hidden_until.slice(0, 10))
+    } else {
+      setVisibility('visible')
+      setHiddenUntil('')
+    }
+  }
+
+  // Populate the editable profile fields from a profile row (used on load and cancel).
   const hydrate = (p: Profile) => {
     setName(p.name)
     setDescription(p.description)
@@ -81,14 +102,7 @@ export function Account() {
     setInterestedIn((p.interested_in as InterestedIn) ?? '')
     setInterests(p.interests ?? [])
     setRegion(p.region ?? '')
-    if (p.self_hidden) setVisibility('hidden')
-    else if (p.hidden_until && new Date(p.hidden_until) > new Date()) {
-      setVisibility('until')
-      setHiddenUntil(p.hidden_until.slice(0, 10))
-    } else {
-      setVisibility('visible')
-      setHiddenUntil('')
-    }
+    hydrateVisibility(p)
   }
 
   useEffect(() => {
@@ -120,10 +134,6 @@ export function Account() {
       interested_in: (interestedIn || undefined) as InterestedIn | undefined,
       interests,
       region: region.trim() || undefined,
-      self_hidden: visibility === 'hidden',
-      hidden_until:
-        visibility === 'until' && hiddenUntil ? new Date(hiddenUntil).toISOString() : null,
-      clearHiddenUntil: visibility !== 'until',
     }
     const { error } = await updateOwnProfile(patch)
     if (error) {
@@ -142,13 +152,36 @@ export function Account() {
             interested_in: patch.interested_in ?? null,
             interests,
             region: patch.region ?? prev.region,
-            self_hidden: patch.self_hidden,
-            hidden_until: patch.hidden_until,
           }
         : prev,
     )
     setStatus('saved')
     setEditing(false)
+    notify('success', t('account.saved'))
+  }
+
+  // Visibility is edited in its own card (below the photos), independent of the
+  // profile edit form — save touches only the self_hidden / hidden_until fields.
+  const handleSaveVisibility = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setVisStatus('saving')
+    const patch = {
+      self_hidden: visibility === 'hidden',
+      hidden_until:
+        visibility === 'until' && hiddenUntil ? new Date(hiddenUntil).toISOString() : null,
+      clearHiddenUntil: visibility !== 'until',
+    }
+    const { error } = await updateOwnProfile(patch)
+    if (error) {
+      setVisStatus('error')
+      notify('error', t('account.saveError'))
+      return
+    }
+    setProfile((prev) =>
+      prev ? { ...prev, self_hidden: patch.self_hidden, hidden_until: patch.hidden_until } : prev,
+    )
+    setVisStatus('saved')
+    setVisEditing(false)
     notify('success', t('account.saved'))
   }
 
@@ -206,6 +239,18 @@ export function Account() {
 
       <main className="landing__main">
         <TelegramBanner />
+        <WhatsAppBanner />
+
+        <section className="account-prefs" aria-label={t('account.prefsTitle')}>
+          <div className="account-prefs__row">
+            <span className="account-prefs__label">{t('account.languageLabel')}</span>
+            <LanguageSwitcher full />
+          </div>
+          <div className="account-prefs__row">
+            <span className="account-prefs__label">{t('account.themeLabel')}</span>
+            <ThemeToggle variant="segmented" />
+          </div>
+        </section>
 
         {(!loaded || authLoading) && <Loader text={t('account.loading')} />}
 
@@ -222,11 +267,18 @@ export function Account() {
           <div className="account-layout">
             <div className="register__card">
               <div className="register__card-header">
-              <span className="register__card-title">{session?.user.email}</span>
-              {age !== null && (
-                <span className="register__card-subtitle">{t('account.age', { age })}</span>
-              )}
-            </div>
+                <span className="register__card-title">{session?.user.email}</span>
+                {profile.whatsapp && (
+                  <a
+                    className="register__card-phone"
+                    href={whatsappUrl(profile.whatsapp)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    +{profile.whatsapp}
+                  </a>
+                )}
+              </div>
 
             {!editing ? (
               <div className="register__form">
@@ -235,6 +287,12 @@ export function Account() {
                     <span className="account-view__label">{t('admin.name')}</span>
                     <span className="account-view__value">{profile.name}</span>
                   </div>
+                  {age !== null && (
+                    <div className="account-view__row">
+                      <span className="account-view__label">{t('account.ageLabel')}</span>
+                      <span className="account-view__value">{t('account.age', { age })}</span>
+                    </div>
+                  )}
                   <div className="account-view__row">
                     <span className="account-view__label">{t('admin.description')}</span>
                     <span className="account-view__value">
@@ -269,15 +327,11 @@ export function Account() {
                         : t('account.notSet')}
                     </span>
                   </div>
-                  <div className="account-view__row">
-                    <span className="account-view__label">{t('account.visibilityTitle')}</span>
-                    <span className="account-view__status">{visibilityLabel()}</span>
-                  </div>
                 </div>
 
                 <button
                   type="button"
-                  className="btn"
+                  className="btn btn--small"
                   onClick={() => {
                     setStatus('idle')
                     setEditing(true)
@@ -315,9 +369,89 @@ export function Account() {
                   onRegion={setRegion}
                 />
 
+                {status === 'error' && <p className="form-error">{t('account.saveError')}</p>}
+                <div className="account-actions">
+                  <button
+                    type="submit"
+                    className="btn btn--primary"
+                    disabled={status === 'saving' || (visibility === 'until' && !hiddenUntil)}
+                  >
+                    {status === 'saving' ? t('register.submitting') : t('account.save')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => {
+                      if (profile) hydrate(profile)
+                      setStatus('idle')
+                      setEditing(false)
+                    }}
+                  >
+                    {t('account.cancel')}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
 
+          <div className="account-side">
+          <div className="account-photos">
+            <h3>{t('account.photosTitle')}</h3>
+            {profile.photos && profile.photos.length > 0 ? (
+              <div className="account-photos__list">
+                {profile.photos.map((url, i) => (
+                  <img
+                    key={i}
+                    src={url}
+                    alt=""
+                    className="account-photos__thumb"
+                    onClick={() => setViewPhoto(url)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="account-photos__empty">{t('account.notSet')}</p>
+            )}
+            <label className="btn account-photos__replace">
+              {photoStatus === 'saving' ? t('register.submitting') : t('account.replacePhoto')}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                disabled={photoStatus === 'saving'}
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void handlePhotoReplace(file)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            {photoStatus === 'saved' && <p className="form-message">{t('account.saved')}</p>}
+            {photoStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
+          </div>
+
+          <div className="account-visibility">
+            <div className="account-visibility__header">
+              <h3>{t('account.visibilityTitle')}</h3>
+              {!visEditing && (
+                <span className="account-view__status">{visibilityLabel()}</span>
+              )}
+            </div>
+
+            {!visEditing ? (
+              <button
+                type="button"
+                className="btn btn--small"
+                onClick={() => {
+                  setVisStatus('idle')
+                  setVisEditing(true)
+                }}
+              >
+                {t('account.edit')}
+              </button>
+            ) : (
+              <form className="register__form" onSubmit={handleSaveVisibility}>
                 <fieldset className="visibility">
-                  <legend>{t('account.visibilityTitle')}</legend>
                   <label className="radio-row">
                     <input
                       type="radio"
@@ -373,22 +507,22 @@ export function Account() {
                   <span className="field-help">{t('account.visibilityHelp')}</span>
                 </fieldset>
 
-                {status === 'error' && <p className="form-error">{t('account.saveError')}</p>}
+                {visStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
                 <div className="account-actions">
                   <button
                     type="submit"
                     className="btn btn--primary"
-                    disabled={status === 'saving' || (visibility === 'until' && !hiddenUntil)}
+                    disabled={visStatus === 'saving' || (visibility === 'until' && !hiddenUntil)}
                   >
-                    {status === 'saving' ? t('register.submitting') : t('account.save')}
+                    {visStatus === 'saving' ? t('register.submitting') : t('account.save')}
                   </button>
                   <button
                     type="button"
                     className="btn"
                     onClick={() => {
-                      if (profile) hydrate(profile)
-                      setStatus('idle')
-                      setEditing(false)
+                      if (profile) hydrateVisibility(profile)
+                      setVisStatus('idle')
+                      setVisEditing(false)
                     }}
                   >
                     {t('account.cancel')}
@@ -397,40 +531,6 @@ export function Account() {
               </form>
             )}
           </div>
-
-          <div className="account-photos">
-            <h3>{t('account.photosTitle')}</h3>
-            {profile.photos && profile.photos.length > 0 ? (
-              <div className="account-photos__list">
-                {profile.photos.map((url, i) => (
-                  <img
-                    key={i}
-                    src={url}
-                    alt=""
-                    className="account-photos__thumb"
-                    onClick={() => setViewPhoto(url)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="account-photos__empty">{t('account.notSet')}</p>
-            )}
-            <label className="btn account-photos__replace">
-              {photoStatus === 'saving' ? t('register.submitting') : t('account.replacePhoto')}
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                disabled={photoStatus === 'saving'}
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) void handlePhotoReplace(file)
-                  e.target.value = ''
-                }}
-              />
-            </label>
-            {photoStatus === 'saved' && <p className="form-message">{t('account.saved')}</p>}
-            {photoStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
           </div>
         </div>
         )}
@@ -480,7 +580,7 @@ export function Account() {
           </form>
         )}
 
-        <div className="account-actions">
+        <div className="account-actions-bottom">
           {!showPwForm && (
             <button type="button" className="btn" onClick={() => setShowPwForm(true)}>
               {t('account.changePassword')}

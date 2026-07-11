@@ -81,19 +81,19 @@ export function NavBar() {
         </button>
       )}
       
-      {!isAdmin && (
-        <button type="button" className="navbar__item" onClick={share}>
-          <Icon.Share />
-          <span>{t('nav.share')}</span>
-        </button>
-      )}
-
       {isAdmin && (
         <Link to={`${ADMIN_PATH}?view=admin`} className={cls(onAdminPath && !viewIsModerator)}>
           <Icon.Shield />
           <span>{t('nav.admin')}</span>
         </Link>
       )}
+
+      {/* {!isAdmin && ( */}
+        <button type="button" className="navbar__item" onClick={share}>
+          <Icon.Share />
+          <span>{t('nav.share')}</span>
+        </button>
+      {/* )} */}
 
       {canInstall && (
         <button type="button" className="navbar__item" onClick={() => void promptInstall()}>

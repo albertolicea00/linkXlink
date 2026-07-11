@@ -29,21 +29,46 @@ function MoonIcon() {
   )
 }
 
-export function ThemeToggle() {
+/**
+ * `icon` (default): a single round icon button that toggles the theme — used in
+ * the compact top header. `segmented`: two labelled pills (Light / Dark) reusing
+ * the language-switcher pill UI — used where there is room (Account page).
+ */
+export function ThemeToggle({ variant = 'icon' }: { variant?: 'icon' | 'segmented' }) {
   const { t } = useTranslation()
   const [theme, setThemeState] = useState<Theme>(getTheme)
 
-  const toggle = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+  const choose = (next: Theme) => {
     setTheme(next)
     setThemeState(next)
+  }
+
+  if (variant === 'segmented') {
+    return (
+      <nav className="lang-links" aria-label={t('nav.theme')}>
+        <button
+          type="button"
+          className={theme === 'light' ? 'lang-links--active' : ''}
+          onClick={() => choose('light')}
+        >
+          {t('account.themeLight')}
+        </button>
+        <button
+          type="button"
+          className={theme === 'dark' ? 'lang-links--active' : ''}
+          onClick={() => choose('dark')}
+        >
+          {t('account.themeDark')}
+        </button>
+      </nav>
+    )
   }
 
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={toggle}
+      onClick={() => choose(theme === 'dark' ? 'light' : 'dark')}
       aria-label={t('nav.theme')}
       title={t('nav.theme')}
     >

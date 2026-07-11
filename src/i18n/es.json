@@ -48,7 +48,7 @@
     "how3": "Entra a la app y desliza entre los perfiles.",
     "how4": "¿Te interesa alguien? Pulsa el botón de WhatsApp.",
     "how5": "¿Algo no funciona? Repórtalo y ayuda a la comunidad.",
-    "how6": "Únete a nuestra <tg>comunidad de Telegram</tg> para ayudar a mantener la app, reportar fallos y pedir ayuda.",
+    "how6": "Únete a nuestra comunidad de <tg>Telegram</tg> y <wa>Whastapp</wa> para ayudar a mantener la app, reportar fallos y pedir ayuda.",
     "faqTitle": "Preguntas Frecuentes",
     "faq1Q": "¿Por qué mi perfil debe ser aprobado?",
     "faq1A": "Para mantener un entorno seguro y de calidad, todos los perfiles nuevos son revisados por nuestros moderadores. Solo los perfiles aprobados serán visibles para la comunidad.",
@@ -113,6 +113,7 @@
   },
   "community": {
     "title": "Únete a nuestra comunidad de Telegram",
+    "whatsappTitle": "Únete a nuestra comunidad de WhatsApp",
     "text": "Ayuda a mantener la app, reporta fallos, pide nuevas funciones o soporte.",
     "join": "Unirme"
   },
@@ -226,8 +227,9 @@
     "loading": "Cargando tu cuenta…",
     "title": "Mi cuenta",
     "age": "{{age}} años",
+    "ageLabel": "Edad",
     "noProfile": "Aún no has creado tu perfil.",
-    "edit": "Editar perfil",
+    "edit": "Editar",
     "cancel": "Cancelar",
     "notSet": "Sin especificar",
     "interestsLabel": "Intereses",
@@ -251,7 +253,12 @@
     "savePassword": "Guardar contraseña",
     "pwError": "No se pudo cambiar la contraseña. Intenta de nuevo.",
     "pwDoneTitle": "¡Contraseña cambiada!",
-    "pwDoneText": "Tu contraseña se actualizó correctamente."
+    "pwDoneText": "Tu contraseña se actualizó correctamente.",
+    "prefsTitle": "Preferencias",
+    "languageLabel": "Idioma",
+    "themeLabel": "Tema",
+    "themeLight": "Modo Claro",
+    "themeDark": "Modo Oscuro"
   },
   "routeError": {
     "title": "Algo salió mal",

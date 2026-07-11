@@ -48,7 +48,7 @@
     "how3": "Enter the app and swipe through profiles.",
     "how4": "Interested in someone? Tap the WhatsApp button.",
     "how5": "Something not working? Report it and help the community.",
-    "how6": "Join our <tg>Telegram community</tg> to help maintain the app, report bugs, and ask for help.",
+    "how6": "Join our <tg>Telegram</tg> and <wa>Whastapp</wa> communities to help maintain the app, report bugs, and ask for help.",
     "faqTitle": "Frequently Asked Questions",
     "faq1Q": "Why does my profile need approval?",
     "faq1A": "To maintain a safe and quality environment, all new profiles are reviewed by our moderators. Only approved profiles will be visible to the community.",
@@ -113,6 +113,7 @@
   },
   "community": {
     "title": "Join our Telegram community",
+    "whatsappTitle": "Join our WhatsApp community",
     "text": "Help keep the app running, report bugs, request features or get support.",
     "join": "Join"
   },
@@ -227,8 +228,9 @@
     "loading": "Loading your account…",
     "title": "My account",
     "age": "{{age}} years old",
+    "ageLabel": "Age",
     "noProfile": "You haven't created your profile yet.",
-    "edit": "Edit profile",
+    "edit": "Edit",
     "cancel": "Cancel",
     "notSet": "Not set",
     "interestsLabel": "Interests",
@@ -252,7 +254,12 @@
     "savePassword": "Save password",
     "pwError": "Could not change the password. Try again.",
     "pwDoneTitle": "Password changed!",
-    "pwDoneText": "Your password was updated successfully."
+    "pwDoneText": "Your password was updated successfully.",
+    "prefsTitle": "Preferences",
+    "languageLabel": "Language",
+    "themeLabel": "Theme",
+    "themeLight": "Light mode",
+    "themeDark": "Dark mode"
   },
   "routeError": {
     "title": "Something went wrong",

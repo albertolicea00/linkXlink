@@ -5,19 +5,20 @@ import { ThemeToggle } from './ThemeToggle'
 
 /**
  * Shared header for the in-app pages (app / account / admin). Desktop shows
- * "Link x Link - <section>"; mobile shows just the section name. All pink.
- * Navigation lives in the NavBar, so no links/logout here beyond the brand.
+ * the app icon + name + current section, plus the language/theme controls.
+ * Hidden on mobile — there the bottom NavBar handles navigation and the
+ * language/theme options live inside the Account page instead.
  */
 export function PageHeader({ section }: { section: string }) {
   const { t } = useTranslation()
   return (
     <header className="app-page__header">
       <h1 className="page-title">
-        <span className="page-title__section">{section}</span>
-        <span className="page-title__sep">&nbsp;&nbsp;::&nbsp;&nbsp;</span>
         <Link to="/app" className="page-title__brand">
-          {t('app.name')}
+          <img src="/icons/icon.svg" alt="" className="page-title__logo" />
+          <span className="page-title__name">{t('app.name')}</span>
         </Link>
+        <span className="page-title__section">{section}</span>
       </h1>
       <div className="app-page__controls">
         <LanguageSwitcher />

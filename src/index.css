@@ -167,6 +167,11 @@ a {
   color: var(--color-danger);
 }
 
+.btn--small {
+  padding: 0 12px;
+  font-size: 0.8rem;
+}
+
 /* Layout */
 .page {
   min-height: 100dvh;
@@ -246,7 +251,7 @@ a {
 .landing__main {
   flex: 1;
   padding: 0 1.25rem 2rem;
-  max-width: 760px;
+  max-width: 960px;
   margin: 0 auto;
   width: 100%;
 }
@@ -622,7 +627,7 @@ a {
 
 /* Wash out stacked cards so their content doesn't read as duplicated UI */
 .swipe-deck__card--behind::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: var(--radius);
@@ -856,7 +861,7 @@ a {
   margin-bottom: 1rem;
 }
 
-.account-actions {
+.account-actions-bottom {
   display: flex;
   gap: 0.75rem;
   justify-content: center;
@@ -1255,10 +1260,18 @@ a {
   color: var(--color-text-muted);
 }
 
-.stat-card--total .stat-card__value { color: var(--color-text); }
-.stat-card--pending .stat-card__value { color: var(--color-primary); }
-.stat-card--active .stat-card__value { color: var(--color-whatsapp-dark); }
-.stat-card--banned .stat-card__value { color: var(--color-danger); }
+.stat-card--total .stat-card__value {
+  color: var(--color-text);
+}
+.stat-card--pending .stat-card__value {
+  color: var(--color-primary);
+}
+.stat-card--active .stat-card__value {
+  color: var(--color-whatsapp-dark);
+}
+.stat-card--banned .stat-card__value {
+  color: var(--color-danger);
+}
 
 /* Admin share */
 .admin-share {
@@ -1500,8 +1513,8 @@ a.landing__brand {
 .register__card-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.25rem;
   margin-bottom: 1.25rem;
 }
 
@@ -1520,6 +1533,17 @@ a.landing__brand {
   font-size: 0.85rem;
   color: var(--color-text-muted);
   margin-top: -0.25rem;
+}
+
+.register__card-phone {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-whatsapp);
+  text-decoration: none;
+}
+
+.register__card-phone:hover {
+  text-decoration: underline;
 }
 
 .share-gate {
@@ -1594,8 +1618,13 @@ a.landing__brand {
 }
 
 @keyframes notfound-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 .notfound__code {
@@ -1730,7 +1759,7 @@ a.landing__brand {
 
 .auth-panel__divider::before,
 .auth-panel__divider::after {
-  content: '';
+  content: "";
   flex: 1;
   height: 1px;
   background: var(--color-border);
@@ -2129,25 +2158,40 @@ a.landing__brand {
 .page-title {
   margin: 0;
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  gap: 0.6rem;
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--color-primary);
 }
 
 .page-title__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--color-primary);
   text-decoration: none;
 }
 
-.page-title__sep,
-.page-title__section {
+.page-title__logo {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.page-title__name {
   color: var(--color-primary);
 }
 
+.page-title__section {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+/* Top header is desktop-only: on mobile the bottom NavBar handles navigation
+   and language/theme move into the Account page (.account-prefs). */
 @media (max-width: 767px) {
-  .page-title__brand,
-  .page-title__sep {
+  .app-page__header {
     display: none;
   }
 }
@@ -2157,11 +2201,15 @@ a.landing__brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin: 1rem 0 1.5rem;
+  margin: 1rem 0 1rem;
   padding: 0.9rem 1rem;
   border-radius: 14px;
   border: 1px solid var(--color-border);
-  background: linear-gradient(120deg, rgba(41, 171, 226, 0.14), var(--color-surface));
+  background: linear-gradient(
+    120deg,
+    rgba(41, 171, 226, 0.14),
+    var(--color-surface)
+  );
   color: var(--color-text);
   text-decoration: none;
 }
@@ -2192,10 +2240,28 @@ a.landing__brand {
   flex-shrink: 0;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #fff;
+  color: #000;
   background: #29a9e0;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
+}
+
+/* WhatsApp variant of the community banner — green instead of Telegram blue. */
+.tg-banner--whatsapp {
+  background: linear-gradient(
+    120deg,
+    rgba(37, 211, 102, 0.14),
+    var(--color-surface)
+  );
+}
+
+.tg-banner--whatsapp .tg-banner__icon {
+  color: var(--color-whatsapp);
+}
+
+.tg-banner--whatsapp .tg-banner__cta {
+  background: var(--color-whatsapp);
+  color: #030303;
 }
 
 /* Account read-only summary */
@@ -2236,7 +2302,7 @@ a.landing__brand {
 /* Account edit action row: left-aligned, save first */
 .account-actions {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 0.75rem;
 }
 
@@ -2290,6 +2356,13 @@ a.landing__brand {
   margin: 0;
 }
 
+/* Right column on desktop: photos stacked above the visibility card. */
+.account-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 .account-photos {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -2330,6 +2403,61 @@ a.landing__brand {
   color: var(--color-text-muted);
 }
 
+/* Account preferences (language + theme) — mobile only; on desktop these
+   controls live in the top PageHeader instead. */
+.account-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.account-prefs__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-prefs__label {
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .account-prefs {
+    display: none;
+  }
+}
+
+/* Standalone visibility card — sits below the profile/photos row, edited on
+   its own (independent of the profile edit form). */
+.account-visibility {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.account-visibility__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.account-visibility__header h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
 /* Fullscreen Photo Viewer */
 .photo-viewer {
   position: fixed;
@@ -2356,10 +2484,10 @@ a.landing__brand {
     align-items: flex-start;
   }
   .account-layout > .register__card {
-    flex: 2;
+    flex: 1.5;
     min-width: 0;
   }
-  .account-layout > .account-photos {
+  .account-layout > .account-side {
     flex: 1;
     min-width: 0;
   }
