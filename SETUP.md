@@ -242,7 +242,25 @@ never exposed to the browser.
 - **Contacts → Lists** → open the target list → note its numeric ID (visible
   in the URL, or via the Brevo API).
 
-### 2. Configure Secrets and Deploy the Edge Function
+### 2. Create the custom contact attributes in Brevo
+
+The function sends three attributes: `NAME`, `WHATSAPP`, `REGION`. Brevo
+**silently ignores attributes that don't exist in your account** and still
+returns `2xx`, so the contact is created but those fields come back empty and
+the sync *looks* successful in the logs.
+
+- Brevo dashboard → **Contacts → Settings → Contact attributes & CRM**.
+- Add each of these as type **Text** (create them even if similar defaults
+  like `FIRSTNAME`/`LASTNAME` exist — the function writes to these exact names):
+  - `NAME`
+  - `WHATSAPP`
+  - `REGION`
+
+Note: `WHATSAPP` here is a plain text attribute, **not** Brevo's native
+WhatsApp/phone field. The number is stored digits-only without a leading `+`
+(E.164 without `+`); Brevo's native phone fields would reject that format.
+
+### 3. Configure Secrets and Deploy the Edge Function
 
 **Option A: Via Supabase Dashboard (Recommended)**
 1. Go to your Supabase project dashboard.
@@ -263,19 +281,22 @@ supabase secrets set BREVO_LIST_ID=<your-list-id>
 supabase functions deploy sync-brevo-contact
 ```
 
-### 3. Wire the Database Webhook
+### 4. Wire the Database Webhook
 
 - Supabase Dashboard → **Integrations** → **Webhooks** → **Create a new webhook**
 - Table: `profiles` — Events: **Insert** and **Update**
 - Type: **Supabase Edge Functions** — select `sync-brevo-contact`
 - Save.
 
-### 4. Test
+### 5. Test
 
 - Complete a profile in the app (or update an existing one).
 - Check **Brevo → Contacts** — the email should appear on the list within a
   few seconds, with `NAME`, `WHATSAPP`, and `REGION` attributes set.
-- If it doesn't show up, check **Supabase Dashboard → Edge Functions →
+- If the contact appears but the attributes are **empty**, you skipped step 2 —
+  the attributes don't exist in Brevo, so it dropped them (the log still shows
+  `200`). Create them, then re-save the profile to re-fire the sync.
+- If it doesn't show up at all, check **Supabase Dashboard → Edge Functions →
   sync-brevo-contact → Logs** for the error (commonly a wrong list ID, or the
   webhook firing before the profile row is fully committed — rare).
 
