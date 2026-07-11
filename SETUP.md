@@ -40,28 +40,28 @@ Step-by-step to get Link x Link running — from Supabase to production on Verce
 - Dashboard → **SQL Editor**
 - Paste and **Run** each file from `supabase/migrations/`, in numeric order:
 
-| File | What it creates |
-|---|---|
-| `0001_init.sql` | `profiles`, `reports`, `admins`, `profile-photos` bucket, RLS, auto-disable trigger |
-| `0002_self_registration.sql` | Public self-registration (pending profiles), unique WhatsApp index, bucket size/mime limits |
-| `0003_metrics.sql` | `profile_events` (views / WhatsApp clicks) + `moderation_actions` (audit trail) |
-| `0004_user_auth.sql` | `profiles.owner_id` (one profile per account), registration requires a signed-in user |
-| `0005_moderators.sql` | `moderators` table + `is_moderator()`; moderation policies extended to moderators |
-| `0006_app_access.sql` | Server-side `/app` gate: reading active profiles requires a signed-in user with their own profile (or a moderator) |
-| `0007_preview.sql` | `preview_profiles()` RPC — anonymous teaser of N profiles (no whatsapp exposed) |
-| `0008_moderator_mgmt.sql` | `search_users()` + `my_approved_count()` RPCs for the admin panel |
-| `0009_profile_fields.sql` | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC |
-| `0010_more_genders.sql` | Expanded gender options in database check constraints |
-| `0011_test_profiles.sql` | Adds `is_fake` column and test mode support to `preview_profiles()` RPC |
-| `0012_moderation_quorum.sql` | Quorum-gated approve/deny (`moderate_profile` RPC), deny `reason`, `profiles.denied_at`, `approve_quorum`/`deny_quorum` settings |
-| `0013_seed_migration.sql` | `profiles.migrated` + `claim_migrated_profile()` RPC (phone-based claim of seed rows) |
-| `0014_ownership_claims.sql` | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed) |
-| `0015_region_and_photo_edit.sql` | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg |
-| `0016_timestamps.sql` | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings` |
-| `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number |
-| `0018_admin_stats.sql` | `admin_stats()` RPC — global counters (fake profiles, migrated total/unclaimed, accounts with no profile), always DB-wide regardless of dev flags |
-| `0019_my_denied_count.sql` | `my_denied_count()` RPC — mirrors `my_approved_count()` for the moderator's "Denied by me" stat |
-| `0020_admin_management.sql` | RLS: admins can read the full `admins` list and insert/delete rows — promoting/demoting other admins from the panel (previously SQL-editor only) |
+| File                                       | What it creates                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0001_init.sql`                            | `profiles`, `reports`, `admins`, `profile-photos` bucket, RLS, auto-disable trigger                                                               |
+| `0002_self_registration.sql`               | Public self-registration (pending profiles), unique WhatsApp index, bucket size/mime limits                                                       |
+| `0003_metrics.sql`                         | `profile_events` (views / WhatsApp clicks) + `moderation_actions` (audit trail)                                                                   |
+| `0004_user_auth.sql`                       | `profiles.owner_id` (one profile per account), registration requires a signed-in user                                                             |
+| `0005_moderators.sql`                      | `moderators` table + `is_moderator()`; moderation policies extended to moderators                                                                 |
+| `0006_app_access.sql`                      | Server-side `/app` gate: reading active profiles requires a signed-in user with their own profile (or a moderator)                                |
+| `0007_preview.sql`                         | `preview_profiles()` RPC — anonymous teaser of N profiles (no whatsapp exposed)                                                                   |
+| `0008_moderator_mgmt.sql`                  | `search_users()` + `my_approved_count()` RPCs for the admin panel                                                                                 |
+| `0009_profile_fields.sql`                  | Profile fields (gender, interested_in, birthdate, interests, hide/pause) + `update_own_profile()` self-edit RPC                                   |
+| `0010_more_genders.sql`                    | Expanded gender options in database check constraints                                                                                             |
+| `0011_test_profiles.sql`                   | Adds `is_fake` column and test mode support to `preview_profiles()` RPC                                                                           |
+| `0012_moderation_quorum.sql`               | Quorum-gated approve/deny (`moderate_profile` RPC), deny `reason`, `profiles.denied_at`, `approve_quorum`/`deny_quorum` settings                  |
+| `0013_seed_migration.sql`                  | `profiles.migrated` + `claim_migrated_profile()` RPC (phone-based claim of seed rows)                                                             |
+| `0014_ownership_claims.sql`                | `ownership_claims` table + `claim_ownership()` RPC ("it's mine", moderator-reviewed)                                                              |
+| `0015_region_and_photo_edit.sql`           | `profiles.region` + `update_own_profile()` extended with region/photos + `claim_migrated_profile()` region arg                                    |
+| `0016_timestamps.sql`                      | `updated_at` on every table + shared `set_updated_at()` trigger; `created_at`/`updated_at` added to `app.settings`                                |
+| `0017_deny_deletes_unclaimed_migrated.sql` | `moderate_profile()`: denying an unclaimed migrated (seed) profile deletes the row instead of soft-denying it, freeing the WhatsApp number        |
+| `0018_admin_stats.sql`                     | `admin_stats()` RPC — global counters (fake profiles, migrated total/unclaimed, accounts with no profile), always DB-wide regardless of dev flags |
+| `0019_my_denied_count.sql`                 | `my_denied_count()` RPC — mirrors `my_approved_count()` for the moderator's "Denied by me" stat                                                   |
+| `0020_admin_management.sql`                | RLS: admins can read the full `admins` list and insert/delete rows — promoting/demoting other admins from the panel (previously SQL-editor only)  |
 
 Optionally, after the migrations, seed the launch feed: edit `supabase/seed.sql`
 with real people and run it **with the service role** (it inserts ownerless,
@@ -172,21 +172,21 @@ git push -u origin main
 
 Vercel auto-detects Vite. Verify the defaults:
 
-| Setting | Value |
-|---|---|
-| Framework preset | Vite |
-| Build command | `npm run build` |
-| Output directory | `dist` |
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Framework preset | Vite            |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
 
 ### 4. Environment variables
 
 **Before deploying**, expand **Environment Variables** and add:
 
-| Key | Value |
-|---|---|
-| `VITE_SUPABASE_URL` | Your Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon public key |
-| `VITE_ADMIN_PATH` | (optional) Secret admin panel path, e.g. `/my-secret-admin` |
+| Key                      | Value                                                       |
+| ------------------------ | ----------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | Your Supabase project URL                                   |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon public key                               |
+| `VITE_ADMIN_PATH`        | (optional) Secret admin panel path, e.g. `/my-secret-admin` |
 
 > After deploying, add the production URL to Supabase **Authentication → URL Configuration → Redirect URLs**, or OAuth logins will bounce.
 
@@ -247,7 +247,7 @@ never exposed to the browser.
 The function sends three attributes: `NAME`, `WHATSAPP`, `REGION`. Brevo
 **silently ignores attributes that don't exist in your account** and still
 returns `2xx`, so the contact is created but those fields come back empty and
-the sync *looks* successful in the logs.
+the sync _looks_ successful in the logs.
 
 - Brevo dashboard → **Contacts → Settings → Contact attributes & CRM**.
 - Add each of these as type **Text** (create them even if similar defaults
@@ -263,6 +263,7 @@ WhatsApp/phone field. The number is stored digits-only without a leading `+`
 ### 3. Configure Secrets and Deploy the Edge Function
 
 **Option A: Via Supabase Dashboard (Recommended)**
+
 1. Go to your Supabase project dashboard.
 2. Navigate to **Edge Functions** (left sidebar) → **Secrets**.
 3. Click **Add new secret** and add two secrets:
@@ -275,6 +276,7 @@ WhatsApp/phone field. The number is stored digits-only without a leading `+`
 
 **Option B: Via Supabase CLI**
 Requires the Supabase CLI logged in and linked to this project.
+
 ```bash
 supabase secrets set BREVO_API_KEY=<your-brevo-api-key>
 supabase secrets set BREVO_LIST_ID=<your-list-id>
@@ -313,11 +315,9 @@ supabase functions deploy sync-brevo-contact
 ## Notes
 
 - **Env var changes** on Vercel require redeployment: **Deployments → Redeploy**
-- The **Telegram community link** (`telegram_url` in `src/config/app-config.json`) is where bug reports, feature requests and support go for now — point it at your own channel.
+- The **Telegram community link** (`community_telegram_url` in `src/config/app-config.json`) is where bug reports, feature requests and support go for now — point it at your own channel.
 - The **report threshold** lives in two places — update **both** if you change it:
   - `app.settings` in the Supabase database (authoritative)
   - `src/config/app-config.json` in the codebase (UI display)
 
-
 - **Roles recap**: `admins` = everything (incl. managing moderators and reading metrics). `moderators` = only approve/skip pending profiles. Regular users = swipe and own one profile. All three share the same Supabase Auth; the tables decide the role.
-
