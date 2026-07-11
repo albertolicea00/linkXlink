@@ -305,7 +305,7 @@ export function Account() {
         </div>
         )}
 
-        <section className="landing__support" style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <section className="landing__support" style={{ marginTop: '1.7rem', marginBottom: '1rem' }}>
           <h2>{t('landing.supportTitle')}</h2>
           <p>{t('landing.supportText')}</p>
           <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
