@@ -19,8 +19,16 @@ export function Privacy() {
         {es ? (
           <>
             <p>
-              Link x Link no requiere registro y no recopila datos personales de los visitantes.
+              Link x Link está destinado únicamente a <strong>personas mayores de 18 años</strong>. 
+              La plataforma no requiere registro y no recopila datos personales de los visitantes.
               El contador de interacciones se guarda únicamente en tu dispositivo.
+            </p>
+            <p>
+              Dado que la aplicación muestra enlaces a WhatsApp para el contacto directo, ten en cuenta que no nos hacemos responsables 
+              del uso que se le dé a esos enlaces. El uso de los servicios de WhatsApp está sujeto a la{' '}
+              <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noreferrer">
+                política de privacidad de WhatsApp
+              </a>.
             </p>
             <p>
               Los perfiles mostrados contienen información publicada voluntariamente: nombre,
@@ -42,8 +50,16 @@ export function Privacy() {
         ) : (
           <>
             <p>
-              Link x Link requires no sign-up and collects no personal data from visitors. The
+              Link x Link is intended only for <strong>individuals over 18 years of age</strong>. 
+              The platform requires no sign-up and collects no personal data from visitors. The
               interaction counter is stored only on your device.
+            </p>
+            <p>
+              Since the application displays links to WhatsApp for direct contact, please note that we are not responsible 
+              for the use of those links. The use of WhatsApp services is subject to{' '}
+              <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noreferrer">
+                WhatsApp's privacy policy
+              </a>.
             </p>
             <p>
               Displayed profiles contain voluntarily published information: name, description,

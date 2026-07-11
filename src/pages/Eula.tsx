@@ -19,9 +19,15 @@ export function Eula() {
         {es ? (
           <>
             <p>
-              Al usar Link x Link aceptas estos términos. La aplicación muestra perfiles públicos
-              con enlaces de contacto a WhatsApp y no es responsable de las conversaciones o
-              acuerdos que ocurran fuera de la plataforma.
+              Al usar Link x Link aceptas estos términos y confirmas que tienes <strong>al menos 18 años de edad</strong>. 
+              La aplicación muestra perfiles públicos con enlaces de contacto a WhatsApp y no se hace responsable 
+              del uso que se les dé, ni de las conversaciones o acuerdos que ocurran fuera de la plataforma.
+            </p>
+            <p>
+              Link x Link no está afiliado con WhatsApp. Al interactuar con los enlaces de contacto, el uso de dichos servicios está sujeto a sus propias políticas. Te recomendamos revisar la{' '}
+              <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noreferrer">
+                política de privacidad de WhatsApp
+              </a>.
             </p>
             <p>
               Los perfiles publicados deben contener información veraz. Los perfiles reportados por
@@ -39,9 +45,15 @@ export function Eula() {
         ) : (
           <>
             <p>
-              By using Link x Link you accept these terms. The application displays public profiles
-              with WhatsApp contact links and is not responsible for conversations or agreements
-              that happen outside the platform.
+              By using Link x Link you accept these terms and confirm that you are <strong>at least 18 years old</strong>. 
+              The application displays public profiles with WhatsApp contact links and is not responsible for their usage, 
+              or any conversations or agreements that happen outside the platform.
+            </p>
+            <p>
+              Link x Link is not affiliated with WhatsApp. When interacting with contact links, the use of those services is subject to their own policies. We recommend reviewing{' '}
+              <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noreferrer">
+                WhatsApp's privacy policy
+              </a>.
             </p>
             <p>
               Published profiles must contain truthful information. Profiles reported by the
