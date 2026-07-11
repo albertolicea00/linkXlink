@@ -2432,7 +2432,19 @@ a.landing__brand {
 
 .account-photos h3 {
   font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+}
+
+.account-photos__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 0.75rem;
+}
+
+.account-photos__header h3 {
+  margin: 0;
 }
 
 .account-photos__list {

@@ -16,7 +16,7 @@ export function PhotoCarousel({ photos, name, profileId }: Props) {
   if (photos.length === 0) {
     return (
       <div className="photo-carousel photo-carousel--empty" aria-hidden="true">
-        <img src={fallbackPhoto(profileId ?? name)} alt="" loading="lazy" draggable={false} />
+        <img src={fallbackPhoto(profileId ?? name)} alt="" loading="eager" decoding="sync" draggable={false} />
       </div>
     )
   }
@@ -28,7 +28,8 @@ export function PhotoCarousel({ photos, name, profileId }: Props) {
       <img
         src={photos[index]}
         alt={t('profile.photoOf', { current: index + 1, total: photos.length }) + ` — ${name}`}
-        loading="lazy"
+        loading="eager"
+        decoding="sync"
         draggable={false}
       />
       {photos.length > 1 && (
