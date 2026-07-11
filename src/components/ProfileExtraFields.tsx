@@ -8,33 +8,38 @@ const INTERESTED: InterestedIn[] = ['male', 'female', 'both']
 interface Props {
   gender: Gender | ''
   interestedIn: InterestedIn | ''
-  interests: string[]
   region: string
   onGender: (g: Gender) => void
   onInterestedIn: (i: InterestedIn) => void
-  onInterests: (list: string[]) => void
   onRegion: (r: string) => void
+  /** Interests are managed separately on the account page, so they can be
+   *  hidden here. Registration passes the picker in. Default: shown. */
+  showInterests?: boolean
+  interests?: string[]
+  onInterests?: (list: string[]) => void
 }
 
 /**
- * Gender / interested-in / interests picker, shared by registration and the
- * account page. Interests are chosen from the config default list, capped at
- * `max_interests`.
+ * Gender / interested-in / region picker, shared by registration and the
+ * account page, with an optional interests picker (chosen from the config
+ * default list, capped at `max_interests`).
  */
 export function ProfileExtraFields({
   gender,
   interestedIn,
-  interests,
   region,
   onGender,
   onInterestedIn,
-  onInterests,
   onRegion,
+  showInterests = true,
+  interests = [],
+  onInterests,
 }: Props) {
   const { t } = useTranslation()
   const max = appConfig.max_interests
 
   const toggleInterest = (key: string) => {
+    if (!onInterests) return
     if (interests.includes(key)) {
       onInterests(interests.filter((i) => i !== key))
     } else if (interests.length < max) {
@@ -90,25 +95,27 @@ export function ProfileExtraFields({
         <span className="field-help">{t('profileFields.regionHelp')}</span>
       </label>
 
-      <div className="field">
-        <span>{t('profileFields.interests', { max })}</span>
-        <div className="interest-chips">
-          {appConfig.interest_options.map((key) => {
-            const selected = interests.includes(key)
-            return (
-              <button
-                key={key}
-                type="button"
-                className={`chip${selected ? ' chip--selected' : ''}`}
-                aria-pressed={selected}
-                onClick={() => toggleInterest(key)}
-              >
-                {t(`interests.${key}`)}
-              </button>
-            )
-          })}
+      {showInterests && (
+        <div className="field">
+          <span>{t('profileFields.interests', { max })}</span>
+          <div className="interest-chips">
+            {appConfig.interest_options.map((key) => {
+              const selected = interests.includes(key)
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`chip${selected ? ' chip--selected' : ''}`}
+                  aria-pressed={selected}
+                  onClick={() => toggleInterest(key)}
+                >
+                  {t(`interests.${key}`)}
+                </button>
+              )
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </>
   )
 }

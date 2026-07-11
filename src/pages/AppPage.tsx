@@ -163,7 +163,7 @@ export function AppPage() {
         ownProfile &&
         (ownProfile.self_hidden ||
           (ownProfile.hidden_until && new Date(ownProfile.hidden_until) > new Date())) && (
-          <Link to="/account" className="paused-banner">
+          <Link to="/account?edit=visibility" className="paused-banner">
             {ownProfile.self_hidden
               ? t('feed.pausedHidden')
               : t('feed.pausedUntil', { date: ownProfile.hidden_until!.slice(0, 10) })}

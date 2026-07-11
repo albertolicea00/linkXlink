@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../components/PageHeader'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
-import { ProfileExtraFields } from '../components/ProfileExtraFields'
+import { EditProfileModal } from '../components/EditProfileModal'
+import { EditInterestsModal } from '../components/EditInterestsModal'
+import { EditVisibilityModal } from '../components/EditVisibilityModal'
 import { TelegramBanner } from '../components/TelegramBanner'
 import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { Loader } from '../components/Loader'
@@ -20,34 +22,9 @@ import { notify } from '../components/Toast'
 import { ageFromBirthdate } from '../lib/age'
 import { whatsappUrl } from '../lib/whatsapp'
 import { supabase } from '../lib/supabase'
-import type { Gender, InterestedIn, Profile } from '../types'
+import type { Profile } from '../types'
 
 const PHOTOS_BUCKET = 'profile-photos'
-
-type Visibility = 'visible' | 'until' | 'hidden'
-
-const DURATIONS: { v: string; unit: 'days' | 'weeks' | 'months'; n: number }[] = [
-  { v: '3d', unit: 'days', n: 3 },
-  { v: '5d', unit: 'days', n: 5 },
-  { v: '7d', unit: 'days', n: 7 },
-  { v: '2w', unit: 'weeks', n: 2 },
-  { v: '3w', unit: 'weeks', n: 3 },
-  { v: '4w', unit: 'weeks', n: 4 },
-  { v: '2m', unit: 'months', n: 2 },
-  { v: '3m', unit: 'months', n: 3 },
-  { v: '6m', unit: 'months', n: 6 },
-]
-
-/** Frontend computes the target date from a chosen duration (yyyy-mm-dd). */
-function computeUntil(v: string): string {
-  const o = DURATIONS.find((x) => x.v === v)
-  if (!o) return ''
-  const d = new Date()
-  if (o.unit === 'days') d.setDate(d.getDate() + o.n)
-  else if (o.unit === 'weeks') d.setDate(d.getDate() + o.n * 7)
-  else d.setMonth(d.getMonth() + o.n)
-  return d.toISOString().slice(0, 10)
-}
 
 export function Account() {
   const { t } = useTranslation()
@@ -56,54 +33,21 @@ export function Account() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loaded, setLoaded] = useState(false)
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [gender, setGender] = useState<Gender | ''>('')
-  const [interestedIn, setInterestedIn] = useState<InterestedIn | ''>('')
-  const [interests, setInterests] = useState<string[]>([])
-  const [visibility, setVisibility] = useState<Visibility>('visible')
-  const [hiddenUntil, setHiddenUntil] = useState('')
-  const [duration, setDuration] = useState('')
-  const [region, setRegion] = useState('')
+  // Which edit modal is open — null = none. `?edit=visibility` (from the "you're
+  // hidden" banner on /app) opens the visibility modal straight away.
+  const [searchParams] = useSearchParams()
+  const [modal, setModal] = useState<null | 'profile' | 'interests' | 'visibility'>(
+    searchParams.get('edit') === 'visibility' ? 'visibility' : null,
+  )
   const [photoStatus, setPhotoStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [showPwForm, setShowPwForm] = useState(false)
   const [newPw, setNewPw] = useState('')
   const [pwBusy, setPwBusy] = useState(false)
   const [pwError, setPwError] = useState(false)
   const [pwDone, setPwDone] = useState(false)
-  const [editing, setEditing] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [visEditing, setVisEditing] = useState(false)
-  const [visStatus, setVisStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [viewPhoto, setViewPhoto] = useState<string | null>(null)
 
   usePageMeta({ title: `${t('account.title')} | Link x Link`, path: '/account', noindex: true })
-
-  // Reset the visibility radios from a profile row (used on load and on cancel
-  // of the standalone visibility card).
-  const hydrateVisibility = (p: Profile) => {
-    if (p.self_hidden) {
-      setVisibility('hidden')
-      setHiddenUntil('')
-    } else if (p.hidden_until && new Date(p.hidden_until) > new Date()) {
-      setVisibility('until')
-      setHiddenUntil(p.hidden_until.slice(0, 10))
-    } else {
-      setVisibility('visible')
-      setHiddenUntil('')
-    }
-  }
-
-  // Populate the editable profile fields from a profile row (used on load and cancel).
-  const hydrate = (p: Profile) => {
-    setName(p.name)
-    setDescription(p.description)
-    setGender((p.gender as Gender) ?? '')
-    setInterestedIn((p.interested_in as InterestedIn) ?? '')
-    setInterests(p.interests ?? [])
-    setRegion(p.region ?? '')
-    hydrateVisibility(p)
-  }
 
   useEffect(() => {
     if (authLoading) return
@@ -116,73 +60,16 @@ export function Account() {
       if (cancelled) return
       setProfile(profile)
       setLoaded(true)
-      if (profile) hydrate(profile)
     })
     return () => {
       cancelled = true
     }
   }, [session?.user?.id, authLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setStatus('saving')
-
-    const patch = {
-      name: name.trim(),
-      description: description.trim(),
-      gender: (gender || undefined) as Gender | undefined,
-      interested_in: (interestedIn || undefined) as InterestedIn | undefined,
-      interests,
-      region: region.trim() || undefined,
-    }
-    const { error } = await updateOwnProfile(patch)
-    if (error) {
-      setStatus('error')
-      notify('error', t('account.saveError'))
-      return
-    }
-    // Reflect saved values locally so the read view is up to date, then exit.
-    setProfile((prev) =>
-      prev
-        ? {
-            ...prev,
-            name: patch.name,
-            description: patch.description,
-            gender: patch.gender ?? null,
-            interested_in: patch.interested_in ?? null,
-            interests,
-            region: patch.region ?? prev.region,
-          }
-        : prev,
-    )
-    setStatus('saved')
-    setEditing(false)
-    notify('success', t('account.saved'))
-  }
-
-  // Visibility is edited in its own card (below the photos), independent of the
-  // profile edit form — save touches only the self_hidden / hidden_until fields.
-  const handleSaveVisibility = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setVisStatus('saving')
-    const patch = {
-      self_hidden: visibility === 'hidden',
-      hidden_until:
-        visibility === 'until' && hiddenUntil ? new Date(hiddenUntil).toISOString() : null,
-      clearHiddenUntil: visibility !== 'until',
-    }
-    const { error } = await updateOwnProfile(patch)
-    if (error) {
-      setVisStatus('error')
-      notify('error', t('account.saveError'))
-      return
-    }
-    setProfile((prev) =>
-      prev ? { ...prev, self_hidden: patch.self_hidden, hidden_until: patch.hidden_until } : prev,
-    )
-    setVisStatus('saved')
-    setVisEditing(false)
-    notify('success', t('account.saved'))
+  // Merge fields saved by an edit modal into the local profile so the read view
+  // updates without a refetch.
+  const applyProfilePatch = (fields: Partial<Profile>) => {
+    setProfile((prev) => (prev ? { ...prev, ...fields } : prev))
   }
 
   // Photo replace lives in the photos box (not the edit form): pick a file →
@@ -267,20 +154,28 @@ export function Account() {
           <div className="account-layout">
             <div className="register__card">
               <div className="register__card-header">
-                <span className="register__card-title">{session?.user.email}</span>
-                {profile.whatsapp && (
-                  <a
-                    className="register__card-phone"
-                    href={whatsappUrl(profile.whatsapp)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    +{profile.whatsapp}
-                  </a>
-                )}
+                <span className="register__card-title">
+                  {t('account.greeting', { email: session?.user.email })}
+                </span>
+                {/* Contact / social links — WhatsApp first; add Instagram, TikTok,
+                    etc. as more rows here when those fields land. */}
+                <div className="register__card-socials">
+                  {profile.whatsapp && (
+                    <a
+                      className="register__card-social"
+                      href={whatsappUrl(profile.whatsapp)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
+                        <path d="M12 0a11.94 11.94 0 0 0-10.2 18.16L0 24l5.98-1.57A11.94 11.94 0 1 0 12 0Zm0 21.82a9.86 9.86 0 0 1-5.03-1.38l-.36-.21-3.55.93.95-3.46-.24-.36A9.88 9.88 0 1 1 12 21.82Zm5.42-7.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35Z" />
+                      </svg>
+                      +{profile.whatsapp}
+                    </a>
+                  )}
+                </div>
               </div>
 
-            {!editing ? (
               <div className="register__form">
                 <div className="account-view">
                   <div className="account-view__row">
@@ -319,79 +214,16 @@ export function Account() {
                       {profile.region || t('account.notSet')}
                     </span>
                   </div>
-                  <div className="account-view__row">
-                    <span className="account-view__label">{t('account.interestsLabel')}</span>
-                    <span className="account-view__value">
-                      {profile.interests && profile.interests.length > 0
-                        ? profile.interests.map((k) => t(`interests.${k}`, k)).join(', ')
-                        : t('account.notSet')}
-                    </span>
-                  </div>
                 </div>
 
                 <button
                   type="button"
                   className="btn btn--small"
-                  onClick={() => {
-                    setStatus('idle')
-                    setEditing(true)
-                  }}
+                  onClick={() => setModal('profile')}
                 >
                   {t('account.edit')}
                 </button>
-                {status === 'saved' && <p className="form-message">{t('account.saved')}</p>}
-
               </div>
-            ) : (
-              <form className="register__form" onSubmit={handleSave}>
-                <label className="field">
-                  {t('admin.name')}
-                  <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} />
-                </label>
-                <label className="field">
-                  {t('admin.description')}
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    maxLength={300}
-                    rows={3}
-                  />
-                </label>
-
-                <ProfileExtraFields
-                  gender={gender}
-                  interestedIn={interestedIn}
-                  interests={interests}
-                  region={region}
-                  onGender={setGender}
-                  onInterestedIn={setInterestedIn}
-                  onInterests={setInterests}
-                  onRegion={setRegion}
-                />
-
-                {status === 'error' && <p className="form-error">{t('account.saveError')}</p>}
-                <div className="account-actions">
-                  <button
-                    type="submit"
-                    className="btn btn--primary"
-                    disabled={status === 'saving' || (visibility === 'until' && !hiddenUntil)}
-                  >
-                    {status === 'saving' ? t('register.submitting') : t('account.save')}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={() => {
-                      if (profile) hydrate(profile)
-                      setStatus('idle')
-                      setEditing(false)
-                    }}
-                  >
-                    {t('account.cancel')}
-                  </button>
-                </div>
-              </form>
-            )}
           </div>
 
           <div className="account-side">
@@ -430,106 +262,42 @@ export function Account() {
             {photoStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
           </div>
 
-          <div className="account-visibility">
-            <div className="account-visibility__header">
-              <h3>{t('account.visibilityTitle')}</h3>
-              {!visEditing && (
-                <span className="account-view__status">{visibilityLabel()}</span>
-              )}
-            </div>
-
-            {!visEditing ? (
+          <div className="account-interests">
+            <div className="account-interests__header">
+              <h3>{t('account.interestsLabel')}</h3>
               <button
                 type="button"
                 className="btn btn--small"
-                onClick={() => {
-                  setVisStatus('idle')
-                  setVisEditing(true)
-                }}
+                onClick={() => setModal('interests')}
               >
                 {t('account.edit')}
               </button>
+            </div>
+            {profile.interests && profile.interests.length > 0 ? (
+              <div className="interest-chips">
+                {profile.interests.map((k) => (
+                  <span key={k} className="chip chip--static">
+                    {t(`interests.${k}`, k)}
+                  </span>
+                ))}
+              </div>
             ) : (
-              <form className="register__form" onSubmit={handleSaveVisibility}>
-                <fieldset className="visibility">
-                  <label className="radio-row">
-                    <input
-                      type="radio"
-                      name="visibility"
-                      checked={visibility === 'visible'}
-                      onChange={() => setVisibility('visible')}
-                    />
-                    {t('account.visible')}
-                  </label>
-                  <label className="radio-row">
-                    <input
-                      type="radio"
-                      name="visibility"
-                      checked={visibility === 'until'}
-                      onChange={() => setVisibility('until')}
-                    />
-                    {t('account.until')}
-                  </label>
-                  {visibility === 'until' && (
-                    <div className="visibility__duration">
-                      <select
-                        value={duration}
-                        onChange={(e) => {
-                          setDuration(e.target.value)
-                          setHiddenUntil(e.target.value ? computeUntil(e.target.value) : '')
-                        }}
-                      >
-                        <option value="" disabled>
-                          {t('account.durationChoose')}
-                        </option>
-                        {DURATIONS.map((d) => (
-                          <option key={d.v} value={d.v}>
-                            {t(`account.${d.unit}`, { n: d.n })}
-                          </option>
-                        ))}
-                      </select>
-                      {hiddenUntil && (
-                        <span className="field-help">
-                          {t('account.hiddenUntilInfo', { date: hiddenUntil })}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <label className="radio-row">
-                    <input
-                      type="radio"
-                      name="visibility"
-                      checked={visibility === 'hidden'}
-                      onChange={() => setVisibility('hidden')}
-                    />
-                    {t('account.hidden')}
-                  </label>
-                  <span className="field-help">{t('account.visibilityHelp')}</span>
-                </fieldset>
-
-                {visStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
-                <div className="account-actions">
-                  <button
-                    type="submit"
-                    className="btn btn--primary"
-                    disabled={visStatus === 'saving' || (visibility === 'until' && !hiddenUntil)}
-                  >
-                    {visStatus === 'saving' ? t('register.submitting') : t('account.save')}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={() => {
-                      if (profile) hydrateVisibility(profile)
-                      setVisStatus('idle')
-                      setVisEditing(false)
-                    }}
-                  >
-                    {t('account.cancel')}
-                  </button>
-                </div>
-              </form>
+              <p className="account-photos__empty">{t('account.notSet')}</p>
             )}
+          </div>
+
+          <div className="account-visibility">
+            <div className="account-visibility__header">
+              <h3>{t('account.visibilityTitle')}</h3>
+              <button
+                type="button"
+                className="btn btn--small"
+                onClick={() => setModal('visibility')}
+              >
+                {t('account.edit')}
+              </button>
+            </div>
+            <span className="account-view__status">{visibilityLabel()}</span>
           </div>
           </div>
         </div>
@@ -606,6 +374,29 @@ export function Account() {
           title={t('account.pwDoneTitle')}
           message={t('account.pwDoneText')}
           onClose={() => setPwDone(false)}
+        />
+      )}
+
+      {modal === 'profile' && profile && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setModal(null)}
+          onSaved={applyProfilePatch}
+        />
+      )}
+      {modal === 'interests' && profile && (
+        <EditInterestsModal
+          profile={profile}
+          onClose={() => setModal(null)}
+          onSaved={applyProfilePatch}
+        />
+      )}
+      {modal === 'visibility' && profile && (
+        <EditVisibilityModal
+          profile={profile}
+          preselectVisible={searchParams.get('edit') === 'visibility'}
+          onClose={() => setModal(null)}
+          onSaved={applyProfilePatch}
         />
       )}
     </div>
