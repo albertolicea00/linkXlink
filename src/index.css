@@ -1982,9 +1982,9 @@ a.landing__brand {
 
 .chip--static {
   cursor: default;
-  background: var(--color-primary-glow);
+  background: transparent;
   color: var(--color-primary-dark);
-  border-color: transparent;
+  border-color: var(--color-primary-glow);
 }
 
 /* Profile card extras */
@@ -2556,7 +2556,7 @@ a.landing__brand {
 @media (min-width: 768px) {
   .account-layout {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
   }
   .account-layout > .register__card {
     flex: 1.5;
@@ -2565,5 +2565,8 @@ a.landing__brand {
   .account-layout > .account-side {
     flex: 1;
     min-width: 0;
+    /* Match the taller left card's height and spread the cards to fill it, so
+       both columns end at the same line. */
+    justify-content: space-between;
   }
 }
