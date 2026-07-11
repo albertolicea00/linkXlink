@@ -228,7 +228,23 @@ export function Account() {
 
           <div className="account-side">
           <div className="account-photos">
-            <h3>{t('account.photosTitle')}</h3>
+            <div className="account-photos__header">
+              <h3>{t('account.photosTitle')}</h3>
+              <label className="btn btn--small account-photos__replace">
+                {photoStatus === 'saving' ? t('register.submitting') : t('account.replacePhoto')}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  disabled={photoStatus === 'saving'}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) void handlePhotoReplace(file)
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            </div>
             {profile.photos && profile.photos.length > 0 ? (
               <div className="account-photos__list">
                 {profile.photos.map((url, i) => (
@@ -244,20 +260,6 @@ export function Account() {
             ) : (
               <p className="account-photos__empty">{t('account.notSet')}</p>
             )}
-            <label className="btn account-photos__replace">
-              {photoStatus === 'saving' ? t('register.submitting') : t('account.replacePhoto')}
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                disabled={photoStatus === 'saving'}
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) void handlePhotoReplace(file)
-                  e.target.value = ''
-                }}
-              />
-            </label>
             {photoStatus === 'saved' && <p className="form-message">{t('account.saved')}</p>}
             {photoStatus === 'error' && <p className="form-error">{t('account.saveError')}</p>}
           </div>
