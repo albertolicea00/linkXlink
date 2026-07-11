@@ -1086,6 +1086,28 @@ a {
   color: var(--color-danger);
 }
 
+/* iOS manual "Add to Home Screen" walkthrough */
+.ios-hint__steps {
+  margin: 0.75rem 0 1.25rem;
+  padding-left: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.ios-hint__steps li {
+  padding-left: 0.25rem;
+}
+
+.ios-hint__glyph {
+  display: inline-block;
+  vertical-align: -0.25em;
+  margin-left: 0.15rem;
+  color: var(--color-primary);
+}
+
 /* Forms */
 .field {
   display: flex;

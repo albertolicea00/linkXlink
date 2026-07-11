@@ -5,6 +5,8 @@ import { useNav } from '../context/nav'
 import { AuthGateModal } from './AuthGateModal'
 import { ADMIN_PATH } from '../lib/adminPath'
 import { useInstallPrompt } from '../hooks/useInstallPrompt'
+import { useIOSInstallHint } from '../hooks/useIOSInstallHint'
+import { IOSInstallHint } from './IOSInstallHint'
 import appConfig from '../config/app-config.json'
 
 /**
@@ -20,10 +22,12 @@ export function NavBar() {
   const { t } = useTranslation()
   const { session, role, loading } = useNav()
   const { canInstall, promptInstall } = useInstallPrompt()
+  const { canInstallIOS, needsSafari, isIPad, autoShow, markSeen } = useIOSInstallHint()
   const { pathname, search } = useLocation()
   // Logged-out visitors still see "Account" — tapping it opens the login/
   // register modal instead of blocking.
   const [authOpen, setAuthOpen] = useState(false)
+  const [iosHintOpen, setIosHintOpen] = useState(false)
 
   // This modal always opens as mode="auth" (only reachable while signed out).
   // Its `mode` prop never updates on its own, so a successful login inside it
@@ -33,6 +37,15 @@ export function NavBar() {
   useEffect(() => {
     if (session) setAuthOpen(false)
   }, [session])
+
+  // iOS can't fire a native install prompt, so nudge the manual walkthrough
+  // once per device (dismissal persisted in localStorage by the hook).
+  useEffect(() => {
+    if (autoShow) {
+      setIosHintOpen(true)
+      markSeen()
+    }
+  }, [autoShow, markSeen])
 
   if (loading) return null
 
@@ -102,7 +115,22 @@ export function NavBar() {
         </button>
       )}
 
+      {/* iOS: no native prompt — this button reopens the manual walkthrough. */}
+      {!canInstall && (canInstallIOS || needsSafari) && (
+        <button type="button" className="navbar__item" onClick={() => setIosHintOpen(true)}>
+          <Icon.Install />
+          <span>{t('nav.install')}</span>
+        </button>
+      )}
+
       {authOpen && <AuthGateModal mode="auth" onClose={() => setAuthOpen(false)} />}
+      {iosHintOpen && (
+        <IOSInstallHint
+          needsSafari={needsSafari}
+          isIPad={isIPad}
+          onClose={() => setIosHintOpen(false)}
+        />
+      )}
     </nav>
   )
 }

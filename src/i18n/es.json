@@ -399,6 +399,18 @@
     "share": "Compartir",
     "install": "Instalar"
   },
+  "iosInstall": {
+    "title": "Instala esta app",
+    "intro": "Añade Link x Link a tu pantalla de inicio — se abre como una app real, a pantalla completa.",
+    "step1": "Abre esta página en Safari (no Chrome ni Firefox — en iOS no pueden añadir a la pantalla de inicio).",
+    "step2": "Toca el botón Compartir en la barra {{where}}",
+    "step3": "Desliza hacia abajo y toca «Añadir a pantalla de inicio».",
+    "step4": "Toca «Añadir» — el icono aparece en tu pantalla de inicio y se abre a pantalla completa.",
+    "top": "superior",
+    "bottom": "inferior",
+    "needsSafari": "En iPhone y iPad solo Safari puede añadir apps a la pantalla de inicio. Abre esta página en Safari y luego toca Compartir → Añadir a pantalla de inicio.",
+    "gotIt": "Entendido"
+  },
   "footer": {
     "eula": "Términos",
     "privacy": "Privacidad",

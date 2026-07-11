@@ -400,6 +400,18 @@
     "share": "Share",
     "install": "Install"
   },
+  "iosInstall": {
+    "title": "Install this app",
+    "intro": "Add Link x Link to your Home Screen — it opens like a real app, full screen.",
+    "step1": "Open this page in Safari (not Chrome or Firefox — they can't add to the Home Screen on iOS).",
+    "step2": "Tap the Share button in the {{where}} toolbar",
+    "step3": "Scroll down and tap “Add to Home Screen”.",
+    "step4": "Tap “Add” — the icon lands on your Home Screen and launches full screen.",
+    "top": "top",
+    "bottom": "bottom",
+    "needsSafari": "On iPhone and iPad, only Safari can add apps to the Home Screen. Open this page in Safari, then tap Share → Add to Home Screen.",
+    "gotIt": "Got it"
+  },
   "footer": {
     "eula": "Terms",
     "privacy": "Privacy",

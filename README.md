@@ -35,7 +35,7 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 📊 **Metrics**             | Anonymous per-device views & WhatsApp clicks (`profile_events`)                                                                                          |
 | 🔀 **Rotation**            | Per-device least-seen-first ordering — not everyone sees the same people first                                                                           |
 | 🌐 **i18n**                | Spanish (default) and English                                                                                                                            |
-| 📱 **Installable PWA**     | Offline support: cached profiles + photos, auto-updating service worker                                                                                  |
+| 📱 **Installable PWA**     | Offline support: cached profiles + photos, auto-updating service worker; native install prompt on Chromium, guided manual walkthrough on iOS Safari                                                                                  |
 | 🔐 **Server-side gate**    | Feed access enforced by RLS (not just a popup); hidden admin path (`VITE_ADMIN_PATH`)                                                                    |
 | ⚙️ **Parametrizable**      | Limits, gates, preview, tracking, interests, deck behavior — all in `src/config/app-config.json`                                                         |
 
@@ -63,7 +63,7 @@ Link x Link is an installable PWA, but **how** you install it depends on the bro
 | Platform / browser          | How install works                                                                                                                                                    |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Chrome / Edge / Android** | Fire a `beforeinstallprompt` event. The app captures it (`src/hooks/useInstallPrompt.ts`) and can show a custom **Install app** button that opens the native prompt. |
-| **iOS / iPadOS Safari**     | **No install API exists.** Apple never fires `beforeinstallprompt` — installation is 100% manual and cannot be triggered from JavaScript.                            |
+| **iOS / iPadOS Safari**     | **No install API exists.** Apple never fires `beforeinstallprompt` — installation is 100% manual and cannot be triggered from JavaScript. The app detects the case and shows a manual walkthrough (`src/hooks/useIOSInstallHint.ts` + `src/components/IOSInstallHint.tsx`). |
 
 ### Why the install button doesn't appear on iPhone/iPad
 
@@ -76,7 +76,7 @@ This is an **iOS platform limitation, not a bug**. Safari on iOS does not suppor
 3. Scroll down and tap **Add to Home Screen** / **Añadir a pantalla de inicio**.
 4. Confirm — the app icon lands on the Home Screen and launches standalone (its own window, no Safari chrome).
 
-> To detect an installed session, check `window.matchMedia('(display-mode: standalone)').matches` (or `navigator.standalone` on iOS). To nudge iOS users, the app would need an iOS-specific banner with these manual steps — it does **not** ship one yet.
+> To detect an installed session, check `window.matchMedia('(display-mode: standalone)').matches` (or `navigator.standalone` on iOS). The app **does** ship an iOS-specific nudge: `useIOSInstallHint` detects iOS Safari (not yet standalone) and `IOSInstallHint` renders these manual steps in an overlay — auto-shown once per device (`lxl_ios_hint_seen`) and reopenable from the NavBar **Install** button. Third-party iOS browsers (Chrome/Firefox), which can't add to the Home Screen at all, get an "open in Safari" message instead.
 
 ---
 
