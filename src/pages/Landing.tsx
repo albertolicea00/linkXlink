@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { useNav } from '../context/nav'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
-import { ADMIN_PATH } from '../lib/adminPath'
 import appConfig from '../config/app-config.json'
 
 interface Props {
@@ -53,8 +52,6 @@ export function Landing({ lang }: Props) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [checked, setChecked] = useState(hasAcceptedTerms)
-  const { session, role, hasProfile, loading: navLoading } = useNav()
-  const isStaff = role === 'admin' || role === 'moderator'
 
   useEffect(() => {
     if (lang && i18n.resolvedLanguage !== lang) {
@@ -114,8 +111,6 @@ export function Landing({ lang }: Props) {
             </span>
           </label>
           <div className="landing__cta">
-            {/* Signed out: accept terms → enter, plus register.
-                Signed in: enter the app, moderate (staff), and edit/create profile. */}
             <button
               type="button"
               className="btn btn--primary btn--large"
@@ -127,24 +122,6 @@ export function Landing({ lang }: Props) {
             >
               {t('landing.enter')}
             </button>
-
-            {!navLoading && session && isStaff && (
-              <Link to={`${ADMIN_PATH}?view=moderator`} className="btn btn--large">
-                {t('nav.moderator')}
-              </Link>
-            )}
-
-            {!navLoading && session && hasProfile && (
-              <Link to="/account" className="btn btn--large">
-                {t('landing.myProfile')}
-              </Link>
-            )}
-
-            {!navLoading && (!session || !hasProfile) && (
-              <Link to="/register" className="btn btn--large">
-                {t('landing.register')}
-              </Link>
-            )}
           </div>
         </section>
 
@@ -183,8 +160,19 @@ export function Landing({ lang }: Props) {
                   i18nKey="landing.how6"
                   components={{
                     tg: (
-                      <a href={appConfig.telegram_url} target="_blank" rel="noopener noreferrer" />
+                      <a
+                        href={appConfig.community_telegram_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
                     ),
+                    wa: (
+                      <a
+                        href={appConfig.community_whatsapp_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    )
                   }}
                 />
               </span>

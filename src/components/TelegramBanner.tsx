@@ -11,14 +11,14 @@ function TelegramIcon() {
 
 /**
  * Community CTA: for now the Telegram channel doubles as bug/feature reports
- * and customer service. Link comes from app-config (`telegram_url`).
+ * and customer service. Link comes from app-config (`community_telegram_url`).
  */
 export function TelegramBanner() {
   const { t } = useTranslation()
   return (
     <a
       className="tg-banner"
-      href={appConfig.telegram_url}
+      href={appConfig.community_telegram_url}
       target="_blank"
       rel="noopener noreferrer"
     >
