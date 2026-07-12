@@ -7,6 +7,7 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { EditProfileModal } from '../components/EditProfileModal'
 import { EditInterestsModal } from '../components/EditInterestsModal'
 import { EditVisibilityModal } from '../components/EditVisibilityModal'
+import { CropModal } from '../components/CropModal'
 import { TelegramBanner } from '../components/TelegramBanner'
 import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { Loader } from '../components/Loader'
@@ -46,6 +47,8 @@ export function Account() {
   const [pwError, setPwError] = useState(false)
   const [pwDone, setPwDone] = useState(false)
   const [viewPhoto, setViewPhoto] = useState<string | null>(null)
+  // File waiting to be cropped before replacing the photo (null = modal closed).
+  const [cropFile, setCropFile] = useState<File | null>(null)
 
   usePageMeta({ title: `${t('account.title')} | Link x Link`, path: '/account', noindex: true })
 
@@ -239,7 +242,7 @@ export function Account() {
                   disabled={photoStatus === 'saving'}
                   onChange={(e) => {
                     const file = e.target.files?.[0]
-                    if (file) void handlePhotoReplace(file)
+                    if (file) setCropFile(file)
                     e.target.value = ''
                   }}
                 />
@@ -391,6 +394,16 @@ export function Account() {
           profile={profile}
           onClose={() => setModal(null)}
           onSaved={applyProfilePatch}
+        />
+      )}
+      {cropFile && (
+        <CropModal
+          file={cropFile}
+          onCancel={() => setCropFile(null)}
+          onCropped={(f) => {
+            setCropFile(null)
+            void handlePhotoReplace(f)
+          }}
         />
       )}
       {modal === 'visibility' && profile && (

@@ -117,6 +117,10 @@
     "text": "Ayuda a mantener la app, reporta fallos, pide nuevas funciones o soporte.",
     "join": "Unirme"
   },
+  "crop": {
+    "zoom": "Zoom",
+    "confirm": "Usar foto"
+  },
   "auth": {
     "continueWith": "Continuar con {{provider}}",
     "or": "o con tu correo",
@@ -168,7 +172,8 @@
     "whatsappPlaceholder": "Número (sin código de país)",
     "whatsappHelp": "El número al que te escribirán al pulsar tu tarjeta. Se valida según el país que elijas.",
     "photos": "Fotos (máx. {{max}})",
-    "photosHelp": "Se mostrarán en tu tarjeta. Se optimizan automáticamente antes de subirse.",
+    "photosHelp": "Se mostrarán en tu tarjeta. Mejor en vertical 4:5 (ej. 1080×1350) — se recortan a ese formato y se optimizan antes de subirse.",
+    "photoReady": "Foto recortada y lista ✓",
     "validationAge": "Debes ser mayor de 18 años para registrarte.",
     "validationGender": "Selecciona tu género.",
     "phoneRequired": "Escribe tu número de WhatsApp.",
@@ -267,7 +272,7 @@
     "months": "{{n}} meses",
     "hiddenUntilInfo": "Estarás oculto hasta el {{date}}.",
     "replacePhoto": "Cambiar foto",
-    "replacePhotoHelp": "Sube una nueva imagen para reemplazar la actual.",
+    "replacePhotoHelp": "Sube una nueva imagen para reemplazar la actual. Mejor en vertical 4:5 — se recorta antes de subirse.",
     "changePassword": "Cambiar contraseña",
     "newPassword": "Nueva contraseña",
     "savePassword": "Guardar contraseña",

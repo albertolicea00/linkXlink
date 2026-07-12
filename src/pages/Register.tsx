@@ -10,6 +10,7 @@ import { ThemeToggle } from '../components/ThemeToggle'
 import { PhoneInput } from '../components/PhoneInput'
 import { AuthPanel } from '../components/AuthPanel'
 import { ProfileExtraFields } from '../components/ProfileExtraFields'
+import { CropModal } from '../components/CropModal'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
@@ -58,6 +59,8 @@ export function Register({ lang }: Props) {
   const [interests, setInterests] = useState<string[]>([])
   const [region, setRegion] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  // File waiting to be cropped in the CropModal (null = modal closed).
+  const [cropFile, setCropFile] = useState<File | null>(null)
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({})
   const [message, setMessage] = useState<string | null>(null)
   const [done, setDone] = useState(false)
@@ -434,12 +437,15 @@ export function Register({ lang }: Props) {
                     <input
                       type="file"
                       accept="image/*"
-                      multiple={appConfig.max_photos_per_profile > 1}
                       onChange={(e) => {
-                        setFiles(Array.from(e.target.files ?? []))
-                        touch('photos')
+                        const file = e.target.files?.[0]
+                        if (file) setCropFile(file)
+                        e.target.value = ''
                       }}
                     />
+                    {files.length > 0 && (
+                      <span className="field-help">{t('register.photoReady')}</span>
+                    )}
                     <span className="field-help">{t('register.photosHelp')}</span>
                     {fieldError('photos') && (
                       <span className="field-error">{fieldError('photos')}</span>
@@ -508,6 +514,18 @@ export function Register({ lang }: Props) {
           </p>
         </div>
       </footer>
+
+      {cropFile && (
+        <CropModal
+          file={cropFile}
+          onCancel={() => setCropFile(null)}
+          onCropped={(f) => {
+            setFiles([f])
+            touch('photos')
+            setCropFile(null)
+          }}
+        />
+      )}
     </div>
   )
 }
