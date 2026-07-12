@@ -80,6 +80,19 @@ This is an **iOS platform limitation, not a bug**. Safari on iOS does not suppor
 
 ---
 
+## 🎥 Promotional Assets & Videos
+
+Marketing materials, video showcases, and feature promos are managed in an isolated repository that mounts into a `videos/` folder within this project.
+
+To easily set up the promotional assets locally (run this from the root of this repository):
+
+```bash
+curl -sL https://raw.githubusercontent.com/albertolicea00/linkXlink-promo-assets/main/setup.sh | bash
+```
+*(If you are new and haven't cloned this repo yet, you can clone both at once from anywhere by adding `--with-parent` to the script arguments).*
+
+---
+
 ## 📚 Docs
 
 | File                                   | Contents                           |
