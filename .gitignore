@@ -75,4 +75,6 @@ plan/
 .agents/
 
 # hyperframes stuff
-videos/*
+.debug/
+videos/
+failures/
