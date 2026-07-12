@@ -31,29 +31,33 @@ export function ProfileCard({
 
   return (
     <article className="profile-card">
-      <PhotoCarousel photos={profile.photos ?? []} name={profile.name} profileId={profile.id} />
-      <div className="profile-card__body">
-        <h2 className="profile-card__name">
-          {profile.name}
-          {appConfig.show_age && age !== null && (
-            <span className="profile-card__age">, {age}</span>
+      <div className="profile-card__media">
+        <PhotoCarousel photos={profile.photos ?? []} name={profile.name} profileId={profile.id} />
+        <div className="profile-card__overlay">
+          <h2 className="profile-card__name">
+            {profile.name}
+            {appConfig.show_age && age !== null && (
+              <span className="profile-card__age">, {age}</span>
+            )}
+          </h2>
+          {profile.region && (
+            <p className="profile-card__region">
+              <span aria-hidden>📍</span> {profile.region}
+            </p>
           )}
-        </h2>
-        {profile.region && (
-          <p className="profile-card__region">
-            <span aria-hidden>📍</span> {profile.region}
-          </p>
-        )}
-        <p className="profile-card__description">{profile.description}</p>
-        {interests.length > 0 && (
-          <ul className="profile-card__interests">
-            {interests.map((key) => (
-              <li key={key} className="chip chip--static">
-                {t(`interests.${key}`, key)}
-              </li>
-            ))}
-          </ul>
-        )}
+          {profile.description && (
+            <p className="profile-card__description">{profile.description}</p>
+          )}
+          {interests.length > 0 && (
+            <ul className="profile-card__interests">
+              {interests.map((key) => (
+                <li key={key} className="chip profile-card__chip">
+                  {t(`interests.${key}`, key)}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
       <div className="profile-card__actions">
         {actions !== undefined ? (
