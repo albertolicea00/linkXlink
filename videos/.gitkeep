@@ -1,1 +1,8 @@
+This `videos/` directory serves as a shared bridge between two repositories:
 
+1. **Parent Repository:** `albertolicea00/linkXlink` (Core application code)
+2. **Assets Repository:** `albertolicea00/linkXlink-promo-assets` (Promotional videos and marketing materials)
+
+This file (`.gitkeep`) ensures that the `videos/` folder structure exists in the parent repository, acting as a mounting point. However, the actual video files and heavy marketing assets inside this directory are tracked and managed entirely by the isolated `linkXlink-promo-assets` repository. 
+
+This architecture keeps the core application repository clean and lightweight while providing a dedicated space for promotional content.
