@@ -82,7 +82,7 @@ This is an **iOS platform limitation, not a bug**. Safari on iOS does not suppor
 
 ## 🎥 Promotional Assets & Videos
 
-Marketing materials, video showcases, and feature promos are managed in an isolated repository that mounts into a `videos/` folder within this project.
+Marketing materials, video showcases, and feature promos are managed in an isolated repository — see the promo assets repo here: [linkxlink-promo-assets](https://github.com/albertolicea00/linkxlink-promo-assets). It mounts into a `videos/` folder within this project.
 
 To easily set up the promotional assets locally (run this from the root of this repository):
 
