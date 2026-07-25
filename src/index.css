@@ -2309,12 +2309,44 @@ a.landing__brand {
 }
 
 /* Telegram community banner */
+/* Shell carries the margin so the absolutely-positioned close button anchors to
+   the banner's box (the button can't be nested inside the <a>). */
+.tg-banner-shell {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.tg-banner__close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tg-banner__close:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
 .tg-banner {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin: 1rem 0 1rem;
-  padding: 0.9rem 1rem;
+  /* Right padding keeps the text clear of the close button. */
+  padding: 0.9rem 2.4rem 0.9rem 1rem;
   border-radius: 14px;
   border: 1px solid var(--color-border);
   background: linear-gradient(

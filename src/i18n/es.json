@@ -115,7 +115,8 @@
     "title": "Únete a nuestra comunidad de Telegram",
     "whatsappTitle": "Únete a nuestra comunidad de WhatsApp",
     "text": "Ayuda a mantener la app, reporta fallos, pide nuevas funciones o soporte.",
-    "join": "Unirme"
+    "join": "Unirme",
+    "dismiss": "Ocultar por ahora"
   },
   "crop": {
     "zoom": "Zoom",

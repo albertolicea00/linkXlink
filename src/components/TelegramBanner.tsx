@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import appConfig from '../config/app-config.json'
+import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
 
 function TelegramIcon() {
   return (
@@ -12,22 +14,43 @@ function TelegramIcon() {
 /**
  * Community CTA: for now the Telegram channel doubles as bug/feature reports
  * and customer service. Link comes from app-config (`community_telegram_url`).
+ * Dismissable — snoozed for `community_banner_snooze_days`, not forever.
  */
 export function TelegramBanner() {
   const { t } = useTranslation()
+  const [dismissed, setDismissed] = useState(() => isBannerDismissed('telegram'))
+
+  if (dismissed) return null
+
   return (
-    <a
-      className="tg-banner"
-      href={appConfig.community_telegram_url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <TelegramIcon />
-      <span className="tg-banner__text">
-        <strong>{t('community.title')}</strong>
-        <span>{t('community.text')}</span>
-      </span>
-      <span className="tg-banner__cta">{t('community.join')}</span>
-    </a>
+    // The close button can't live inside the <a> (nested interactive element),
+    // so the shell positions it over the banner instead.
+    <div className="tg-banner-shell">
+      <a
+        className="tg-banner"
+        href={appConfig.community_telegram_url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <TelegramIcon />
+        <span className="tg-banner__text">
+          <strong>{t('community.title')}</strong>
+          <span>{t('community.text')}</span>
+        </span>
+        <span className="tg-banner__cta">{t('community.join')}</span>
+      </a>
+      <button
+        type="button"
+        className="tg-banner__close"
+        aria-label={t('community.dismiss')}
+        title={t('community.dismiss')}
+        onClick={() => {
+          dismissBanner('telegram')
+          setDismissed(true)
+        }}
+      >
+        ×
+      </button>
+    </div>
   )
 }

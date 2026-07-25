@@ -115,7 +115,8 @@
     "title": "Join our Telegram community",
     "whatsappTitle": "Join our WhatsApp community",
     "text": "Help keep the app running, report bugs, request features or get support.",
-    "join": "Join"
+    "join": "Join",
+    "dismiss": "Hide for now"
   },
   "crop": {
     "zoom": "Zoom",

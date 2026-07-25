@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import appConfig from '../config/app-config.json'
+import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
 
 function WhatsAppIcon() {
   return (
@@ -13,23 +15,41 @@ function WhatsAppIcon() {
  * Community CTA for the WhatsApp group — same shape as the Telegram banner,
  * green WhatsApp styling. Link comes from app-config (`community_whatsapp_url`);
  * renders nothing while that URL is empty (feature not configured yet).
+ * Dismissable — snoozed for `community_banner_snooze_days`, not forever.
  */
 export function WhatsAppBanner() {
   const { t } = useTranslation()
-  if (!appConfig.community_whatsapp_url) return null
+  const [dismissed, setDismissed] = useState(() => isBannerDismissed('whatsapp'))
+
+  if (!appConfig.community_whatsapp_url || dismissed) return null
+
   return (
-    <a
-      className="tg-banner tg-banner--whatsapp"
-      href={appConfig.community_whatsapp_url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <WhatsAppIcon />
-      <span className="tg-banner__text">
-        <strong>{t('community.whatsappTitle')}</strong>
-        <span>{t('community.text')}</span>
-      </span>
-      <span className="tg-banner__cta">{t('community.join')}</span>
-    </a>
+    <div className="tg-banner-shell">
+      <a
+        className="tg-banner tg-banner--whatsapp"
+        href={appConfig.community_whatsapp_url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <WhatsAppIcon />
+        <span className="tg-banner__text">
+          <strong>{t('community.whatsappTitle')}</strong>
+          <span>{t('community.text')}</span>
+        </span>
+        <span className="tg-banner__cta">{t('community.join')}</span>
+      </a>
+      <button
+        type="button"
+        className="tg-banner__close"
+        aria-label={t('community.dismiss')}
+        title={t('community.dismiss')}
+        onClick={() => {
+          dismissBanner('whatsapp')
+          setDismissed(true)
+        }}
+      >
+        ×
+      </button>
+    </div>
   )
 }
