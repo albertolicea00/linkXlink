@@ -265,16 +265,16 @@ a {
   position: relative;
   text-align: center;
   padding: 3rem 0 2.5rem;
-  /* The glow below sticks out 350px on each side; clip it horizontally or the
-     whole landing gets a horizontal scrollbar. `clip` (not `hidden`) so the
-     glow's vertical bleed above the hero survives and no scroll box is made. */
-  overflow-x: clip;
 }
 
 .landing__hero::before {
   content: "";
   position: absolute;
-  inset: -160px -350px auto;
+  /* Bleeds exactly the landing's own inline padding: the glow still reaches the
+     screen edges on mobile, but nothing sticks out past the page box (a wider
+     bleed made the whole landing scroll sideways, and clipping it left a hard
+     edge because the gradient got cut mid-intensity). */
+  inset: -160px -1.25rem auto;
   height: 260px;
   background: radial-gradient(
     closest-side,
