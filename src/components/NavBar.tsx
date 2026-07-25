@@ -101,12 +101,12 @@ export function NavBar() {
         </Link>
       )}
 
-      {/* {!isAdmin && ( */}
+      {!isAdmin && (
         <button type="button" className="navbar__item" onClick={share}>
           <Icon.Share />
           <span>{t('nav.share')}</span>
         </button>
-      {/* )} */}
+      )}
 
       {canInstall && (
         <button type="button" className="navbar__item" onClick={() => void promptInstall()}>
