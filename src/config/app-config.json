@@ -21,7 +21,8 @@
   "dev_flags": [
     { "key": "showFakes", "labelKey": "dev.showFakes" },
     { "key": "onlyMigratedUnclaimed", "labelKey": "dev.onlyMigrated" },
-    { "key": "bypassLimits", "labelKey": "dev.bypassLimits" }
+    { "key": "bypassLimits", "labelKey": "dev.bypassLimits" },
+    { "key": "showMigratedStat", "labelKey": "dev.showMigratedStat" }
   ],
   "default_language": "es",
   "supported_languages": [

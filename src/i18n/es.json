@@ -299,7 +299,8 @@
     "showFakes": "Ver solo perfiles de prueba (fake)",
     "bypassRelease": "Saltar la fecha de lanzamiento",
     "onlyMigrated": "Ver solo migradas sin reclamar",
-    "bypassLimits": "Saltar el límite diario de swaps/clics"
+    "bypassLimits": "Saltar el límite diario de swaps/clics",
+    "showMigratedStat": "Ver la stat de perfiles migrados"
   },
   "admin": {
     "title": "Admin",

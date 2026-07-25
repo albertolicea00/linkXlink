@@ -299,7 +299,8 @@
     "showFakes": "Show only test (fake) profiles",
     "bypassRelease": "Bypass the release date",
     "onlyMigrated": "Show only unclaimed migrated profiles",
-    "bypassLimits": "Bypass the daily swap/click limit"
+    "bypassLimits": "Bypass the daily swap/click limit",
+    "showMigratedStat": "Show the migrated-profiles stat"
   },
   "admin": {
     "title": "Admin",
