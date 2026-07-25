@@ -21,6 +21,7 @@ import { ToastRoot } from './components/Toast'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
+import { isStandalone } from './lib/whatsapp'
 import { ADMIN_PATH } from './lib/adminPath'
 import { useOffline } from './hooks/useOffline'
 import { WarningBanner } from './components/WarningBanner'
@@ -89,6 +90,16 @@ const router = createBrowserRouter([
     ],
   },
 ])
+
+// Installed app: a cold launch should open the deck, not the marketing page.
+// Rewritten BEFORE the router mounts (so no landing flash, no history entry) and
+// only for the launch URL itself — navigating to the landing later from inside
+// the app (the /account link) still works, since this never runs again.
+// First run is exempt: the terms checkbox lives on the landing.
+const LAUNCH_PATHS = ['/', '/es', '/en']
+if (isStandalone() && hasAcceptedTerms() && LAUNCH_PATHS.includes(window.location.pathname)) {
+  window.history.replaceState(null, '', '/app')
+}
 
 // Global, not tied to any page's lifecycle: retry queued profile_events the
 // instant connectivity returns, and once on boot in case events queued in a
