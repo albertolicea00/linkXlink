@@ -94,13 +94,6 @@ export function ModeratorDashboard() {
 
   return (
     <div className="admin-panel">
-      <div className="admin-stats admin-stats--mod">
-        <StatCard value={approvedByMe} label={t('admin.statsApprovedByMe')} variant="approved" />
-        <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
-        <StatCard value={deniedByMe} label={t('admin.statsDeniedByMe')} variant="banned" />
-        <StatCard value={skippedToday} label={t('admin.statsSkippedToday')} variant="total" />
-      </div>
-
       <section className="admin-moderation">
         <h2>{t('admin.pendingTitle')}</h2>
         <p className="field-help">{t('admin.moderationHint')}</p>
@@ -175,6 +168,13 @@ export function ModeratorDashboard() {
           }}
         />
       )}
+
+      <div className="admin-stats admin-stats--mod">
+        <StatCard value={approvedByMe} label={t('admin.statsApprovedByMe')} variant="approved" />
+        <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
+        <StatCard value={deniedByMe} label={t('admin.statsDeniedByMe')} variant="banned" />
+        <StatCard value={skippedToday} label={t('admin.statsSkippedToday')} variant="total" />
+      </div>
     </div>
   )
 }
