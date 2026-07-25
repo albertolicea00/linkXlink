@@ -276,6 +276,7 @@
     "replacePhoto": "Change photo",
     "replacePhotoHelp": "Upload a new image to replace the current one. Best in portrait 4:5 — auto-cropped before upload.",
     "changePassword": "Change password",
+    "landingLink": "See the Link x Link landing page",
     "newPassword": "New password",
     "savePassword": "Save password",
     "pwError": "Could not change the password. Try again.",

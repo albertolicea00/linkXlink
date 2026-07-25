@@ -276,6 +276,7 @@
     "replacePhoto": "Cambiar foto",
     "replacePhotoHelp": "Sube una nueva imagen para reemplazar la actual. Mejor en vertical 4:5 — se recorta antes de subirse.",
     "changePassword": "Cambiar contraseña",
+    "landingLink": "Ver la página de inicio de Link x Link",
     "newPassword": "Nueva contraseña",
     "savePassword": "Guardar contraseña",
     "pwError": "No se pudo cambiar la contraseña. Intenta de nuevo.",

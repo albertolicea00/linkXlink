@@ -367,6 +367,10 @@ export function Account() {
             {t('admin.logout')}
           </button>
         </div>
+
+        <p className="account-landing-link">
+          <Link to="/">{t('account.landingLink')}</Link>
+        </p>
       </main>
 
       {viewPhoto && (

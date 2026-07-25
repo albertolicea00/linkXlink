@@ -880,6 +880,14 @@ a {
   margin-top: 2rem;
 }
 
+/* Plain text link (deliberately not a button) back to the landing page. */
+.account-landing-link {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 1rem 0 0;
+}
+
 .account-password__form {
   margin-top: 1.5rem;
 }
