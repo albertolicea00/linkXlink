@@ -2358,6 +2358,23 @@ a.landing__brand {
   border-radius: 999px;
 }
 
+/* Narrow screens: the 3-column row squeezes the text into 3 wrapped lines with
+   the pill floating beside it. Stack instead — icon + text on top, full-width CTA. */
+@media (max-width: 400px) {
+  .tg-banner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.6rem 0.6rem;
+  }
+
+  .tg-banner__cta {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding-block: 0.5rem;
+  }
+}
+
 /* WhatsApp variant of the community banner — green instead of Telegram blue. */
 .tg-banner--whatsapp {
   background: linear-gradient(
