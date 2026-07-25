@@ -156,7 +156,11 @@ export function Landing({ lang }: Props) {
             <li>
               <span>
                 <Trans
-                  i18nKey="landing.how6"
+                  // No WhatsApp channel configured → don't name it at all
+                  // (same rule as WhatsAppBanner, which renders nothing).
+                  i18nKey={
+                    appConfig.community_whatsapp_url ? 'landing.how6' : 'landing.how6NoWa'
+                  }
                   components={{
                     tg: (
                       <a
