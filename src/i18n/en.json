@@ -65,7 +65,7 @@
     "acceptTerms": "I accept the <eula>terms and conditions</eula>, the <privacy>privacy policy</privacy> and the <data>data usage</data>."
   },
   "profile": {
-    "openWhatsApp": "Open WhatsApp",
+    "openWhatsApp": "WhatsApp",
     "report": "Report",
     "disabled": "Disabled",
     "photoOf": "Photo {{current}} of {{total}}"
@@ -282,8 +282,8 @@
     "prefsTitle": "Preferences",
     "languageLabel": "Language",
     "themeLabel": "Theme",
-    "themeLight": "Light mode",
-    "themeDark": "Dark mode"
+    "themeLight": "Light",
+    "themeDark": "Dark"
   },
   "routeError": {
     "title": "Something went wrong",

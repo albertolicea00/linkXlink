@@ -65,7 +65,7 @@
     "acceptTerms": "Acepto los <eula>términos y condiciones</eula>, la <privacy>política de privacidad</privacy> y el <data>uso de datos</data>."
   },
   "profile": {
-    "openWhatsApp": "Abrir WhatsApp",
+    "openWhatsApp": "WhatsApp",
     "report": "Reportar",
     "disabled": "Deshabilitado",
     "photoOf": "Foto {{current}} de {{total}}"
@@ -282,8 +282,8 @@
     "prefsTitle": "Preferencias",
     "languageLabel": "Idioma",
     "themeLabel": "Tema",
-    "themeLight": "Modo Claro",
-    "themeDark": "Modo Oscuro"
+    "themeLight": "Claro",
+    "themeDark": "Oscuro"
   },
   "routeError": {
     "title": "Algo salió mal",
