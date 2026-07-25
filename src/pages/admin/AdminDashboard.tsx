@@ -19,15 +19,13 @@ export function AdminDashboard() {
   return (
     <div className="admin-panel">
       <div className="admin-stats">
+        <StatCard value={active} label={t('admin.statusActive')} variant="active" wide />
+
         <StatCard value={adminStats?.totalUsers ?? 0} label={t('admin.statsTotal')} variant="total" />
-        <StatCard value={active} label={t('admin.statusActive')} variant="active" />
+        <StatCard value={adminStats?.noProfile ?? 0} label={t('admin.statsNoProfile')} variant="banned" />
+        
         <StatCard value={pending} label={t('admin.statsPending')} variant="pending" />
         <StatCard value={banned} label={t('admin.statsBanned')} variant="banned" />
-      </div>
-
-      {/* Global counters — always true DB totals, never filtered by dev flags. */}
-      <div className="admin-stats">
-        <StatCard value={adminStats?.fake ?? 0} label={t('admin.statsFake')} variant="total" />
         <StatCard
           value={`${(adminStats?.migrated ?? 0) - (adminStats?.migratedUnclaimed ?? 0)}/${adminStats?.migrated ?? 0}`}
           label={t('admin.statsMigrated')}
@@ -35,7 +33,6 @@ export function AdminDashboard() {
           variant="pending"
           wide
         />
-        <StatCard value={adminStats?.noProfile ?? 0} label={t('admin.statsNoProfile')} variant="banned" />
       </div>
 
       <AdminsManager />
