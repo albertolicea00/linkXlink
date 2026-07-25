@@ -17,6 +17,7 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
 import { trackProfileEvent } from '../lib/metrics'
 import { getClickCount, recordClick, isFirstWhatsappClick } from '../lib/clickCounter'
+import { isSwipeHintVisible, recordSwipeHintSwipe } from '../lib/swipeHint'
 import { fireConfetti } from '../components/Confetti'
 import { getDevFlags } from '../lib/devFlags'
 import appConfig from '../config/app-config.json'
@@ -28,6 +29,9 @@ export function AppPage() {
   const { count, swap } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
   const [clicks, setClicks] = useState(getClickCount)
+  // The gesture hint only pays for its vertical space until the user has
+  // clearly learned it (first N swipes); it returns after the config'd hours.
+  const [hintVisible, setHintVisible] = useState(isSwipeHintVisible)
   // Dev flag lets admins ignore the soft daily WhatsApp-click limit while testing.
   const bypassLimits = getDevFlags().bypassLimits
   const clickLimitReached = !bypassLimits && clicks >= appConfig.max_swaps_per_24h
@@ -212,7 +216,7 @@ export function AppPage() {
           <>
             <SwipeDeck
               profiles={deckProfiles}
-              hint={<p className="deck-hint">{t('feed.swipeHint')}</p>}
+              hint={hintVisible ? <p className="deck-hint">{t('feed.swipeHint')}</p> : undefined}
               showCounter={appConfig.show_deck_counter}
               showUndo={!previewMode && appConfig.show_undo_button}
               renderCard={(p) => (
@@ -232,7 +236,12 @@ export function AppPage() {
                   onReportClick={() => (previewMode ? setGateOpen(true) : setReporting(p))}
                 />
               )}
-              onSwipe={() => !previewMode && swap()}
+              onSwipe={() => {
+                // Preview swipes teach the gesture too, so they count for the
+                // hint even though they don't count against the swap limit.
+                if (hintVisible) setHintVisible(recordSwipeHintSwipe())
+                if (!previewMode) swap()
+              }}
               onTopChange={(p) => {
                 if (previewMode) {
                   removePreviewProfile(p.id)
