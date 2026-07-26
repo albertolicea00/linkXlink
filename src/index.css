@@ -354,6 +354,134 @@ a {
   box-shadow: 0 10px 30px var(--color-primary-glow);
 }
 
+/* Primary CTA: breathing glow while it waits, shine sweep + lift on hover.
+   Only when enabled — a disabled "Entrar" (terms unchecked) stays inert. */
+.landing__cta .btn:not(:disabled) {
+  position: relative;
+  overflow: hidden;
+  animation: cta-breathe 3.2s ease-in-out infinite;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.landing__cta .btn:not(:disabled)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 65%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.landing__cta .btn:not(:disabled):hover,
+.landing__cta .btn:not(:disabled):focus-visible {
+  animation-play-state: paused;
+  transform: translateY(-3px) scale(1.04);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 38px var(--color-primary-glow);
+}
+
+.landing__cta .btn:not(:disabled):hover::after,
+.landing__cta .btn:not(:disabled):focus-visible::after {
+  transform: translateX(130%);
+}
+
+.landing__cta .btn:not(:disabled):active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+@keyframes cta-breathe {
+  0%,
+  100% {
+    box-shadow: 0 10px 30px var(--color-primary-glow);
+  }
+  50% {
+    box-shadow: 0 14px 40px var(--color-primary-glow);
+  }
+}
+
+/* Scroll reveal — the base hidden state applies ONLY once the hook has run
+   (`.reveal-ready` on <html>), so if JS never runs the content stays visible. */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-ready [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Staggered groups only — scoped on purpose, so a lone revealed section never
+   inherits a delay just from its position among its siblings. */
+.reveal-ready .benefit-grid [data-reveal]:nth-child(2),
+.reveal-ready .faq-grid [data-reveal]:nth-child(2),
+.reveal-ready .landing__how li[data-reveal]:nth-child(2) {
+  transition-delay: 0.09s;
+}
+
+.reveal-ready .benefit-grid [data-reveal]:nth-child(3),
+.reveal-ready .faq-grid [data-reveal]:nth-child(3),
+.reveal-ready .landing__how li[data-reveal]:nth-child(3) {
+  transition-delay: 0.18s;
+}
+
+.reveal-ready .benefit-grid [data-reveal]:nth-child(4),
+.reveal-ready .faq-grid [data-reveal]:nth-child(4),
+.reveal-ready .landing__how li[data-reveal]:nth-child(4) {
+  transition-delay: 0.27s;
+}
+
+.reveal-ready .landing__how li[data-reveal]:nth-child(5) {
+  transition-delay: 0.36s;
+}
+
+.reveal-ready .landing__how li[data-reveal]:nth-child(6) {
+  transition-delay: 0.45s;
+}
+
+/* Steps slide in from the left, one after another, instead of just rising. */
+.reveal-ready .landing__how li[data-reveal] {
+  transform: translateX(-18px);
+}
+
+.reveal-ready .landing__how li[data-reveal].is-revealed {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__cta .btn:not(:disabled) {
+    animation: none;
+    transition: none;
+  }
+
+  .landing__cta .btn:not(:disabled):hover,
+  .landing__cta .btn:not(:disabled):focus-visible {
+    transform: none;
+  }
+
+  .landing__cta .btn:not(:disabled)::after {
+    display: none;
+  }
+
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 .terms-check {
   display: flex;
   align-items: flex-start;

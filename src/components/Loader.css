@@ -4,16 +4,73 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  gap: 1rem;
+  gap: 1.5rem;
+  text-align: center;
 }
 
-.loader-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: loader-spin 1s linear infinite;
+.loader-heart {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-heart svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.loader-heart path {
+  stroke: var(--color-primary);
+  stroke-width: 24;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  fill: transparent;
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  transform-origin: center;
+  animation: heart-draw-fill-pulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes heart-draw-fill-pulse {
+  0% {
+    stroke-dashoffset: 1500;
+    fill: transparent;
+    transform: scale(1);
+  }
+  25% {
+    stroke-dashoffset: 0;
+    fill: transparent;
+    transform: scale(1);
+  }
+  35% {
+    fill: var(--color-primary);
+    transform: scale(1.1);
+  }
+  45% {
+    fill: var(--color-primary);
+    transform: scale(0.9);
+  }
+  55% {
+    fill: var(--color-primary);
+    transform: scale(1.15);
+  }
+  65% {
+    fill: var(--color-primary);
+    transform: scale(1);
+  }
+  80% {
+    stroke-dashoffset: 0;
+    fill: transparent;
+    transform: scale(1);
+  }
+  100% {
+    stroke-dashoffset: -1500;
+    fill: transparent;
+    transform: scale(1);
+  }
 }
 
 .loader-text {
@@ -22,8 +79,29 @@
   margin: 0;
 }
 
-@keyframes loader-spin {
-  to {
-    transform: rotate(360deg);
-  }
+.loader-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 320px;
+  animation: fade-in 0.3s ease-out;
+}
+
+.loader-title {
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.loader-tip {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
