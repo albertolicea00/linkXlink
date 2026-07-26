@@ -11,6 +11,7 @@ import { PhoneInput } from '../components/PhoneInput'
 import { AuthPanel } from '../components/AuthPanel'
 import { ProfileExtraFields } from '../components/ProfileExtraFields'
 import { CropModal } from '../components/CropModal'
+import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
@@ -499,21 +500,7 @@ export function Register({ lang }: Props) {
         )}
       </main>
 
-      <footer className="landing__footer">
-        <div className="landing__footer-links">
-          <Link to="/eula">{t('footer.eula')}</Link>
-          <Link to="/privacy">{t('footer.privacy')}</Link>
-          <Link to="/data">{t('footer.data')}</Link>
-        </div>
-        <div className="landing__footer-credits">
-          <p>
-            {t('landing.footerMadeWith')}
-            <a href="https://github.com/albertolicea00" target="_blank" rel="noopener noreferrer">
-              @albertolicea00
-            </a>
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
 
       {cropFile && (
         <CropModal

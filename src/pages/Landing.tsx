@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { SocialsCard } from '../components/SocialsCard'
+import { SupportCard } from '../components/SupportCard'
+import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import appConfig from '../config/app-config.json'
@@ -208,30 +210,10 @@ export function Landing({ lang }: Props) {
           </div>
         </section>
 
-        <section className="landing__support">
-          <h2>{t('landing.supportTitle')}</h2>
-          <p>{t('landing.supportText')}</p>
-          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
-            ☕ {t('landing.footerCoffee')}
-          </a>
-        </section>
+        <SupportCard />
       </main>
 
-      <footer className="landing__footer">
-        <div className="landing__footer-links">
-          <Link to="/eula">{t('footer.eula')}</Link>
-          <Link to="/privacy">{t('footer.privacy')}</Link>
-          <Link to="/data">{t('footer.data')}</Link>
-        </div>
-        <div className="landing__footer-credits">
-          <p>
-            {t('landing.footerMadeWith')}
-            <a href="https://github.com/albertolicea00" target="_blank" rel="noopener noreferrer">
-              @albertolicea00
-            </a>
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

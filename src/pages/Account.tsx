@@ -5,6 +5,7 @@ import { PageHeader } from '../components/PageHeader'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { SocialsCard } from '../components/SocialsCard'
+import { SupportCard } from '../components/SupportCard'
 import { EditProfileModal } from '../components/EditProfileModal'
 import { EditInterestsModal } from '../components/EditInterestsModal'
 import { EditVisibilityModal } from '../components/EditVisibilityModal'
@@ -311,13 +312,7 @@ export function Account() {
 
         <SocialsCard />
 
-        <section className="landing__support" style={{ marginTop: '1.7rem', marginBottom: '1rem' }}>
-          <h2>{t('landing.supportTitle')}</h2>
-          <p>{t('landing.supportText')}</p>
-          <a href="https://buymeacoffee.com/albertolicea00" className="btn btn--primary btn--coffee" target="_blank" rel="noopener noreferrer">
-            ☕ {t('landing.footerCoffee')}
-          </a>
-        </section>
+        <SupportCard className="landing__support--compact" />
 
         {showPwForm && (
           <form className="register__form account-password__form" onSubmit={handleChangePassword}>

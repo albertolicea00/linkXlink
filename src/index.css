@@ -488,6 +488,12 @@ a {
   text-align: center;
 }
 
+/* Tighter spacing for the copy inside /account, which stacks several cards. */
+.landing__support--compact {
+  margin-top: 1.7rem;
+  margin-bottom: 1rem;
+}
+
 .landing__support h2 {
   font-size: 1.3rem;
   margin-bottom: 0.75rem;
