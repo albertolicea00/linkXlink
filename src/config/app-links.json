@@ -3,6 +3,7 @@
   "site_alt_urls": [
     "https://linksxlinks.vercel.app"
   ],
+  "app_source_hide": false,
   "app_source_url": "https://github.com/albertolicea00/linkxlink",
   "community_telegram_url": "https://t.me/linksxlinks",
   "community_whatsapp_url": "",

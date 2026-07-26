@@ -1650,6 +1650,45 @@ a {
   }
 }
 
+/* Desktop: the 640px main column leaves the sides empty, so the stats move out
+   of the flow into a fixed rail hugging main's left edge — one card under the
+   other. Breakpoint is 1100px = 640 main + 2x230 of side room, which clears the
+   186px rail plus its gutter. Below it, the inline grid above applies. */
+@media (min-width: 1100px) {
+  .admin-stats,
+  .admin-stats--mod {
+    position: fixed;
+    top: 50%;
+    /* Right-align against main's left edge, whatever the viewport width. */
+    left: calc(50% - 320px - 3rem);
+    transform: translate(-100%, -50%);
+    grid-template-columns: minmax(0, 160px);
+    justify-content: stretch;
+    gap: 0.6rem;
+    margin-bottom: 0;
+    /* Breathing room so the hover glow isn't clipped by the scroll container. */
+    padding: 0.5rem;
+    margin-left: -0.5rem;
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+    z-index: 5;
+  }
+
+  /* Single column — the 2-span cards have nothing to span. */
+  .admin-stats .stat-card--wide {
+    grid-column: auto;
+  }
+
+  /* Shorter cards so a 6-card admin rail still clears a laptop viewport. */
+  .admin-stats .stat-card {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .admin-stats .stat-card__value {
+    font-size: 1.5rem;
+  }
+}
+
 /* Stat cards: staggered rise on mount, accent bar + lift on hover (no shine
    sweep — reads as glass glare on a flat card). Each variant only sets
    --stat-accent; the value color, the top bar
