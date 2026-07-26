@@ -76,6 +76,19 @@ This is an **iOS platform limitation, not a bug**. Safari on iOS does not suppor
 3. Scroll down and tap **Add to Home Screen** / **Añadir a pantalla de inicio**.
 4. Confirm — the app icon lands on the Home Screen and launches standalone (its own window, no Safari chrome).
 
+### "Unsafe app blocked" / "built for an older version of Android" on install
+
+Google Play Protect can block the install with **Unsafe app blocked — This app was built for an older version of Android and doesn't include the latest privacy protections**. It isn't — **nothing in this repo can cause or fix it**.
+
+Why it happens: installing a PWA on Android doesn't create a shortcut, it creates a real APK. The browser asks Google's WebAPK minting server to generate an APK that wraps the site, and **the browser's minting pipeline decides that APK's `targetSdkVersion`** — the web manifest has no say. Since Android 14, Play Protect refuses APKs targeting an old SDK (API < 23; Android 15 raised the bar to < 24). A WebAPK minted with a stale target lands on the wrong side of that filter.
+
+In practice it shows up on non-Chrome Chromium browsers (Samsung Internet, some vendor browsers) that lag behind on WebAPK minting. Workarounds, best first:
+
+1. **Install from an up-to-date Chrome** — fixes the vast majority of reports.
+2. Update the browser and Google Play services on the device.
+3. Tap **Install anyway** (a tappable link above the blue button) — works, but no ordinary user will do it.
+4. Use **Add to Home screen** in plain shortcut mode where the browser offers it: no APK, so Play Protect never sees it. Costs the standalone launch.
+
 > To detect an installed session, check `window.matchMedia('(display-mode: standalone)').matches` (or `navigator.standalone` on iOS). The app **does** ship an iOS-specific nudge: `useIOSInstallHint` detects iOS Safari (not yet standalone) and `IOSInstallHint` renders these manual steps in an overlay — auto-shown once per device (`lxl_ios_hint_seen`) and reopenable from the NavBar **Install** button. Third-party iOS browsers (Chrome/Firefox), which can't add to the Home Screen at all, get an "open in Safari" message instead.
 
 ---
