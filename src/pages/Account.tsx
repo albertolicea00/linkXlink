@@ -144,7 +144,7 @@ export function Account() {
           </div>
         </section>
 
-        {(!loaded || authLoading) && <Loader text={t('account.loading')} />}
+        {(!loaded || authLoading) && <Loader />}
 
         {loaded && !profile && (
           <div className="register__success">

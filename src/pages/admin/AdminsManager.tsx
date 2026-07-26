@@ -209,7 +209,7 @@ export function AdminsManager() {
       )}
 
       {loadingStaff ? (
-        <Loader text={t('feed.loading')} />
+        <Loader />
       ) : (
         <>
           <CollapsibleList

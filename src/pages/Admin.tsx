@@ -30,7 +30,7 @@ export function Admin() {
         {!session && !loading && <LoginForm />}
         {session && loading && (
           <div className="app-page__status">
-            <Loader text={t('admin.checkingAccess')} />
+            <Loader />
           </div>
         )}
         {session && !loading && role === null && (

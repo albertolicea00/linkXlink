@@ -78,7 +78,6 @@
     "photoOf": "Photo {{current}} of {{total}}"
   },
   "feed": {
-    "loading": "Loading profiles…",
     "whatsappMessage": "Hi {{name}} 👋, I saw you on Link x Link :: https://linkxlink.vercel.app/",
     "empty": "No profiles available right now.",
     "emptyDesc": "No more profiles for now. Come back later or share the app to discover more people.",
@@ -256,7 +255,6 @@
   },
   "account": {
     "photosTitle": "My photos",
-    "loading": "Loading your account…",
     "title": "My account",
     "age": "{{age}} years old",
     "ageLabel": "Age",
@@ -358,7 +356,6 @@
     "loginDesc": "Administration panel for user moderation and app settings",
     "loginHelper": "Creating new moderators or recovering a password is in development — contact a system administrator.",
     "loginError": "Invalid credentials.",
-    "checkingAccess": "Checking access…",
     "notAuthorized": "This account has no moderation permissions. Contact an administrator.",
     "showPassword": "Show password",
     "hidePassword": "Hide password",

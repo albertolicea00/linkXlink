@@ -140,7 +140,7 @@ export function ModeratorDashboard() {
           onSwipe={(p, dir, meta) => void handleModeration(p, dir, meta)}
           emptyState={
             loadingProfiles ? (
-              <Loader text={t('feed.loading')} />
+              <Loader />
             ) : (
               <div className="app-page__status">
                 <img src="/icons/icon.svg" alt="" className="preview-end__logo" />

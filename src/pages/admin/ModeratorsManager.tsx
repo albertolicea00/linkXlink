@@ -107,7 +107,7 @@ export function ModeratorsManager() {
         {t('admin.currentModerators')} ({moderators.length})
       </h3>
       {loadingMods ? (
-        <Loader text={t('feed.loading')} />
+        <Loader />
       ) : moderators.length === 0 ? (
         <p className="form-message">{t('admin.noModerators')}</p>
       ) : (

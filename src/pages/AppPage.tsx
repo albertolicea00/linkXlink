@@ -140,8 +140,18 @@ export function AppPage() {
     path: '/app',
   })
 
-  // Gate the instant a blocked visitor has no preview to show.
-  const isLoading = previewMode ? previewLoading : loading
+  const baseLoading = previewMode ? previewLoading : loading
+  const [minLoadDone, setMinLoadDone] = useState(true)
+
+  useEffect(() => {
+    if (baseLoading) {
+      setMinLoadDone(false)
+      const timer = setTimeout(() => setMinLoadDone(true), 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [baseLoading])
+
+  const isLoading = baseLoading || !minLoadDone
   const deckProfiles = previewMode ? preview : orderedProfiles
   // Only ever show while actually blocked, so signing in (blocked flips false)
   // hides it the SAME render — no leftover `gateOpen` flashing the modal after
@@ -175,7 +185,7 @@ export function AppPage() {
         )}
 
       <main className="app-page__main">
-        {isLoading && <Loader text={t('feed.loading')} />}
+        {isLoading && <Loader />}
 
         {!isLoading && !previewMode && servingCached && deckProfiles.length > 0 && (
           <p className="app-page__status" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
