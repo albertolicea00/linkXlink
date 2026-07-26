@@ -1,19 +1,25 @@
 import devConfig from '../config/dev-config.json'
-import demoAdmin from '../mocks/demo-admin.json'
-import demoModerator from '../mocks/demo-moderator.json'
-import demoUser from '../mocks/demo-user.json'
+import demoUsers from '../mocks/demo-user.json'
 import mockData from '../mocks/demo-data.json'
 
-const DEMO_USERS: Record<string, { profile: any, email: string }> = {
-  'admin@demo.com': { profile: demoAdmin, email: 'admin@demo.com' },
-  'moderator@demo.com': { profile: demoModerator, email: 'moderator@demo.com' },
-  'user@demo.com': { profile: demoUser, email: 'user@demo.com' },
-}
+// The three demo accounts live in ONE file (each row = a profile plus `role`
+// and `email`); both lookup maps are derived from it, so adding a demo account
+// is a JSON edit with no code change.
+const DEMO_USERS: Record<string, { profile: any, email: string }> = Object.fromEntries(
+  demoUsers.map((u) => [u.email, { profile: u, email: u.email }]),
+)
 
-const DEMO_IDS: Record<string, string> = {
-  'demo-admin-id': 'admin@demo.com',
-  'demo-moderator-id': 'moderator@demo.com',
-  'demo-user-id': 'user@demo.com',
+/** user id → email, for requests that only carry the JWT `sub`. */
+const DEMO_IDS: Record<string, string> = Object.fromEntries(
+  demoUsers.map((u) => [u.id, u.email]),
+)
+
+/** Which demo account is staff, mirroring the `admins` / `moderators` tables. */
+export const DEMO_STAFF = {
+  admins: demoUsers.filter((u) => u.role === 'admin').map((u) => ({ id: u.id, email: u.email })),
+  moderators: demoUsers
+    .filter((u) => u.role === 'moderator')
+    .map((u) => ({ id: u.id, email: u.email })),
 }
 
 /** True when this user id belongs to a demo account (used by the demo banner). */
@@ -66,12 +72,17 @@ function jsonList(
   return json(out)
 }
 
+/** Per-account kill switches from dev-config.json, keyed off the demo `role`. */
+const DEMO_SWITCHES: Record<string, boolean> = {
+  admin: devConfig.demo_admin,
+  moderator: devConfig.demo_moderator,
+  user: devConfig.demo_user,
+}
+
 function isDemoEnabled(emailOrId: string): boolean {
   const email = DEMO_IDS[emailOrId] || emailOrId
-  if (email === 'admin@demo.com' && devConfig.demo_admin) return true
-  if (email === 'moderator@demo.com' && devConfig.demo_moderator) return true
-  if (email === 'user@demo.com' && devConfig.demo_user) return true
-  return false
+  const row = demoUsers.find((u) => u.email === email)
+  return !!row && !!DEMO_SWITCHES[row.role]
 }
 
 /** The `user` object gotrue expects in a token/user response. */
@@ -184,11 +195,11 @@ export async function customFetch(input: RequestInfo | URL, init?: RequestInit):
     // is the `id=eq.<uid>` filter in the URL. Ignore it and every demo user
     // reads back as staff.
     if (url.includes('/rest/v1/admins')) {
-      return jsonList(url, init, [{ id: 'demo-admin-id', email: 'admin@demo.com' }])
+      return jsonList(url, init, DEMO_STAFF.admins)
     }
 
     if (url.includes('/rest/v1/moderators')) {
-      return jsonList(url, init, [{ id: 'demo-moderator-id', email: 'moderator@demo.com' }])
+      return jsonList(url, init, DEMO_STAFF.moderators)
     }
 
     // 3. Intercept RPC calls
