@@ -1684,7 +1684,7 @@ a {
     margin-left: -0.5rem;
     max-height: calc(100dvh - 6rem);
     overflow-y: auto;
-    z-index: 5;
+    z-index: 4;
   }
 
   /* Single column — the 2-span cards have nothing to span. */

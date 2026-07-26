@@ -145,7 +145,7 @@ export function SwipeDeck({
   // opacity (e.g. Approve showing the SKIP stamp) — so force 0 while leaving.
   const dragRatio = leaving ? 0 : Math.max(-1, Math.min(1, (drag?.x ?? 0) / (THRESHOLD_PX * 1.5)))
   // Behind-the-top cards visible in the stack (visual preload).
-  const behind = profiles.slice(index + 1, index + 3)
+  const behind = profiles.slice(index + 1, index + 5)
 
   return (
     <div className="swipe-deck">
