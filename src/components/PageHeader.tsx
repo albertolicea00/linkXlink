@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'
 
+import { GithubLink } from './GithubLink'
+
 /**
  * Shared header for the in-app pages (app / account / admin). Desktop shows
  * the app icon + name + current section, plus the language/theme controls.
@@ -23,6 +25,7 @@ export function PageHeader({ section }: { section: string }) {
       <div className="app-page__controls">
         <LanguageSwitcher />
         <ThemeToggle />
+        <GithubLink />
       </div>
     </header>
   )

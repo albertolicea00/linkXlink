@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { GithubLink } from '../components/GithubLink'
 import { SocialsCard } from '../components/SocialsCard'
 import { TelegramBanner } from '../components/TelegramBanner'
 import { WhatsAppBanner } from '../components/WhatsAppBanner'
@@ -91,6 +92,7 @@ export function Landing({ lang }: Props) {
             </Link>
           </nav>
           <ThemeToggle />
+          <GithubLink />
         </div>
       </header>
 
