@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../components/PageHeader'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { SocialsCard } from '../components/SocialsCard'
 import { EditProfileModal } from '../components/EditProfileModal'
 import { EditInterestsModal } from '../components/EditInterestsModal'
 import { EditVisibilityModal } from '../components/EditVisibilityModal'
@@ -307,6 +308,8 @@ export function Account() {
           </div>
         </div>
         )}
+
+        <SocialsCard />
 
         <section className="landing__support" style={{ marginTop: '1.7rem', marginBottom: '1rem' }}>
           <h2>{t('landing.supportTitle')}</h2>

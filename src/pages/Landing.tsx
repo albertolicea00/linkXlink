@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { SocialsCard } from '../components/SocialsCard'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import appConfig from '../config/app-config.json'
@@ -182,6 +183,8 @@ export function Landing({ lang }: Props) {
             </li>
           </ol>
         </section>
+
+        <SocialsCard />
 
         <section className="landing__faq" style={{ marginTop: '3rem' }}>
           <h2>{t('landing.faqTitle')}</h2>
