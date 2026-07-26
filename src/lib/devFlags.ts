@@ -10,6 +10,10 @@ import devConfig from '../config/dev-config.json'
  * + an i18n label + wire its effect where the flag is read. Defaults are
  * derived from that list, so this file never needs editing to add one.
  *
+ * `show_dev_settings_to_admins: false` in dev-config.json is the kill switch:
+ * the panel disappears AND any stored flags are purged, so a device that had
+ * them on falls back to normal behavior on the next read.
+ *
  * NOT a security boundary: the is_fake filter is client-side and RLS returns
  * active profiles regardless. All off → the app behaves like for everyone else.
  */
@@ -25,12 +29,27 @@ function defaults(): DevFlags {
 
 export function getDevFlags(): DevFlags {
   const base = defaults()
+  // Kill switch: flipping `show_dev_settings_to_admins` off must neutralize the
+  // flags, not just hide the panel — otherwise whoever had them on keeps a
+  // an altered app forever. Purge the stored copy on the way out.
+  if (!devConfig.show_dev_settings_to_admins) {
+    clearDevFlags()
+    return base
+  }
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return base
     return { ...base, ...(JSON.parse(raw) as Record<string, boolean>) }
   } catch {
     return base
+  }
+}
+
+export function clearDevFlags(): void {
+  try {
+    localStorage.removeItem(KEY)
+  } catch {
+    // no-op: private mode / storage disabled
   }
 }
 

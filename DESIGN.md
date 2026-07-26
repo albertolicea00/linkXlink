@@ -7,7 +7,9 @@ Architecture and design decisions. Living doc — update when decisions change.
 ```
 Browser (PWA)
   └── React SPA (Vite)
-        ├── react-router: / , /es , /en , /app , /admin , /eula , /privacy
+        ├── react-router: / , /es , /en , /app , /account , /register ,
+        │                 /admin , /admin/moderator , /admin/config ,
+        │                 /eula , /privacy , /data
         ├── i18n (es default, en)
         ├── config/: app-config (behavior) + app-links (URLs) + dev-config (admin flags)
         └── @supabase/supabase-js
@@ -146,4 +148,53 @@ SPA, no SSR — metadata is set client-side; Googlebot executes JS and picks it 
 - **Quorum** (migration 0012, `moderate_profile` RPC): approve/deny apply on one admin vote OR N distinct moderator votes (`app.settings.approve_quorum` / `deny_quorum`, mirrored in config). Votes are idempotent (unique partial index on `moderation_actions`). Deny stores a text reason from the config pick-list. The moderator deck treats every swipe as skip; approve/deny are buttons that pass `SwipeMeta` through `SwipeDeck`.
 - **Seed + claim** (migration 0013): launch feed seeded via `supabase/seed.sql` with `migrated = true`, ownerless, active rows. Registering with a matching number claims the row (`claim_migrated_profile`) instead of hitting the duplicate-number error. `seed_profiles_visible_before_claim` controls feed visibility of unclaimed seed rows.
 - **Ownership claims** (migration 0014): a duplicate number owned by a non-seed profile lets the registrant file `ownership_claims` via `claim_ownership` ("Es mío"). Recorded only; moderators reassign manually if warranted.
-- **Dev flags** replaced the old global `test_mode`: `showFakes`, `bypassRelease`, `onlyMigratedUnclaimed`, per-device in localStorage, toggled from an admin-only panel in `/account`.
+- **Dev flags** replaced the old global `test_mode`: `showFakes`, `bypassRelease`, `onlyMigratedUnclaimed`, `showMigratedStat`, per-device in localStorage, toggled from the admin-only floating `</>` panel (`DevFlagsFab`, mounted app-wide).
+- **Two kill switches** in `dev-config.json`, both all-or-nothing for admins:
+  - `show_app_settings_to_admins` — the config route (the env keyword path) and
+    the banner linking to it from the admin dashboard. Off → the banner is gone
+    AND the route redirects to the admin dashboard, so there is no way in.
+  - `show_dev_settings_to_admins` — the `</>` dev-flags panel. Off → the button
+    is gone AND `getDevFlags()` purges the stored flags, so a device that had
+    them on reverts to normal behavior instead of staying silently altered.
+    Hiding the UI alone would have left that stale state in place forever.
+- **Planned: per-email allowlists.** Two future arrays in `dev-config.json`
+  (`app_settings_admin_emails`, `dev_settings_admin_emails`) that narrow each
+  switch from "every admin" to "these admins". Semantics: the boolean stays the
+  master switch — `false` means nobody, `true` + a non-empty list means only
+  those emails, `true` + empty list means every admin (today's behavior). The
+  two lists are independent but the dev-settings one is only meaningful when
+  app-settings access is also granted. Deliberately NOT implemented yet: the
+  keys would be dead config, which is exactly how the two booleans above sat
+  unread in the repo until this change.
+
+## 9.1. Staff routes
+
+The staff area is three independent routes with fixed paths, declared in
+`src/lib/adminPath.ts`:
+
+| Constant         | Path                | Who              | Content                                     |
+| ---------------- | ------------------- | ---------------- | ------------------------------------------- |
+| `ADMIN_PATH`     | `/admin`            | admin            | global stats + staff management             |
+| `MODERATOR_PATH` | `/admin/moderator`  | moderator, admin | personal stats + share + approve/deny deck  |
+| `CONFIG_PATH`    | `/admin/config`     | admin            | read-only viewer for the three config JSONs |
+
+Two things changed here, both removals:
+
+- They were previously ONE route split by a `?view=admin|moderator` query.
+  Splitting them means deep links, nav active state, page titles and the role
+  check all key off the URL rather than a param the router doesn't own.
+- `VITE_ADMIN_PATH` (a build-env "secret" path) is gone. `VITE_` vars are
+  inlined into the bundle, so the path was readable by anyone who opened the
+  JS — it deterred casual URL guessing only, and in exchange every environment
+  had to carry a matching env var. The boundary always was the staff login +
+  RLS, so the obscurity bought nothing worth its cost.
+
+`src/pages/admin/StaffGate.tsx` holds the shared session/role gate so the three
+route components stay thin; `requires: 'admin' | 'staff'` is the only
+difference between them.
+
+The config viewer is read-only on purpose — editing means a redeploy today.
+It renders each value by shape (booleans as ON/OFF pills, URLs as links, arrays
+of primitives as chips, arrays of objects as numbered cards) and has one search
+box filtering keys and values across all three files. Live editing is designed
+in issue #8 (Supabase-backed remote config).

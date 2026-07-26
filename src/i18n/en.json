@@ -309,6 +309,24 @@
     "bypassLimits": "Bypass the daily swap/click limit",
     "showMigratedStat": "Show the migrated-profiles stat"
   },
+  "config": {
+    "readOnlyTitle": "Read-only for now",
+    "readOnly": "To change a value, edit the JSON in the repo and redeploy.",
+    "viewRepo": "Open the repository",
+    "searchPlaceholder": "Search a setting...",
+    "matches_one": "{{count}} setting found",
+    "matches_other": "{{count}} settings found",
+    "noResults": "No setting matches “{{query}}”.",
+    "panelApp": "App settings",
+    "panelAppDesc": "Behavior knobs: languages, login providers, limits, moderation thresholds, photos and profile options.",
+    "panelLinks": "Links & identity",
+    "panelLinksDesc": "Every outward-facing URL and the project's identity: site, community, socials, author and donation.",
+    "panelLinksProtected": "The identity and donation keys are legally protected — do not edit them in a fork or PR (see CONTRIBUTING.md).",
+    "panelDev": "Developer settings",
+    "panelDevDesc": "Admin-only surface: access to this page, the developer options panel, and seed-profile visibility.",
+    "bannerTitle": "App configuration",
+    "bannerText": "View the app-config, links and developer values."
+  },
   "admin": {
     "title": "Admin",
     "viewSwitch": "Switch view",
@@ -429,7 +447,8 @@
     "moderator": "Moderate",
     "app": "Explore",
     "share": "Share",
-    "install": "Install"
+    "install": "Install",
+    "config": "Configuration"
   },
   "iosInstall": {
     "title": "Install this app",

@@ -6,6 +6,8 @@ import './index.css'
 import { Landing } from './pages/Landing'
 import { AppPage } from './pages/AppPage'
 import { Admin } from './pages/Admin'
+import { Moderator } from './pages/Moderator'
+import { Config } from './pages/Config'
 import { Register } from './pages/Register'
 import { Account } from './pages/Account'
 import { Eula } from './pages/Eula'
@@ -22,7 +24,7 @@ import { UpdatePrompt } from './components/UpdatePrompt'
 import { NavStateProvider } from './context/nav'
 import { hasAcceptedTerms } from './lib/terms'
 import { isStandalone } from './lib/whatsapp'
-import { ADMIN_PATH } from './lib/adminPath'
+import { ADMIN_PATH, MODERATOR_PATH, CONFIG_PATH } from './lib/adminPath'
 import { useOffline } from './hooks/useOffline'
 import { WarningBanner } from './components/WarningBanner'
 import { useTranslation } from 'react-i18next'
@@ -75,7 +77,11 @@ const router = createBrowserRouter([
             ),
           },
           { path: '/account', element: <Account /> },
+          // Staff area: three independent routes under /admin (they used to be
+          // one route split by ?view=).
           { path: ADMIN_PATH, element: <Admin /> },
+          { path: MODERATOR_PATH, element: <Moderator /> },
+          { path: CONFIG_PATH, element: <Config /> },
         ],
       },
       { path: '/register', element: <Register /> },

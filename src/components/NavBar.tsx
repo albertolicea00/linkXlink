@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNav } from '../context/nav'
 import { AuthGateModal } from './AuthGateModal'
-import { ADMIN_PATH } from '../lib/adminPath'
+import { ADMIN_PATH, MODERATOR_PATH } from '../lib/adminPath'
 import { useInstallPrompt } from '../hooks/useInstallPrompt'
 import { useIOSInstallHint } from '../hooks/useIOSInstallHint'
 import { IOSInstallHint } from './IOSInstallHint'
@@ -11,7 +11,8 @@ import appLinks from '../config/app-links.json'
 
 /**
  * App-like navigation: a fixed bottom bar (mobile) that becomes a top-right
- * cluster on wide screens. Items depend on session + role:
+ * cluster on wide screens. Admin and moderator are independent routes, so
+ * active state is plain path matching. Items depend on session + role:
  *   admin      → account, admin, moderator, app
  *   moderator  → account, moderator, app, share
  *   user       → account, app, share
@@ -23,7 +24,7 @@ export function NavBar() {
   const { session, role, loading } = useNav()
   const { canInstall, promptInstall } = useInstallPrompt()
   const { canInstallIOS, needsSafari, isIPad, autoShow, markSeen } = useIOSInstallHint()
-  const { pathname, search } = useLocation()
+  const { pathname } = useLocation()
   // Logged-out visitors still see "Account" — tapping it opens the login/
   // register modal instead of blocking.
   const [authOpen, setAuthOpen] = useState(false)
@@ -52,10 +53,6 @@ export function NavBar() {
   const isAdmin = role === 'admin'
   const isStaff = role === 'admin' || role === 'moderator'
 
-  // Admin and moderator share one route (ADMIN_PATH) and differ only by the
-  // ?view= query, so active state can't come from path matching alone.
-  const onAdminPath = pathname === ADMIN_PATH
-  const viewIsModerator = new URLSearchParams(search).get('view') === 'moderator'
   const cls = (isActive: boolean) => `navbar__item${isActive ? ' active' : ''}`
 
   const share = () => {
@@ -76,7 +73,7 @@ export function NavBar() {
       </Link>
 
       {isStaff && (
-        <Link to={`${ADMIN_PATH}?view=moderator`} className={cls(onAdminPath && viewIsModerator)}>
+        <Link to={MODERATOR_PATH} className={cls(pathname === MODERATOR_PATH)}>
           <Icon.Check />
           <span>{t('nav.moderator')}</span>
         </Link>
@@ -95,7 +92,7 @@ export function NavBar() {
       )}
       
       {isAdmin && (
-        <Link to={`${ADMIN_PATH}?view=admin`} className={cls(onAdminPath && !viewIsModerator)}>
+        <Link to={ADMIN_PATH} className={cls(pathname === ADMIN_PATH)}>
           <Icon.Shield />
           <span>{t('nav.admin')}</span>
         </Link>

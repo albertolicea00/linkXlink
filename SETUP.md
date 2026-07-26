@@ -129,12 +129,11 @@ Edit `.env.local` and fill in:
 ```
 VITE_SUPABASE_URL=<your-project-url>
 VITE_SUPABASE_ANON_KEY=<your-anon-key>
-# Optional: secret path for the admin panel (defaults to /admin)
-VITE_ADMIN_PATH=/my-secret-admin
 ```
 
 > The anon key is **public by design** — security comes from RLS, not key secrecy.
-> `VITE_ADMIN_PATH` only hides the admin URL from casual visitors — it ships inside the JS bundle. Real protection is the staff login + RLS.
+
+The staff area lives at three fixed routes: `/admin` (dashboard), `/admin/moderator` (moderation deck) and `/admin/config` (read-only config viewer). They are protected by the staff login + RLS — there is no secret path (the old `VITE_ADMIN_PATH` shipped inlined in the bundle anyway, so it hid nothing from anyone reading the JS).
 
 ### 8. Test locally
 
@@ -186,7 +185,6 @@ Vercel auto-detects Vite. Verify the defaults:
 | ------------------------ | ----------------------------------------------------------- |
 | `VITE_SUPABASE_URL`      | Your Supabase project URL                                   |
 | `VITE_SUPABASE_ANON_KEY` | Your Supabase anon public key                               |
-| `VITE_ADMIN_PATH`        | (optional) Secret admin panel path, e.g. `/my-secret-admin` |
 
 > After deploying, add the production URL to Supabase **Authentication → URL Configuration → Redirect URLs**, or OAuth logins will bounce.
 

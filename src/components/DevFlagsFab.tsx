@@ -16,6 +16,9 @@ export function DevFlagsFab() {
   const [open, setOpen] = useState(false)
   const [flags, setFlags] = useState<DevFlags>(getDevFlags)
 
+  // Kill switch in dev-config.json — getDevFlags() also purges the stored
+  // flags when it's off, so hiding the button is enough here.
+  if (!devConfig.show_dev_settings_to_admins) return null
   if (role !== 'admin') return null
 
   const toggle = (key: string, value: boolean) => {

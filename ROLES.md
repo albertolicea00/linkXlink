@@ -85,9 +85,9 @@ membership — no row in `admins`/`moderators` = regular user, row in
 
 ## Moderator
 
-- Everything a regular user can do, plus access to `/admin` in the moderator
-  view (the only view a moderator can reach — no `?view=admin` toggle for
-  them).
+- Everything a regular user can do, plus access to the moderator route
+  (`/admin/moderator`) — the only staff route they can reach. The admin and
+  config routes answer "not authorized" for them.
 - Sees their own stats: approved by me, denied by me, pending count, and
   skipped today (skipped-today is a local per-device counter, not a DB value —
   it resets at local midnight and isn't shared across devices).
@@ -102,14 +102,15 @@ membership — no row in `admins`/`moderators` = regular user, row in
     instead of soft-denying it — a seed row has no real person behind it, and
     a permanent denied stub would squat the WhatsApp number forever.
 - Cannot see global admin stats, cannot search/promote/remove staff, cannot
-  switch to the admin view.
+  open the admin or config routes.
 
 ## Admin
 
 - Everything a moderator can do (`is_moderator()` is true for admins too),
   plus:
-  - Can switch between the admin view and the moderator view from the nav bar.
-  - Admin view shows global stats: total/active/pending/banned profiles, and
+  - Can move between the admin and moderator routes from the nav bar (they are
+    separate URLs, not two views of one page).
+  - Admin route shows global stats: total/active/pending/banned profiles, and
     database-wide counters (fake profiles, migrated total/unclaimed, accounts
     with no profile at all) — these counters are **never** affected by dev
     flags or the panel's own filtered profiles query; they're always the true
@@ -121,19 +122,28 @@ membership — no row in `admins`/`moderators` = regular user, row in
   - Can remove a moderator or another admin — each removal requires a
     confirmation dialog. Cannot remove themselves from the admins list (guard
     against accidental self-lockout).
-  - Sees a floating `</>` button (bottom-right, semi-transparent) opening a
+  - Sees a floating `</>` button (right edge, semi-transparent) opening a
     dev-flags panel: show only fake profiles, bypass the release-date gate,
-    show only unclaimed migrated profiles, bypass the daily swap/click limit.
-    These are per-device localStorage toggles for QA — **not** a security
-    boundary, and never affect the global stats counters.
+    show only unclaimed migrated profiles, bypass the daily swap/click limit,
+    show the migrated stat. These are per-device localStorage toggles for QA —
+    **not** a security boundary, and never affect the global stats counters.
+    Hidden (and the stored flags purged) when `show_dev_settings_to_admins` is
+    false in `dev-config.json`.
+  - Sees a banner in the admin route linking to the **config** route: a
+    read-only view of `app-config.json`, `app-links.json` and
+    `dev-config.json`, one collapsible panel each. Hidden, and the route
+    itself closed, when `show_app_settings_to_admins` is false.
+  - Both switches are all-or-nothing for admins today. Narrowing them to
+    specific admin emails is a planned follow-up (see `DESIGN.md` §9).
 
 ## Notes
 
 - The first admin has to be created by hand (Supabase Auth user + a row in
   `admins`, via SQL) — see `SETUP.md`. Every admin after that can be promoted
   from the panel, no SQL needed.
-- `VITE_ADMIN_PATH` only hides the `/admin` URL from casual visitors — it ships
-  inside the JS bundle. The actual boundary is the staff login + RLS, not the
-  path.
+- Staff routes are plain fixed URLs: `/admin`, `/admin/moderator`,
+  `/admin/config`. There is no secret path — the old `VITE_ADMIN_PATH` shipped
+  inlined in the JS bundle, so it only deterred casual URL guessing. The actual
+  boundary is the staff login + RLS.
 - All of the above server-side rules live in `supabase/migrations/` — the
   client-side checks (popups, disabled buttons) are UX, not the real gate.

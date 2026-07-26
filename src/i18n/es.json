@@ -309,6 +309,24 @@
     "bypassLimits": "Saltar el límite diario de swaps/clics",
     "showMigratedStat": "Ver la stat de perfiles migrados"
   },
+  "config": {
+    "readOnlyTitle": "Solo lectura por ahora",
+    "readOnly": "Para cambiar un valor, edita el JSON en el repositorio y vuelve a desplegar.",
+    "viewRepo": "Abrir el repositorio",
+    "searchPlaceholder": "Buscar un ajuste...",
+    "matches_one": "{{count}} ajuste encontrado",
+    "matches_other": "{{count}} ajustes encontrados",
+    "noResults": "Ningún ajuste coincide con «{{query}}».",
+    "panelApp": "Ajustes de la app",
+    "panelAppDesc": "Perillas de comportamiento: idiomas, proveedores de login, límites, umbrales de moderación, fotos y opciones de perfil.",
+    "panelLinks": "Enlaces e identidad",
+    "panelLinksDesc": "Todas las URLs hacia afuera y la identidad del proyecto: sitio, comunidad, redes, autor y donación.",
+    "panelLinksProtected": "Las claves de identidad y donación están protegidas legalmente: no las edites en un fork ni en un PR (ver CONTRIBUTING.md).",
+    "panelDev": "Ajustes de desarrollo",
+    "panelDevDesc": "Superficie solo para admins: acceso a esta página, panel de opciones de desarrollo y visibilidad de perfiles semilla.",
+    "bannerTitle": "Configuración de la app",
+    "bannerText": "Ver los valores de app-config, enlaces y desarrollo."
+  },
   "admin": {
     "title": "Admin",
     "viewSwitch": "Cambiar vista",
@@ -429,7 +447,8 @@
     "moderator": "Moderar",
     "app": "Explorar",
     "share": "Compartir",
-    "install": "Instalar"
+    "install": "Instalar",
+    "config": "Configuración"
   },
   "iosInstall": {
     "title": "Instala esta app",

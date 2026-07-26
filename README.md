@@ -36,7 +36,7 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 🔀 **Rotation**            | Per-device least-seen-first ordering — not everyone sees the same people first                                                                           |
 | 🌐 **i18n**                | Spanish (default) and English                                                                                                                            |
 | 📱 **Installable PWA**     | Offline support: cached profiles + photos, auto-updating service worker; native install prompt on Chromium, guided manual walkthrough on iOS Safari                                                                                  |
-| 🔐 **Server-side gate**    | Feed access enforced by RLS (not just a popup); hidden admin path (`VITE_ADMIN_PATH`)                                                                    |
+| 🔐 **Server-side gate**    | Feed access enforced by RLS (not just a popup); staff routes gated by role tables + RLS                                                                    |
 | ⚙️ **Parametrizable**      | Limits, gates, preview, tracking, interests, deck behavior in `src/config/app-config.json`; URLs & identity in `app-links.json`; admin/dev toggles in `dev-config.json`                                                       |
 
 ---
@@ -49,7 +49,9 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | `/app`      | Swipe feed (soft-gated: account + profile required, via popup)           |
 | `/register` | Self-registration wizard                                                 |
 | `/account`  | Manage own profile (edit, hide/pause)                                    |
-| `/admin`    | Staff panel (role-based views) — path configurable via `VITE_ADMIN_PATH` |
+| `/admin`    | Admin dashboard — global stats + staff management                        |
+| `/admin/moderator` | Moderation deck — pending queue, approve/deny                     |
+| `/admin/config`    | Read-only viewer for the three config JSONs                       |
 | `/eula`     | Terms and conditions                                                     |
 | `/privacy`  | Privacy policy                                                           |
 | `/data`     | Data usage                                                               |

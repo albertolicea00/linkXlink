@@ -7,6 +7,9 @@ import {
   type CountryCode,
 } from 'libphonenumber-js/max'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { GithubLink } from '../components/GithubLink'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { Loader } from '../components/Loader'
 import { PhoneInput } from '../components/PhoneInput'
 import { AuthPanel } from '../components/AuthPanel'
 import { ProfileExtraFields } from '../components/ProfileExtraFields'
@@ -267,6 +270,7 @@ export function Register({ lang }: Props) {
             </Link>
           </nav>
           <ThemeToggle />
+          <GithubLink />
         </div>
       </header>
 
