@@ -148,7 +148,7 @@ export function Account() {
 
         {isAppLoading && <Loader />}
 
-        {loaded && !profile && (
+        {!isAppLoading && loaded && !profile && (
           <div className="register__success">
             <p>{t('account.noProfile')}</p>
             <Link to="/register" className="btn btn--primary">
@@ -157,7 +157,7 @@ export function Account() {
           </div>
         )}
 
-        {loaded && profile && (
+        {!isAppLoading && loaded && profile && (
           <div className="account-layout">
             <div className="register__card">
               <div className="register__card-header">
