@@ -8,6 +8,7 @@ import { moderateProfile } from '../../lib/metrics'
 import { getSkippedToday, recordSkip } from '../../lib/moderatorSkips'
 import { myApprovedCount, myDeniedCount } from '../../lib/moderators'
 import { useAdminProfiles } from '../../hooks/useAdminProfiles'
+import { useMinLoading } from '../../hooks/useMinLoading'
 import { DenyReasonModal } from './DenyReasonModal'
 import { fireConfetti } from '../../components/Confetti'
 import { notify } from '../../components/Toast'
@@ -26,6 +27,7 @@ export function ModeratorDashboard() {
     profile: Profile
     swipe: (dir: SwipeDirection, meta?: SwipeMeta) => void
   } | null>(null)
+  const isAppLoading = useMinLoading(loadingProfiles)
 
   useEffect(() => {
     void myApprovedCount().then(setApprovedByMe)
@@ -139,7 +141,7 @@ export function ModeratorDashboard() {
           }}
           onSwipe={(p, dir, meta) => void handleModeration(p, dir, meta)}
           emptyState={
-            loadingProfiles ? (
+            isAppLoading ? (
               <Loader />
             ) : (
               <div className="app-page__status">

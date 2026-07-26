@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useProfiles } from '../hooks/useProfiles'
 import { useSwapCounter } from '../hooks/useSwapCounter'
+import { useMinLoading } from '../hooks/useMinLoading'
 import { useAuth } from '../hooks/useAuth'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { fetchPreviewProfiles, removePreviewProfile } from '../lib/previewProfiles'
@@ -141,17 +142,7 @@ export function AppPage() {
   })
 
   const baseLoading = previewMode ? previewLoading : loading
-  const [minLoadDone, setMinLoadDone] = useState(true)
-
-  useEffect(() => {
-    if (baseLoading) {
-      setMinLoadDone(false)
-      const timer = setTimeout(() => setMinLoadDone(true), 4000)
-      return () => clearTimeout(timer)
-    }
-  }, [baseLoading])
-
-  const isLoading = baseLoading || !minLoadDone
+  const isLoading = useMinLoading(baseLoading)
   const deckProfiles = previewMode ? preview : orderedProfiles
   // Only ever show while actually blocked, so signing in (blocked flips false)
   // hides it the SAME render — no leftover `gateOpen` flashing the modal after

@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useNav } from '../context/nav'
+import { useMinLoading } from '../hooks/useMinLoading'
 import { ADMIN_PATH } from '../lib/adminPath'
 import { LoginForm } from './admin/LoginForm'
 import { AdminDashboard } from './admin/AdminDashboard'
@@ -20,6 +21,7 @@ export function Admin() {
   const [searchParams] = useSearchParams()
   const view: 'admin' | 'moderator' = searchParams.get('view') === 'moderator' ? 'moderator' : 'admin'
   const effectiveView = role === 'admin' ? view : 'moderator'
+  const isAppLoading = useMinLoading(session && loading)
 
   usePageMeta({ title: `${t('admin.title')} | Link x Link`, path: ADMIN_PATH, noindex: true })
 
@@ -28,7 +30,7 @@ export function Admin() {
       <PageHeader section={effectiveView === 'moderator' ? t('nav.moderator') : t('nav.admin')} />
       <main>
         {!session && !loading && <LoginForm />}
-        {session && loading && (
+        {isAppLoading && (
           <div className="app-page__status">
             <Loader />
           </div>

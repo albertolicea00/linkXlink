@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader } from '../../components/Loader'
+import { useMinLoading } from '../../hooks/useMinLoading'
 import {
   listModerators,
   searchUsers,
@@ -23,6 +24,7 @@ export function ModeratorsManager() {
   const [results, setResults] = useState<UserSearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [loadingMods, setLoadingMods] = useState(true)
+  const isAppLoading = useMinLoading(loadingMods)
 
   const load = () => {
     setLoadingMods(true)
@@ -106,7 +108,7 @@ export function ModeratorsManager() {
       <h3 className="moderators__subtitle">
         {t('admin.currentModerators')} ({moderators.length})
       </h3>
-      {loadingMods ? (
+      {isAppLoading ? (
         <Loader />
       ) : moderators.length === 0 ? (
         <p className="form-message">{t('admin.noModerators')}</p>

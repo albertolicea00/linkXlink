@@ -4,6 +4,7 @@ import { Loader } from '../../components/Loader'
 import { ConfirmModal } from '../../components/ConfirmModal'
 import { notify } from '../../components/Toast'
 import { useNav } from '../../context/nav'
+import { useMinLoading } from '../../hooks/useMinLoading'
 import {
   listModerators,
   listAdmins,
@@ -53,6 +54,7 @@ export function AdminsManager() {
   const [adminsCollapsed, setAdminsCollapsed] = useState(true)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
   const [busy, setBusy] = useState(false)
+  const isAppLoading = useMinLoading(loadingStaff)
 
   const loadStaff = () => {
     setLoadingStaff(true)
@@ -208,7 +210,7 @@ export function AdminsManager() {
         </ul>
       )}
 
-      {loadingStaff ? (
+      {isAppLoading ? (
         <Loader />
       ) : (
         <>

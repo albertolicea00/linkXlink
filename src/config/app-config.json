@@ -16,6 +16,7 @@
   "report_threshold": 4,
   "moderation_approve_quorum": 1,
   "moderation_deny_quorum": 3,
+  "min_loading_time_ms": 4000,
   "moderation_deny_reasons": [
     "spam",
     "fake_photos",

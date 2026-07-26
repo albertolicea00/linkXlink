@@ -15,6 +15,7 @@ import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAuth } from '../hooks/useAuth'
+import { useMinLoading } from '../hooks/useMinLoading'
 import { fetchOwnProfile } from '../lib/ownProfile'
 import { updateOwnProfile } from '../lib/account'
 import { optimizeImage } from '../lib/imageOptimize'
@@ -35,6 +36,7 @@ export function Account() {
   const { session, loading: authLoading } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const isAppLoading = useMinLoading(!loaded || authLoading)
 
   // Which edit modal is open — null = none. `?edit=visibility` (from the "you're
   // hidden" banner on /app) opens the visibility modal straight away.
@@ -144,7 +146,7 @@ export function Account() {
           </div>
         </section>
 
-        {(!loaded || authLoading) && <Loader />}
+        {isAppLoading && <Loader />}
 
         {loaded && !profile && (
           <div className="register__success">
