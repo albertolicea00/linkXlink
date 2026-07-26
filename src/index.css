@@ -523,28 +523,106 @@ a {
   gap: 0.6rem;
 }
 
+/* Each brand sets --social-glow; the shared hover below uses it for the shadow. */
 .btn--facebook {
   background: #1877f2;
   border-color: #1877f2;
   color: #fff;
+  --social-glow: rgba(24, 119, 242, 0.45);
 }
 
 .btn--instagram {
   background: linear-gradient(45deg, #f9ce34, #ee2a7b 45%, #6228d7);
   border-color: #ee2a7b;
   color: #fff;
+  --social-glow: rgba(238, 42, 123, 0.45);
 }
 
 .btn--tiktok {
   background: #010101;
   border-color: #010101;
   color: #fff;
+  --social-glow: rgba(37, 244, 238, 0.45);
 }
 
 .btn--twitter {
   background: #0f1419;
   border-color: #0f1419;
   color: #fff;
+  --social-glow: rgba(120, 140, 155, 0.5);
+}
+
+/* Hover: lift + brand glow + a light sweep across the button, and the icon
+   tilts. Overrides .btn's default brightness(0.96) darkening, which would
+   otherwise read as "pressed" instead of "alive". */
+.socials-card__row .btn {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.socials-card__row .btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 65%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.55s ease;
+  pointer-events: none;
+}
+
+.socials-card__row .btn:hover,
+.socials-card__row .btn:focus-visible {
+  transform: translateY(-3px) scale(1.03);
+  filter: brightness(1.07);
+  box-shadow: 0 10px 22px var(--social-glow);
+}
+
+.socials-card__row .btn:hover::after,
+.socials-card__row .btn:focus-visible::after {
+  transform: translateX(130%);
+}
+
+.socials-card__row .btn:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.socials-card__row .btn svg {
+  transition: transform 0.18s ease;
+}
+
+.socials-card__row .btn:hover svg {
+  transform: rotate(-8deg) scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .socials-card__row .btn,
+  .socials-card__row .btn::after,
+  .socials-card__row .btn svg {
+    transition: none;
+  }
+
+  .socials-card__row .btn:hover,
+  .socials-card__row .btn:focus-visible {
+    transform: none;
+  }
+
+  .socials-card__row .btn:hover::after,
+  .socials-card__row .btn:focus-visible::after {
+    transform: translateX(-130%);
+  }
+
+  .socials-card__row .btn:hover svg {
+    transform: none;
+  }
 }
 
 .landing__footer {
@@ -2416,6 +2494,11 @@ a.landing__brand {
   );
   color: var(--color-text);
   text-decoration: none;
+}
+
+/* No close button → reclaim the space reserved for it. */
+.tg-banner--no-close {
+  padding-right: 1rem;
 }
 
 .tg-banner__icon {
