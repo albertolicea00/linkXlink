@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { SocialsCard } from '../components/SocialsCard'
+import { TelegramBanner } from '../components/TelegramBanner'
+import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { SupportCard } from '../components/SupportCard'
 import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
@@ -187,6 +189,10 @@ export function Landing({ lang }: Props) {
         </section>
 
         <SocialsCard />
+        {/* Part of the landing's own content — no X, and unaffected by a
+            dismiss made on /account. */}
+        <TelegramBanner dismissable={false} />
+        <WhatsAppBanner dismissable={false} />
 
         <section className="landing__faq" style={{ marginTop: '3rem' }}>
           <h2>{t('landing.faqTitle')}</h2>

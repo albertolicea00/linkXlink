@@ -14,11 +14,15 @@ function TelegramIcon() {
 /**
  * Community CTA: for now the Telegram channel doubles as bug/feature reports
  * and customer service. Link comes from app-config (`community_telegram_url`).
- * Dismissable — snoozed for `community_banner_snooze_days`, not forever.
+ *
+ * `dismissable` (default) shows an X and snoozes the banner for
+ * `community_banner_snooze_days`. Pass false where the banner is part of the
+ * page's own content (the landing) — there it always shows, and a dismiss made
+ * elsewhere doesn't hide it either.
  */
-export function TelegramBanner() {
+export function TelegramBanner({ dismissable = true }: { dismissable?: boolean }) {
   const { t } = useTranslation()
-  const [dismissed, setDismissed] = useState(() => isBannerDismissed('telegram'))
+  const [dismissed, setDismissed] = useState(() => dismissable && isBannerDismissed('telegram'))
 
   if (dismissed) return null
 
@@ -27,7 +31,7 @@ export function TelegramBanner() {
     // so the shell positions it over the banner instead.
     <div className="tg-banner-shell">
       <a
-        className="tg-banner"
+        className={`tg-banner${dismissable ? '' : ' tg-banner--no-close'}`}
         href={appConfig.community_telegram_url}
         target="_blank"
         rel="noopener noreferrer"
@@ -39,18 +43,20 @@ export function TelegramBanner() {
         </span>
         <span className="tg-banner__cta">{t('community.join')}</span>
       </a>
-      <button
-        type="button"
-        className="tg-banner__close"
-        aria-label={t('community.dismiss')}
-        title={t('community.dismiss')}
-        onClick={() => {
-          dismissBanner('telegram')
-          setDismissed(true)
-        }}
-      >
-        ×
-      </button>
+      {dismissable && (
+        <button
+          type="button"
+          className="tg-banner__close"
+          aria-label={t('community.dismiss')}
+          title={t('community.dismiss')}
+          onClick={() => {
+            dismissBanner('telegram')
+            setDismissed(true)
+          }}
+        >
+          ×
+        </button>
+      )}
     </div>
   )
 }
