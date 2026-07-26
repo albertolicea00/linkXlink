@@ -304,18 +304,25 @@ a {
   filter: drop-shadow(0 8px 18px var(--color-primary-glow));
 }
 
+/* Uses the standalone `scale`/`rotate` properties, NOT `transform`: the
+   animation is `fill: both`, so a filled `transform` keyframe keeps winning
+   over `:hover { transform }` in the cascade and the hover never fires. Same
+   trap as the stat cards' entrance. */
 @keyframes hero-logo-in {
   0% {
     opacity: 0;
-    transform: scale(0.4) rotate(-12deg);
+    scale: 0.4;
+    rotate: -12deg;
   }
   60% {
     opacity: 1;
-    transform: scale(1.14) rotate(3deg);
+    scale: 1.14;
+    rotate: 3deg;
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
+    scale: 1;
+    rotate: 0deg;
   }
 }
 
@@ -3649,10 +3656,29 @@ a.landing__brand {
   gap: 0.3rem;
 }
 
+/* Same tilt-and-glow hover as the landing hero and the empty-state logo. */
 .demo-banner__logo {
   width: 28px;
   height: 28px;
   border-radius: 8px;
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.demo-banner__logo:hover {
+  transform: scale(1.12) rotate(-6deg);
+  filter: drop-shadow(0 8px 18px var(--color-primary-glow));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-banner__logo {
+    transition: none;
+  }
+
+  .demo-banner__logo:hover {
+    transform: none;
+  }
 }
 
 .demo-banner__badge {
@@ -3660,7 +3686,7 @@ a.landing__brand {
   padding: 0.15rem 0.5rem;
   color: var(--color-primary);;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
