@@ -12,6 +12,10 @@ Thanks for your interest in improving Link x Link!
   - `app-links.json` — outward-facing URLs and project identity
   - `dev-config.json` — admin/dev-only toggles and `dev_flags`
 
+## 🎭 Demo Mode
+
+The project includes a built-in mock system (`src/lib/mockFetch.ts` and `src/mocks/`) that intercepts API calls to simulate users and data without a real backend. **Keep this system minimal.** Only add the strictly necessary logic and data required to demonstrate the app's functionality. Avoid overly complex mock state or exhaustive data sets that add unnecessary maintenance overhead.
+
 ## ⛔ Protected configuration
 
 `src/config/app-config.json` and `src/config/app-links.json` drive live behavior and the project's public identity. **Do not touch them** unless the change is the actual point of your contribution, and say why in the PR description. "Tidied up the config", reordering keys, reformatting, or flipping a limit "because it seemed better" are not reasons — a PR that edits these files without a clear, coherent justification gets closed without review.

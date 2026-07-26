@@ -298,6 +298,12 @@
     "reload": "Reload",
     "home": "Go home"
   },
+  "demo": {
+    "badge": "Demo mode",
+    "text": "You are viewing a demonstration. Every profile, number and statistic is made up: there are no real people behind them and nothing you do is saved. Some features (uploading photos, sending WhatsApp, registering) may not work or may have no effect.",
+    "hide": "Hide",
+    "show": "More"
+  },
   "dev": {
     "title": "Developer options",
     "help": "Admins only. Stored on this device. With everything off, the app behaves like it does for everyone else.",

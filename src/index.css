@@ -3581,3 +3581,66 @@ a.landing__brand {
     align-items: baseline;
   }
 }
+
+/* Demo mode notice — floating pill, top-center, above page chrome but below
+   the offline banner (z 9999). Collapsible, never dismissable: nobody should
+   be able to forget these profiles are fabricated. */
+.demo-banner {
+  position: fixed;
+  top: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: min(92vw, 620px);
+  padding: 0.5rem 0.7rem;
+  border-radius: 15px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.demo-banner--collapsed {
+  border-radius: 999px;
+}
+
+.demo-banner__badge {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.5rem;
+  color: var(--color-primary);;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.demo-banner__text {
+  min-width: 0;
+  color: var(--color-text-muted);
+}
+
+.demo-banner__toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0.1rem 0.4rem;
+  background: none;
+  border: 0;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Narrow screens: the full text needs the room, so drop the pill shape. */
+@media (max-width: 560px) {
+  .demo-banner:not(.demo-banner--collapsed) {
+    border-radius: 14px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}

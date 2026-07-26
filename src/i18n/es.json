@@ -298,6 +298,12 @@
     "reload": "Recargar",
     "home": "Ir al inicio"
   },
+  "demo": {
+    "badge": "Modo demo",
+    "text": "Estás viendo una demostración. Todos los perfiles, números y estadísticas son inventados: no hay personas reales detrás y nada de lo que hagas se guarda. Algunas funciones (subir fotos, enviar WhatsApp, registrarte) pueden no funcionar o no tener efecto.",
+    "hide": "Ocultar",
+    "show": "Ver más"
+  },
   "dev": {
     "title": "Opciones de desarrollo",
     "help": "Solo visible para admins. Se guardan en este dispositivo. Con todas apagadas, la app funciona igual que para los demás.",

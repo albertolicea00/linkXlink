@@ -18,6 +18,7 @@ import { ResetPassword } from './pages/ResetPassword'
 import { RouteError } from './pages/RouteError'
 import { NavBar } from './components/NavBar'
 import { DevFlagsFab } from './components/DevFlagsFab'
+import { DemoBanner } from './components/DemoBanner'
 import { ConfettiRoot } from './components/Confetti'
 import { ToastRoot } from './components/Toast'
 import { UpdatePrompt } from './components/UpdatePrompt'
@@ -118,6 +119,9 @@ createRoot(document.getElementById('root')!).render(
     <NavStateProvider>
       <ConfettiRoot />
       <ToastRoot />
+      {/* Outside the router: the demo warning belongs on every page, landing
+          included, not only on the ones with the app chrome. */}
+      <DemoBanner />
       <UpdatePrompt />
       <RouterProvider router={router} />
     </NavStateProvider>

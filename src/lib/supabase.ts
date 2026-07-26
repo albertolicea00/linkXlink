@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { customFetch } from './mockFetch'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
@@ -19,4 +20,9 @@ if (!isSupabaseConfigured) {
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-anon-key',
+  {
+    global: {
+      fetch: customFetch
+    }
+  }
 )

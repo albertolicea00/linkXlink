@@ -1,4 +1,7 @@
 {
+  "demo_admin": true,
+  "demo_moderator": true,
+  "demo_user": true,
   "show_app_settings_to_admins": true,
   "show_dev_settings_to_admins": true,
   "seed_profiles_visible_before_claim": true,

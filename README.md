@@ -53,6 +53,20 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 🔐 **Server-side gate**    | Feed access enforced by RLS (not just a popup); staff routes gated by role tables + RLS                                                                    |
 | ⚙️ **Parametrizable**      | Limits, gates, preview, tracking, interests, deck behavior in `src/config/app-config.json`; URLs & identity in `app-links.json`; admin/dev toggles in `dev-config.json`                                                       |
 
+## 🎭 Demo Users
+
+This project includes a built-in mock system designed to showcase the app's functionality `just make-believe` without needing a real Supabase backend connection. The mock system intercepts API requests and returns static JSON profiles located in `src/mocks/`.
+
+You can log in with the following demo credentials to explore different roles:
+
+- **Admin**: `admin@demo.com` (Password: any)
+- **Moderator**: `moderator@demo.com` (Password: any)
+- **User**: `user@demo.com` (Password: any)
+
+While a demo account is signed in, a **Demo mode** banner stays on screen on every page: the profiles are fabricated, nothing is persisted, and some flows (photo upload, WhatsApp, registration) do nothing. Each account can be switched off individually with `demo_admin` / `demo_moderator` / `demo_user` in `src/config/dev-config.json`.
+
+Demo WhatsApp numbers use the `1-555-555-01xx` range, reserved for fiction — tapping through can never reach a real person.
+
 ---
 
 ## 🗺️ Routes
