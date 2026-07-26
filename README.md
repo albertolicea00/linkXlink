@@ -12,6 +12,20 @@
 
 ---
 
+## ⚠️ Production Warning & Known Risks
+
+This project is currently provided as a **proof-of-concept / example application**. Deploying this code as-is to a production environment is a **security risk** because it lacks several critical systems to prevent spam, abuse, and impersonation.
+
+The following minimum required features are currently missing and marked as `wontfix` due to lack of funding *(please support the project hehehe and maybe we will build them!)*:
+
+- [Automated AI Image Moderation (#22)](https://github.com/albertolicea00/linkXlink/issues/22)
+- [Server-Side Rate Limiting and Anti-Scraping Protection (#25)](https://github.com/albertolicea00/linkXlink/issues/25)
+- [Automated Text Moderation for Bios (#27)](https://github.com/albertolicea00/linkXlink/issues/27)
+- [Robust Age and Identity Verification (#29)](https://github.com/albertolicea00/linkXlink/issues/29)
+- [SMS/WhatsApp OTP Phone Number Verification (#13)](https://github.com/albertolicea00/linkXlink/issues/13)
+
+---
+
 ## ✨ What is Link x Link?
 
 A **PWA** built for users. Browse people profiles with photos, name, and description, and connect with them directly via **WhatsApp** in one click. Tinder-like horizontal card navigation, community reporting system, and profiles that auto-disable after a report threshold.
@@ -30,7 +44,7 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 👤 **My account**          | Read-only summary + edit (name/bio/gender/interests), hide or pause your profile until a date                                                            |
 | 💬 **Community**           | Telegram channel for support, bug reports & feature requests (`community_telegram_url`) — on /account and landing                                        |
 | 👀 **Anonymous preview**   | Signed-out visitors get a teaser of N profiles (numbers hidden) before the gate                                                                          |
-| 🛂 **Roles**               | Admins (global stats + manage moderators) and moderators (approve/skip deck + own stats); admin can switch views                                         |
+| 🛂 **Roles**               | Admins (global stats + manage moderators + config viewer) and moderators (approve/skip deck + own stats); each on its own route                          |
 | 🚨 **Community reports**   | Profile disables after `report_threshold` reports (DB trigger); full moderation audit trail                                                              |
 | 📊 **Metrics**             | Anonymous per-device views & WhatsApp clicks (`profile_events`)                                                                                          |
 | 🔀 **Rotation**            | Per-device least-seen-first ordering — not everyone sees the same people first                                                                           |
