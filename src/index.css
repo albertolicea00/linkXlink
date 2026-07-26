@@ -355,8 +355,12 @@ a {
 }
 
 /* Primary CTA: breathing glow while it waits, shine sweep + lift on hover.
-   Only when enabled — a disabled "Entrar" (terms unchecked) stays inert. */
-.landing__cta .btn:not(:disabled) {
+   Only when enabled — a disabled "Entrar" (terms unchecked) stays inert.
+   Shared with the empty/error/404 states so every dead-end screen offers the
+   same inviting primary action. */
+.landing__cta .btn:not(:disabled),
+.app-page__status .btn--primary:not(:disabled),
+.notfound__main .btn--primary:not(:disabled) {
   position: relative;
   overflow: hidden;
   animation: cta-breathe 3.2s ease-in-out infinite;
@@ -366,7 +370,9 @@ a {
     filter 0.2s ease;
 }
 
-.landing__cta .btn:not(:disabled)::after {
+.landing__cta .btn:not(:disabled)::after,
+.app-page__status .btn--primary:not(:disabled)::after,
+.notfound__main .btn--primary:not(:disabled)::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -382,7 +388,11 @@ a {
 }
 
 .landing__cta .btn:not(:disabled):hover,
-.landing__cta .btn:not(:disabled):focus-visible {
+.landing__cta .btn:not(:disabled):focus-visible,
+.app-page__status .btn--primary:not(:disabled):hover,
+.app-page__status .btn--primary:not(:disabled):focus-visible,
+.notfound__main .btn--primary:not(:disabled):hover,
+.notfound__main .btn--primary:not(:disabled):focus-visible {
   animation-play-state: paused;
   transform: translateY(-3px) scale(1.04);
   filter: brightness(1.05);
@@ -390,11 +400,17 @@ a {
 }
 
 .landing__cta .btn:not(:disabled):hover::after,
-.landing__cta .btn:not(:disabled):focus-visible::after {
+.landing__cta .btn:not(:disabled):focus-visible::after,
+.app-page__status .btn--primary:not(:disabled):hover::after,
+.app-page__status .btn--primary:not(:disabled):focus-visible::after,
+.notfound__main .btn--primary:not(:disabled):hover::after,
+.notfound__main .btn--primary:not(:disabled):focus-visible::after {
   transform: translateX(130%);
 }
 
-.landing__cta .btn:not(:disabled):active {
+.landing__cta .btn:not(:disabled):active,
+.app-page__status .btn--primary:not(:disabled):active,
+.notfound__main .btn--primary:not(:disabled):active {
   transform: translateY(-1px) scale(0.99);
 }
 
@@ -461,17 +477,25 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing__cta .btn:not(:disabled) {
+  .landing__cta .btn:not(:disabled),
+  .app-page__status .btn--primary:not(:disabled),
+  .notfound__main .btn--primary:not(:disabled) {
     animation: none;
     transition: none;
   }
 
   .landing__cta .btn:not(:disabled):hover,
-  .landing__cta .btn:not(:disabled):focus-visible {
+  .landing__cta .btn:not(:disabled):focus-visible,
+  .app-page__status .btn--primary:not(:disabled):hover,
+  .app-page__status .btn--primary:not(:disabled):focus-visible,
+  .notfound__main .btn--primary:not(:disabled):hover,
+  .notfound__main .btn--primary:not(:disabled):focus-visible {
     transform: none;
   }
 
-  .landing__cta .btn:not(:disabled)::after {
+  .landing__cta .btn:not(:disabled)::after,
+  .app-page__status .btn--primary:not(:disabled)::after,
+  .notfound__main .btn--primary:not(:disabled)::after {
     display: none;
   }
 
@@ -1626,7 +1650,17 @@ a {
   }
 }
 
+/* Stat cards: staggered rise on mount, accent bar + lift on hover (no shine
+   sweep — reads as glass glare on a flat card). Each variant only sets
+   --stat-accent; the value color, the top bar
+   and the glow all derive from it, so a new variant is a one-line addition.
+   Entrance uses the standalone `translate`/`scale` properties on purpose —
+   `transform` stays free for the hover lift, which a filled entrance
+   animation would otherwise override. */
 .stat-card {
+  --stat-accent: var(--color-text);
+  position: relative;
+  overflow: hidden;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 14px;
@@ -1636,12 +1670,81 @@ a {
   align-items: center;
   gap: 0.25rem;
   text-align: center;
+  animation: stat-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* Top accent bar — grows out from the centre. */
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--stat-accent);
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--stat-accent) 45%, var(--color-border));
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--stat-accent) 26%, transparent);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+@keyframes stat-card-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* Cards land one after another instead of all at once. */
+.admin-stats .stat-card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.admin-stats .stat-card:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.admin-stats .stat-card:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.admin-stats .stat-card:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.admin-stats .stat-card:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.admin-stats .stat-card:nth-child(7) {
+  animation-delay: 0.36s;
+}
+.admin-stats .stat-card:nth-child(8) {
+  animation-delay: 0.42s;
 }
 
 .stat-card__value {
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1;
+  color: var(--stat-accent);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stat-card:hover .stat-card__value {
+  transform: scale(1.1);
 }
 
 .stat-card__label {
@@ -1650,19 +1753,42 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-text-muted);
+  transition: color 0.25s ease;
 }
 
-.stat-card--total .stat-card__value {
+.stat-card:hover .stat-card__label {
   color: var(--color-text);
 }
-.stat-card--pending .stat-card__value {
-  color: var(--color-primary);
+
+.stat-card--total {
+  --stat-accent: var(--color-text);
 }
-.stat-card--active .stat-card__value {
-  color: var(--color-whatsapp-dark);
+.stat-card--pending {
+  --stat-accent: var(--color-primary);
 }
-.stat-card--banned .stat-card__value {
-  color: var(--color-danger);
+.stat-card--active {
+  --stat-accent: var(--color-whatsapp-dark);
+}
+.stat-card--banned {
+  --stat-accent: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .stat-card::before,
+  .stat-card__value {
+    animation: none;
+    transition: none;
+  }
+
+  .stat-card:hover,
+  .stat-card:hover .stat-card__value {
+    transform: none;
+  }
+
+  .stat-card:hover::before {
+    transform: scaleX(1);
+  }
 }
 
 /* Admin share */
@@ -2029,6 +2155,14 @@ a.landing__brand {
   width: 100px;
   height: 100px;
   animation: notfound-pulse 2s ease-in-out infinite;
+  transition: filter 0.25s ease;
+}
+
+/* The pulse keyframes own `transform`, so a plain :hover transform would lose
+   to it — swap the whole animation out instead of trying to override it. */
+.notfound__heart:hover {
+  animation: notfound-heart-hover 0.25s ease forwards;
+  filter: drop-shadow(0 8px 18px var(--color-primary-glow));
 }
 
 @keyframes notfound-pulse {
@@ -2038,6 +2172,27 @@ a.landing__brand {
   }
   50% {
     transform: scale(1.08);
+  }
+}
+
+@keyframes notfound-heart-hover {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12) rotate(-6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notfound__heart,
+  .notfound__heart:hover {
+    animation: none;
+    transition: none;
+  }
+
+  .notfound__heart:hover {
+    filter: none;
   }
 }
 
@@ -2473,8 +2628,8 @@ a.landing__brand {
   transform: rotate(90deg);
 }
 
-.stat-card--approved .stat-card__value {
-  color: var(--color-whatsapp-dark);
+.stat-card--approved {
+  --stat-accent: var(--color-whatsapp-dark);
 }
 
 .app-page__account {
@@ -2862,12 +3017,30 @@ a.landing__brand {
   text-decoration: none;
 }
 
-/* Preview-end app logo */
+/* Preview-end app logo — same tilt-and-glow hover as the landing hero logo. */
 .preview-end__logo {
   width: 64px;
   height: 64px;
   margin: 0 auto 0.75rem;
   border-radius: 16px;
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.preview-end__logo:hover {
+  transform: scale(1.12) rotate(-6deg);
+  filter: drop-shadow(0 8px 18px var(--color-primary-glow));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-end__logo {
+    transition: none;
+  }
+
+  .preview-end__logo:hover {
+    transform: none;
+  }
 }
 
 /* Account layout */
