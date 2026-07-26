@@ -21,7 +21,12 @@ export function DemoBanner() {
 
   return (
     <div className={`demo-banner${open ? '' : ' demo-banner--collapsed'}`} role="status">
-      <span className="demo-banner__badge">{t('demo.badge')}</span>
+      <span className="demo-banner__brand">
+        {/* Collapsed, the pill should stay a one-line strip — the mark only
+            earns its space next to the full text. */}
+        {open && <img src="/icons/icon.svg" alt="" className="demo-banner__logo" />}
+        <span className="demo-banner__badge">{t('demo.badge')}</span>
+      </span>
       {open && <span className="demo-banner__text">{t('demo.text')}</span>}
       <button
         type="button"

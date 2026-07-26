@@ -3608,6 +3608,21 @@ a.landing__brand {
   border-radius: 999px;
 }
 
+/* Brand mark stacked over the label, so the notice reads as the app talking. */
+.demo-banner__brand {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.demo-banner__logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
 .demo-banner__badge {
   flex: 0 0 auto;
   padding: 0.15rem 0.5rem;
