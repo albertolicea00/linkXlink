@@ -3093,6 +3093,7 @@ a.landing__brand {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  margin-top: 1em;
 }
 
 .account-layout > .register__card {
