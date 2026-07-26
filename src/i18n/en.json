@@ -316,6 +316,7 @@
     "showMigratedStat": "Show the migrated-profiles stat"
   },
   "config": {
+    "back": "Back to the panel",
     "readOnlyTitle": "Read-only for now",
     "readOnly": "To change a value, edit the JSON in the repo and redeploy.",
     "viewRepo": "Open the repository",

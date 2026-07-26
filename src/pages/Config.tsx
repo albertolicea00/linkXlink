@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { StaffGate } from './admin/StaffGate'
 import { CONFIG_PATH, ADMIN_PATH } from '../lib/adminPath'
@@ -206,6 +206,15 @@ export function Config() {
   return (
     <StaffGate section={t('nav.config')} path={CONFIG_PATH} requires="admin" wide>
       <div className="admin-panel config-page">
+        {/* The config route hangs off the admin dashboard and the nav bar has
+            no item for it, so it needs its own way back. */}
+        <Link to={ADMIN_PATH} className="config-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16" aria-hidden>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          {t('config.back')}
+        </Link>
+
         <header className="config-intro">
           <h2 className="config-intro__title">
             {t('config.readOnlyTitle')} 

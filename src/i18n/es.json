@@ -316,6 +316,7 @@
     "showMigratedStat": "Ver la stat de perfiles migrados"
   },
   "config": {
+    "back": "Volver al panel",
     "readOnlyTitle": "Solo lectura por ahora",
     "readOnly": "Para cambiar un valor, edita el JSON en el repositorio y vuelve a desplegar.",
     "viewRepo": "Abrir el repositorio",
