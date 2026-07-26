@@ -8,6 +8,7 @@ import { WhatsAppBanner } from '../components/WhatsAppBanner'
 import { SupportCard } from '../components/SupportCard'
 import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { useScrollReveal } from '../hooks/useScrollReveal'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
 import appConfig from '../config/app-config.json'
 
@@ -70,6 +71,8 @@ export function Landing({ lang }: Props) {
     ogImage: i18n.resolvedLanguage === 'en' ? '/og-en.png' : '/og-es.png',
   })
 
+  useScrollReveal()
+
   const active = i18n.resolvedLanguage
 
 
@@ -130,19 +133,19 @@ export function Landing({ lang }: Props) {
         </section>
 
         <section className="landing__benefits">
-          <h2>{t('landing.benefitsTitle')}</h2>
+          <h2 data-reveal>{t('landing.benefitsTitle')}</h2>
           <div className="benefit-grid">
-            <div className="benefit">
+            <div className="benefit" data-reveal>
               <MapPinIcon />
               <h3>{t('landing.benefit1Title')}</h3>
               <p>{t('landing.benefit1Text')}</p>
             </div>
-            <div className="benefit">
+            <div className="benefit" data-reveal>
               <MessageIcon />
               <h3>{t('landing.benefit2Title')}</h3>
               <p>{t('landing.benefit2Text')}</p>
             </div>
-            <div className="benefit">
+            <div className="benefit" data-reveal>
               <ShieldIcon />
               <h3>{t('landing.benefit3Title')}</h3>
               <p>{t('landing.benefit3Text')}</p>
@@ -151,14 +154,14 @@ export function Landing({ lang }: Props) {
         </section>
 
         <section className="landing__how">
-          <h2>{t('landing.howTitle')}</h2>
+          <h2 data-reveal>{t('landing.howTitle')}</h2>
           <ol>
-            <li>{t('landing.how1')}</li>
-            <li>{t('landing.how2')}</li>
-            <li>{t('landing.how3')}</li>
-            <li>{t('landing.how4')}</li>
-            <li>{t('landing.how5')}</li>
-            <li>
+            <li data-reveal>{t('landing.how1')}</li>
+            <li data-reveal>{t('landing.how2')}</li>
+            <li data-reveal>{t('landing.how3')}</li>
+            <li data-reveal>{t('landing.how4')}</li>
+            <li data-reveal>{t('landing.how5')}</li>
+            <li data-reveal>
               <span>
                 <Trans
                   // No WhatsApp channel configured → don't name it at all
@@ -188,35 +191,41 @@ export function Landing({ lang }: Props) {
           </ol>
         </section>
 
-        <SocialsCard />
+        <div data-reveal>
+          <SocialsCard />
+        </div>
         {/* Part of the landing's own content — no X, and unaffected by a
             dismiss made on /account. */}
-        <TelegramBanner dismissable={false} />
-        <WhatsAppBanner dismissable={false} />
+        <div data-reveal>
+          <TelegramBanner dismissable={false} />
+          <WhatsAppBanner dismissable={false} />
+        </div>
 
         <section className="landing__faq" style={{ marginTop: '3rem' }}>
-          <h2>{t('landing.faqTitle')}</h2>
+          <h2 data-reveal>{t('landing.faqTitle')}</h2>
           <div className="faq-grid">
-            <details className="faq-item">
+            <details className="faq-item" data-reveal>
               <summary>{t('landing.faq1Q')}</summary>
               <p>{t('landing.faq1A')}</p>
             </details>
-            <details className="faq-item">
+            <details className="faq-item" data-reveal>
               <summary>{t('landing.faq2Q')}</summary>
               <p>{t('landing.faq2A')}</p>
             </details>
-            <details className="faq-item">
+            <details className="faq-item" data-reveal>
               <summary>{t('landing.faq3Q')}</summary>
               <p>{t('landing.faq3A')}</p>
             </details>
-            <details className="faq-item">
+            <details className="faq-item" data-reveal>
               <summary>{t('landing.faq4Q')}</summary>
               <p>{t('landing.faq4A')}</p>
             </details>
           </div>
         </section>
 
-        <SupportCard />
+        <div data-reveal>
+          <SupportCard />
+        </div>
       </main>
 
       <SiteFooter />
