@@ -1,0 +1,23 @@
+{
+  "show_app_settings_to_admins": true,
+  "show_dev_settings_to_admins": true,
+  "seed_profiles_visible_before_claim": true,
+  "dev_flags": [
+    {
+      "key": "bypassLimits",
+      "labelKey": "dev.bypassLimits"
+    },
+    {
+      "key": "showFakes",
+      "labelKey": "dev.showFakes"
+    },
+    {
+      "key": "onlyMigratedUnclaimed",
+      "labelKey": "dev.onlyMigrated"
+    },
+    {
+      "key": "showMigratedStat",
+      "labelKey": "dev.showMigratedStat"
+    }
+  ]
+}

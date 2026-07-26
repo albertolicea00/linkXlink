@@ -7,7 +7,7 @@ import { ADMIN_PATH } from '../lib/adminPath'
 import { useInstallPrompt } from '../hooks/useInstallPrompt'
 import { useIOSInstallHint } from '../hooks/useIOSInstallHint'
 import { IOSInstallHint } from './IOSInstallHint'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 /**
  * App-like navigation: a fixed bottom bar (mobile) that becomes a top-right
@@ -59,9 +59,9 @@ export function NavBar() {
   const cls = (isActive: boolean) => `navbar__item${isActive ? ' active' : ''}`
 
   const share = () => {
-    const text = t('register.shareMessage', { url: appConfig.site_url })
+    const text = t('register.shareMessage', { url: appLinks.site_url })
     if (navigator.share) {
-      void navigator.share({ title: 'Link x Link', text, url: appConfig.site_url })
+      void navigator.share({ title: 'Link x Link', text, url: appLinks.site_url })
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener')
     }

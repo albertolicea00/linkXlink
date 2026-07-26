@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import appConfig from '../config/app-config.json'
+import devConfig from '../config/dev-config.json'
 import { useNav } from '../context/nav'
 import { getDevFlags, setDevFlags, type DevFlags } from '../lib/devFlags'
 
 /**
  * Admin-only developer overrides. A floating </> button (right edge, vertically
  * centered, semi-transparent) opens a modal listing the toggles declared in
- * app-config.json (`dev_flags`). Flags live in localStorage (see devFlags.ts).
+ * dev-config.json (`dev_flags`). Flags live in localStorage (see devFlags.ts).
  * Mounted once app-wide; renders nothing for non-admins.
  */
 export function DevFlagsFab() {
@@ -46,7 +46,7 @@ export function DevFlagsFab() {
           >
             <h3>{t('dev.title')}</h3>
             <p className="field-help">{t('dev.help')}</p>
-            {appConfig.dev_flags.map(({ key, labelKey }) => (
+            {devConfig.dev_flags.map(({ key, labelKey }) => (
               <label key={key} className="dev-panel__item">
                 <input
                   type="checkbox"

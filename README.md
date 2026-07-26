@@ -37,7 +37,7 @@ A **PWA** built for users. Browse people profiles with photos, name, and descrip
 | 🌐 **i18n**                | Spanish (default) and English                                                                                                                            |
 | 📱 **Installable PWA**     | Offline support: cached profiles + photos, auto-updating service worker; native install prompt on Chromium, guided manual walkthrough on iOS Safari                                                                                  |
 | 🔐 **Server-side gate**    | Feed access enforced by RLS (not just a popup); hidden admin path (`VITE_ADMIN_PATH`)                                                                    |
-| ⚙️ **Parametrizable**      | Limits, gates, preview, tracking, interests, deck behavior — all in `src/config/app-config.json`                                                         |
+| ⚙️ **Parametrizable**      | Limits, gates, preview, tracking, interests, deck behavior in `src/config/app-config.json`; URLs & identity in `app-links.json`; admin/dev toggles in `dev-config.json`                                                       |
 
 ---
 

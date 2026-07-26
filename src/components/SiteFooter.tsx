@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 /**
  * Legal links + author credit. Shared by the pages that sit outside the app
@@ -20,8 +20,8 @@ export function SiteFooter() {
       <div className="landing__footer-credits">
         <p>
           {t('landing.footerMadeWith')}
-          <a href={appConfig.author_github_url} target="_blank" rel="noopener noreferrer">
-            {appConfig.author_handle}
+          <a href={appLinks.author_website_url} target="_blank" rel="noopener noreferrer">
+            {appLinks.author_handle}
           </a>
         </p>
       </div>

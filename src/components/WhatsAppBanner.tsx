@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
 
 function WhatsAppIcon() {
@@ -13,7 +13,7 @@ function WhatsAppIcon() {
 
 /**
  * Community CTA for the WhatsApp group — same shape as the Telegram banner,
- * green WhatsApp styling. Link comes from app-config (`community_whatsapp_url`);
+ * green WhatsApp styling. Link comes from app-links (`community_whatsapp_url`);
  * renders nothing while that URL is empty (feature not configured yet).
  * `dismissable` works exactly as in TelegramBanner.
  */
@@ -21,13 +21,13 @@ export function WhatsAppBanner({ dismissable = true }: { dismissable?: boolean }
   const { t } = useTranslation()
   const [dismissed, setDismissed] = useState(() => dismissable && isBannerDismissed('whatsapp'))
 
-  if (!appConfig.community_whatsapp_url || dismissed) return null
+  if (!appLinks.community_whatsapp_url || dismissed) return null
 
   return (
     <div className="tg-banner-shell">
       <a
         className={`tg-banner tg-banner--whatsapp${dismissable ? '' : ' tg-banner--no-close'}`}
-        href={appConfig.community_whatsapp_url}
+        href={appLinks.community_whatsapp_url}
         target="_blank"
         rel="noopener noreferrer"
       >

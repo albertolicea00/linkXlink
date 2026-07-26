@@ -9,7 +9,7 @@ Browser (PWA)
   └── React SPA (Vite)
         ├── react-router: / , /es , /en , /app , /admin , /eula , /privacy
         ├── i18n (es default, en)
-        ├── app-config.json (runtime parameters)
+        ├── config/: app-config (behavior) + app-links (URLs) + dev-config (admin flags)
         └── @supabase/supabase-js
               ├── Postgres (profiles, reports, admins)
               ├── Storage (profile photos)
@@ -71,7 +71,7 @@ src/
   lib/          supabase.ts, whatsapp.ts (sanitize/format), swapCounter.ts,
                 reports.ts, theme.ts, legal.ts
   hooks/        useProfiles, useSwapCounter, usePageMeta
-  config/       app-config.json
+  config/       app-config.json, app-links.json, dev-config.json
   i18n/         index.ts, es.json, en.json
 ```
 
@@ -130,13 +130,13 @@ SPA, no SSR — metadata is set client-side; Googlebot executes JS and picks it 
 - Per-route metadata via `usePageMeta` hook: title, description, canonical, `html lang`,
   `noindex` for `/admin` and 404
 - `public/robots.txt` (disallow `/admin`) and `public/sitemap.xml` with hreflang alternates
-- Site URL lives in `app-config.json` (`site_url`) AND hardcoded in `index.html`,
+- Site URL lives in `app-links.json` (`site_url`) AND hardcoded in `index.html`,
   `robots.txt`, `sitemap.xml` — update all four when the domain changes
 
 ## 8. Open items / to verify
 
 - Supabase project not yet provisioned — migrations written in `supabase/migrations/`, need MCP or dashboard to apply
-- Domain: SEO files use `https://linkxlink.vercel.app` (index.html, robots.txt, sitemap.xml, app-config.json) — update all four if the domain changes
+- Domain: SEO files use `https://linkxlink.vercel.app` (index.html, robots.txt, sitemap.xml, app-links.json) — update all four if the domain changes
 - Rate-limiting report spam: basic client throttle only; server-side needs Edge Function (future)
 - Dev flags (`lib/devFlags.ts`) are client-side localStorage, not a security boundary — a savvy user could view fake seed data. Acceptable for test data; if fakes ever hold sensitive info, gate `is_fake` server-side.
 - Deny quorum vs report auto-disable are two independent disable paths (`denied_at` vs `report_count >= threshold`) — keep them distinct when reasoning about "why is this profile off".

@@ -17,7 +17,7 @@ import appConfig from '../config/app-config.json'
 function redirectBase(): string {
   // const h = window.location.hostname
   // const isLocal = h === 'localhost' || h === '127.0.0.1' || h.startsWith('192.168.')
-  // return isLocal ? window.location.origin : appConfig.site_url
+  // return isLocal ? window.location.origin : appLinks.site_url
   return window.location.origin
 
 }

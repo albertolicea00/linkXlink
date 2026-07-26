@@ -10,7 +10,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 interface Props {
   lang?: 'es' | 'en'
@@ -167,19 +167,19 @@ export function Landing({ lang }: Props) {
                   // No WhatsApp channel configured → don't name it at all
                   // (same rule as WhatsAppBanner, which renders nothing).
                   i18nKey={
-                    appConfig.community_whatsapp_url ? 'landing.how6' : 'landing.how6NoWa'
+                    appLinks.community_whatsapp_url ? 'landing.how6' : 'landing.how6NoWa'
                   }
                   components={{
                     tg: (
                       <a
-                        href={appConfig.community_telegram_url}
+                        href={appLinks.community_telegram_url}
                         target="_blank"
                         rel="noopener noreferrer"
                       />
                     ),
                     wa: (
                       <a
-                        href={appConfig.community_whatsapp_url}
+                        href={appLinks.community_whatsapp_url}
                         target="_blank"
                         rel="noopener noreferrer"
                       />

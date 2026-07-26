@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 interface PageMeta {
   title: string
@@ -60,7 +61,7 @@ export function usePageMeta({ title, description, path, noindex, ogImage }: Page
   const lang = i18n.resolvedLanguage ?? appConfig.default_language
 
   useEffect(() => {
-    const url = appConfig.site_url + path
+    const url = appLinks.site_url + path
 
     document.title = title
     document.documentElement.lang = lang
@@ -76,8 +77,8 @@ export function usePageMeta({ title, description, path, noindex, ogImage }: Page
       upsertMeta('twitter:description', description)
     }
     if (ogImage) {
-      upsertProperty('og:image', appConfig.site_url + ogImage)
-      upsertMeta('twitter:image', appConfig.site_url + ogImage)
+      upsertProperty('og:image', appLinks.site_url + ogImage)
+      upsertMeta('twitter:image', appLinks.site_url + ogImage)
     }
 
     if (noindex) upsertMeta('robots', 'noindex, nofollow')

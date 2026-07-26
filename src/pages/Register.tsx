@@ -22,6 +22,7 @@ import { getShareCount, incrementShareCount, REQUIRED_SHARES } from '../lib/regi
 import { fireConfetti } from '../components/Confetti'
 import { notify } from '../components/Toast'
 import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 import type { Gender, InterestedIn, Profile } from '../types'
 
 const PHOTOS_BUCKET = 'profile-photos'
@@ -145,7 +146,7 @@ export function Register({ lang }: Props) {
   }
 
   const handleShare = () => {
-    const text = t('register.shareMessage', { url: appConfig.site_url })
+    const text = t('register.shareMessage', { url: appLinks.site_url })
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener')
     setShares(incrementShareCount())
   }

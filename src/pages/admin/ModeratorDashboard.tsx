@@ -12,7 +12,7 @@ import { useMinLoading } from '../../hooks/useMinLoading'
 import { DenyReasonModal } from './DenyReasonModal'
 import { fireConfetti } from '../../components/Confetti'
 import { notify } from '../../components/Toast'
-import appConfig from '../../config/app-config.json'
+import appLinks from '../../config/app-links.json'
 import type { Profile } from '../../types'
 
 export function ModeratorDashboard() {
@@ -35,9 +35,9 @@ export function ModeratorDashboard() {
   }, [])
 
   const handleShare = () => {
-    const text = t('register.shareMessage', { url: appConfig.site_url })
+    const text = t('register.shareMessage', { url: appLinks.site_url })
     if (navigator.share) {
-      void navigator.share({ title: 'Link x Link', text, url: appConfig.site_url })
+      void navigator.share({ title: 'Link x Link', text, url: appLinks.site_url })
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener')
     }

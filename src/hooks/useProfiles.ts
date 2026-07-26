@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import appConfig from '../config/app-config.json'
+import devConfig from '../config/dev-config.json'
 import { getDevFlags } from '../lib/devFlags'
 import { idbGetAll, idbReplaceAll } from '../lib/idb'
 import type { Profile } from '../types'
@@ -29,7 +29,7 @@ export function useProfiles() {
     if (dev.onlyMigratedUnclaimed) {
       // Dev QA view: unclaimed seed rows only.
       query = query.eq('migrated', true).is('owner_id', null)
-    } else if (!appConfig.seed_profiles_visible_before_claim) {
+    } else if (!devConfig.seed_profiles_visible_before_claim) {
       // Seed ("migrated") rows are live so their owner can claim them, but the
       // feed can be told to hide them until claimed (owner_id set).
       query = query.or('migrated.eq.false,owner_id.not.is.null')

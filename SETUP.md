@@ -315,9 +315,9 @@ supabase functions deploy sync-brevo-contact
 ## Notes
 
 - **Env var changes** on Vercel require redeployment: **Deployments → Redeploy**
-- The **Telegram community link** (`community_telegram_url` in `src/config/app-config.json`) is where bug reports, feature requests and support go for now — point it at your own channel.
+- The **Telegram community link** (`community_telegram_url` in `src/config/app-links.json`) is where bug reports, feature requests and support go for now — point it at your own channel.
 - The **report threshold** lives in two places — update **both** if you change it:
   - `app.settings` in the Supabase database (authoritative)
-  - `src/config/app-config.json` in the codebase (UI display)
+  - `src/config/app-links.json` in the codebase (UI display)
 
 - **Roles recap**: `admins` = everything (incl. managing moderators and reading metrics). `moderators` = only approve/skip pending profiles. Regular users = swipe and own one profile. All three share the same Supabase Auth; the tables decide the role.

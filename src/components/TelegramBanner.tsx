@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
 
 function TelegramIcon() {
@@ -13,7 +13,7 @@ function TelegramIcon() {
 
 /**
  * Community CTA: for now the Telegram channel doubles as bug/feature reports
- * and customer service. Link comes from app-config (`community_telegram_url`).
+ * and customer service. Link comes from app-links (`community_telegram_url`).
  *
  * `dismissable` (default) shows an X and snoozes the banner for
  * `community_banner_snooze_days`. Pass false where the banner is part of the
@@ -32,7 +32,7 @@ export function TelegramBanner({ dismissable = true }: { dismissable?: boolean }
     <div className="tg-banner-shell">
       <a
         className={`tg-banner${dismissable ? '' : ' tg-banner--no-close'}`}
-        href={appConfig.community_telegram_url}
+        href={appLinks.community_telegram_url}
         target="_blank"
         rel="noopener noreferrer"
       >

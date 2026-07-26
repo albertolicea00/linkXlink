@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 function FacebookIcon() {
   return (
@@ -35,7 +35,7 @@ function TwitterIcon() {
 
 /**
  * "Follow us" card, styled like the support card next to it. Each network shows
- * only when its app-config URL is set; with all three empty the card renders
+ * only when its app-links URL is set; with all three empty the card renders
  * nothing at all (no empty box).
  */
 export function SocialsCard() {
@@ -43,25 +43,25 @@ export function SocialsCard() {
 
   const networks = [
     {
-      url: appConfig.community_twitter_url,
+      url: appLinks.community_twitter_url,
       label: t('landing.socialTwitter'),
       className: 'btn--twitter',
       icon: <TwitterIcon />,
     },
     {
-      url: appConfig.community_facebook_url,
+      url: appLinks.community_facebook_url,
       label: t('landing.socialFacebook'),
       className: 'btn--facebook',
       icon: <FacebookIcon />,
     },
     {
-      url: appConfig.community_instagram_url,
+      url: appLinks.community_instagram_url,
       label: t('landing.socialInstagram'),
       className: 'btn--instagram',
       icon: <InstagramIcon />,
     },
     {
-      url: appConfig.community_tiktok_url,
+      url: appLinks.community_tiktok_url,
       label: t('landing.socialTiktok'),
       className: 'btn--tiktok',
       icon: <TiktokIcon />,

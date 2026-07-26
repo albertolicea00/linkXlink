@@ -6,11 +6,11 @@
  * gone for `community_banner_snooze_days` and then comes back, so the CTA keeps
  * working without nagging. One entry per banner key.
  */
-import appConfig from '../config/app-config.json'
+import appLinks from '../config/app-links.json'
 
 const STORAGE_KEY = 'lxl_dismissed_banners'
 
-const SNOOZE_MS = appConfig.community_banner_snooze_days * 24 * 60 * 60 * 1000
+const SNOOZE_MS = appLinks.community_banner_snooze_days * 24 * 60 * 60 * 1000
 
 function load(): Record<string, number> {
   try {
