@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Profile } from '../types'
 import { whatsappUrl, isStandalone } from '../lib/whatsapp'
 import { ageFromBirthdate } from '../lib/age'
+import { displayName as getDisplayName } from '../lib/profileName'
 import appConfig from '../config/app-config.json'
 import { PhotoCarousel } from './PhotoCarousel'
 
@@ -25,19 +26,22 @@ export function ProfileCard({
   const { t } = useTranslation()
   const age = ageFromBirthdate(profile.birthdate)
   const interests = profile.interests ?? []
+  const name = getDisplayName(profile.name)
   const waMessage = appConfig.whatsapp_prefill_enabled
-    ? t('feed.whatsappMessage', { name: profile.name })
+    ? name
+      ? t('feed.whatsappMessage', { name })
+      : t('feed.whatsappMessageNoName')
     : undefined
 
   return (
     <article className="profile-card">
       <div className="profile-card__media">
-        <PhotoCarousel photos={profile.photos ?? []} name={profile.name} profileId={profile.id} />
+        <PhotoCarousel photos={profile.photos ?? []} name={name} profileId={profile.id} />
         <div className="profile-card__overlay">
           <h2 className="profile-card__name">
-            {profile.name}
+            {name}
             {appConfig.show_age && age !== null && (
-              <span className="profile-card__age">, {age}</span>
+              <span className="profile-card__age">{name ? ', ' : ''}{age}</span>
             )}
           </h2>
           {profile.region && (

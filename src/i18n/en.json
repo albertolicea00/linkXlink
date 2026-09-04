@@ -79,6 +79,7 @@
   },
   "feed": {
     "whatsappMessage": "Hi {{name}} 👋, I saw you on Link x Link :: https://linkxlink.vercel.app/",
+    "whatsappMessageNoName": "Hi 👋, I saw you on Link x Link :: https://linkxlink.vercel.app/",
     "empty": "No profiles available right now.",
     "emptyDesc": "No more profiles for now. Come back later or share the app to discover more people.",
     "shareApp": "Share app",
