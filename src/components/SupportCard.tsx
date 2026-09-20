@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import appLinks from '../config/app-links.json'
+import { withUtm } from '../lib/utm'
 
 /**
  * "Support this project" card (buy-me-a-coffee CTA), shared by the landing and
@@ -16,7 +17,7 @@ export function SupportCard({ className = '' }: { className?: string }) {
       <h2>{t('landing.supportTitle')}</h2>
       <p>{t('landing.supportText')}</p>
       <a
-        href={appLinks.support_coffee_url}
+        href={withUtm(appLinks.support_coffee_url, 'coffee')}
         className="btn btn--primary btn--coffee"
         target="_blank"
         rel="noopener noreferrer"

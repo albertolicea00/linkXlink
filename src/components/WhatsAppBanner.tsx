@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import appLinks from '../config/app-links.json'
 import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
+import { withUtm } from '../lib/utm'
 
 function WhatsAppIcon() {
   return (
@@ -27,7 +28,7 @@ export function WhatsAppBanner({ dismissable = true }: { dismissable?: boolean }
     <div className="tg-banner-shell">
       <a
         className={`tg-banner tg-banner--whatsapp${dismissable ? '' : ' tg-banner--no-close'}`}
-        href={appLinks.community_whatsapp_url}
+        href={withUtm(appLinks.community_whatsapp_url, 'whatsapp')}
         target="_blank"
         rel="noopener noreferrer"
       >

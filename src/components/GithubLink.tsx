@@ -1,4 +1,5 @@
 import appLinks from '../config/app-links.json'
+import { withUtm } from '../lib/utm'
 
 export function GithubLink() {
   if (appLinks.app_source_hide || !appLinks.app_source_url) {
@@ -7,7 +8,7 @@ export function GithubLink() {
 
   return (
     <a
-      href={appLinks.app_source_url}
+      href={withUtm(appLinks.app_source_url, 'github')}
       target="_blank"
       rel="noopener noreferrer"
       className="theme-toggle"

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import appLinks from '../config/app-links.json'
+import { withUtm } from '../lib/utm'
 
 /**
  * Legal links + author credit. Shared by the pages that sit outside the app
@@ -20,7 +21,7 @@ export function SiteFooter() {
       <div className="landing__footer-credits">
         <p>
           {t('landing.footerMadeWith')}
-          <a href={appLinks.author_website_url} target="_blank" rel="noopener noreferrer">
+          <a href={withUtm(appLinks.author_website_url, 'author')} target="_blank" rel="noopener noreferrer">
             {appLinks.author_handle}
           </a>
         </p>

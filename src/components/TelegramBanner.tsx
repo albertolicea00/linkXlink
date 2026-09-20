@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import appLinks from '../config/app-links.json'
 import { dismissBanner, isBannerDismissed } from '../lib/dismissedBanners'
+import { withUtm } from '../lib/utm'
 
 function TelegramIcon() {
   return (
@@ -32,7 +33,7 @@ export function TelegramBanner({ dismissable = true }: { dismissable?: boolean }
     <div className="tg-banner-shell">
       <a
         className={`tg-banner${dismissable ? '' : ' tg-banner--no-close'}`}
-        href={appLinks.community_telegram_url}
+        href={withUtm(appLinks.community_telegram_url, 'telegram')}
         target="_blank"
         rel="noopener noreferrer"
       >

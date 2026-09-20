@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import appLinks from '../config/app-links.json'
+import { withUtm } from '../lib/utm'
 
 function FacebookIcon() {
   return (
@@ -44,24 +45,28 @@ export function SocialsCard() {
   const networks = [
     {
       url: appLinks.community_twitter_url,
+      campaign: 'twitter',
       label: t('landing.socialTwitter'),
       className: 'btn--twitter',
       icon: <TwitterIcon />,
     },
     {
       url: appLinks.community_facebook_url,
+      campaign: 'facebook',
       label: t('landing.socialFacebook'),
       className: 'btn--facebook',
       icon: <FacebookIcon />,
     },
     {
       url: appLinks.community_instagram_url,
+      campaign: 'instagram',
       label: t('landing.socialInstagram'),
       className: 'btn--instagram',
       icon: <InstagramIcon />,
     },
     {
       url: appLinks.community_tiktok_url,
+      campaign: 'tiktok',
       label: t('landing.socialTiktok'),
       className: 'btn--tiktok',
       icon: <TiktokIcon />,
@@ -78,7 +83,7 @@ export function SocialsCard() {
         {networks.map((n) => (
           <a
             key={n.label}
-            href={n.url}
+            href={withUtm(n.url, n.campaign)}
             className={`btn ${n.className}`}
             target="_blank"
             rel="noopener noreferrer"

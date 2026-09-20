@@ -11,6 +11,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { acceptTerms, hasAcceptedTerms } from '../lib/terms'
+import { withUtm } from '../lib/utm'
 import appLinks from '../config/app-links.json'
 
 interface Props {
@@ -174,14 +175,14 @@ export function Landing({ lang }: Props) {
                   components={{
                     tg: (
                       <a
-                        href={appLinks.community_telegram_url}
+                        href={withUtm(appLinks.community_telegram_url, 'telegram')}
                         target="_blank"
                         rel="noopener noreferrer"
                       />
                     ),
                     wa: (
                       <a
-                        href={appLinks.community_whatsapp_url}
+                        href={withUtm(appLinks.community_whatsapp_url, 'whatsapp')}
                         target="_blank"
                         rel="noopener noreferrer"
                       />
