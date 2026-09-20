@@ -310,6 +310,38 @@ supabase functions deploy sync-brevo-contact
 
 ---
 
+## D. Health check endpoint (optional)
+
+`supabase/functions/health/` is a no-auth Edge Function for uptime monitors
+(UptimeRobot, Better Uptime, etc). It runs a trivial `select` against
+`profiles` to confirm the DB connection is alive, not just that the function
+runtime responds.
+
+Deploy:
+
+```bash
+supabase functions deploy health --no-verify-jwt
+```
+
+`--no-verify-jwt` is required — otherwise Supabase rejects unauthenticated
+requests before the function code runs, and most uptime checkers can't send
+an API key. The function touches no sensitive data (row count only), so this
+is safe to expose.
+
+Check it:
+
+```bash
+curl -i https://<project-ref>.supabase.co/functions/v1/health
+```
+
+- `200 {"status":"ok"}` — DB reachable.
+- `503 {"status":"error"}` — DB query failed; check **Edge Functions → health →
+  Logs** for the error.
+
+Point your uptime monitor at that URL.
+
+---
+
 ## Notes
 
 - **Env var changes** on Vercel require redeployment: **Deployments → Redeploy**
