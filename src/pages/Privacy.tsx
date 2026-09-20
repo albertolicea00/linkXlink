@@ -19,9 +19,20 @@ export function Privacy() {
         {es ? (
           <>
             <p>
-              Link x Link está destinado únicamente a <strong>personas mayores de 18 años</strong>. 
-              La plataforma no requiere registro y no recopila datos personales de los visitantes.
-              El contador de interacciones se guarda únicamente en tu dispositivo.
+              Link x Link está destinado únicamente a <strong>personas mayores de 18 años</strong>.
+              La plataforma no requiere registro para navegar por los perfiles. El contador de
+              interacciones se guarda únicamente en tu dispositivo.
+            </p>
+            <p>
+              Usamos <strong>Microsoft Clarity</strong> para analizar el uso de la aplicación
+              (mapas de calor, grabaciones de sesión y estadísticas de navegación agregadas). Clarity
+              coloca cookies y usa almacenamiento local en tu navegador para reconocer visitas
+              recurrentes; no recopilamos tu nombre ni tu email a través de esta herramienta. Más
+              información en la{' '}
+              <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noreferrer">
+                política de privacidad de Microsoft
+              </a>. Detalles en nuestro{' '}
+              <Link to="/data">uso de datos</Link>.
             </p>
             <p>
               Dado que la aplicación muestra enlaces a WhatsApp para el contacto directo, ten en cuenta que no nos hacemos responsables 
@@ -50,9 +61,19 @@ export function Privacy() {
         ) : (
           <>
             <p>
-              Link x Link is intended only for <strong>individuals over 18 years of age</strong>. 
-              The platform requires no sign-up and collects no personal data from visitors. The
-              interaction counter is stored only on your device.
+              Link x Link is intended only for <strong>individuals over 18 years of age</strong>.
+              The platform requires no sign-up to browse profiles. The interaction counter is
+              stored only on your device.
+            </p>
+            <p>
+              We use <strong>Microsoft Clarity</strong> to analyze app usage (heatmaps, session
+              recordings, and aggregated navigation stats). Clarity sets cookies and uses local
+              storage in your browser to recognize repeat visits; we do not collect your name or
+              email through this tool. More details in{' '}
+              <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noreferrer">
+                Microsoft's privacy statement
+              </a>. See our{' '}
+              <Link to="/data">data usage policy</Link> for more.
             </p>
             <p>
               Since the application displays links to WhatsApp for direct contact, please note that we are not responsible 

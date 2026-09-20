@@ -20,8 +20,24 @@ export function DataUsage() {
           <>
             <h2>Recopilación de datos</h2>
             <p>
-              Link x Link no recopila datos personales de los visitantes. La aplicación funciona
-              sin registro y no requiere crear una cuenta para navegar por los perfiles.
+              La aplicación funciona sin registro y no requiere crear una cuenta para navegar por
+              los perfiles. No recopilamos datos personales identificables de los visitantes más
+              allá de lo descrito en la sección de analítica a continuación.
+            </p>
+
+            <h2>Analítica (Microsoft Clarity)</h2>
+            <p>
+              Utilizamos Microsoft Clarity para entender cómo se usa la aplicación: mapas de calor,
+              grabaciones de sesión anonimizadas y estadísticas agregadas de navegación (páginas
+              visitadas, clics, tiempo en la app). Clarity puede registrar la interacción con la
+              pantalla, pero no capturamos ni introducimos manualmente datos como contraseñas o
+              números de WhatsApp en los eventos que le reportamos. Clarity coloca cookies propias
+              y de Microsoft y usa almacenamiento del navegador para diferenciar visitas nuevas de
+              recurrentes. Esta herramienta corre para todos los visitantes (no solo usuarios
+              registrados). Puedes leer más en la{' '}
+              <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noreferrer">
+                política de privacidad de Microsoft
+              </a>.
             </p>
 
             <h2>Almacenamiento local</h2>
@@ -36,8 +52,10 @@ export function DataUsage() {
             <p>
               Utilizamos una cookie de navegación para recordar tu aceptación de los términos. Esta
               cookie se asocia a la versión legal vigente; cuando los textos legales cambian, la
-              cookie deja de ser válida y se te solicita aceptar de nuevo. No usamos cookies de
-              terceros, de rastreo ni publicitarias.
+              cookie deja de ser válida y se te solicita aceptar de nuevo. Adicionalmente, Microsoft
+              Clarity (ver sección de analítica) coloca sus propias cookies de rastreo con fines
+              estadísticos. No usamos cookies publicitarias ni vendemos datos de navegación a
+              terceros.
             </p>
 
             <h2>Datos de perfiles</h2>
@@ -58,8 +76,9 @@ export function DataUsage() {
             <h2>Servicios de terceros</h2>
             <p>
               Las imágenes de los perfiles se alojan en Supabase Storage y se sirven mediante URLs
-              públicas. Los enlaces de contacto abren WhatsApp directamente en tu dispositivo; no
-              compartimos datos personales con terceros ni vendemos información.
+              públicas. Los enlaces de contacto abren WhatsApp directamente en tu dispositivo.
+              Usamos Microsoft Clarity para analítica de uso (ver sección anterior). No compartimos
+              datos personales con terceros ni vendemos información.
             </p>
 
             <h2>Comunicaciones por correo</h2>
@@ -82,8 +101,23 @@ export function DataUsage() {
           <>
             <h2>Data collection</h2>
             <p>
-              Link x Link does not collect personal data from visitors. The application works
-              without registration and does not require an account to browse profiles.
+              The application works without registration and does not require an account to
+              browse profiles. We do not collect personally identifiable data from visitors beyond
+              what is described in the analytics section below.
+            </p>
+
+            <h2>Analytics (Microsoft Clarity)</h2>
+            <p>
+              We use Microsoft Clarity to understand how the app is used: heatmaps, anonymized
+              session recordings, and aggregated navigation stats (pages visited, clicks, time in
+              app). Clarity may record on-screen interaction, but we do not capture or manually
+              feed it sensitive data such as passwords or WhatsApp numbers in the events we report
+              to it. Clarity sets its own and Microsoft's cookies and uses browser storage to tell
+              new visits from repeat ones. This tool runs for all visitors, not just registered
+              users. Read more in{' '}
+              <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noreferrer">
+                Microsoft's privacy statement
+              </a>.
             </p>
 
             <h2>Local storage</h2>
@@ -97,8 +131,9 @@ export function DataUsage() {
             <p>
               We use a browser cookie to remember your terms acceptance. This cookie is tied to
               the current legal version; when the legal texts change, the cookie becomes invalid
-              and you will be asked to accept again. We do not use third-party, tracking, or
-              advertising cookies.
+              and you will be asked to accept again. Additionally, Microsoft Clarity (see the
+              analytics section) sets its own tracking cookies for statistical purposes. We do not
+              use advertising cookies or sell browsing data to third parties.
             </p>
 
             <h2>Profile data</h2>
@@ -119,8 +154,9 @@ export function DataUsage() {
             <h2>Third-party services</h2>
             <p>
               Profile images are hosted on Supabase Storage and served through public URLs.
-              Contact links open WhatsApp directly on your device. We do not share personal data
-              with third parties or sell information.
+              Contact links open WhatsApp directly on your device. We use Microsoft Clarity for
+              usage analytics (see above). We do not share personal data with third parties or
+              sell information.
             </p>
 
             <h2>Email communications</h2>
