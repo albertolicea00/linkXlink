@@ -16,6 +16,7 @@ import { PageHeader } from '../components/PageHeader'
 import { Loader } from '../components/Loader'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { markSeen, orderProfiles } from '../lib/seenProfiles'
+import { applySavedOrder, loadDeckSession } from '../lib/deckSession'
 import { trackProfileEvent } from '../lib/metrics'
 import { getClickCount, recordClick, isFirstWhatsappClick } from '../lib/clickCounter'
 import { isSwipeHintVisible, recordSwipeHintSwipe } from '../lib/swipeHint'
@@ -27,7 +28,11 @@ import type { Profile } from '../types'
 
 export function AppPage() {
   const { t } = useTranslation()
-  const { profiles, loading, error, servingCached, refetch } = useProfiles()
+  const { session, loading: authLoading } = useAuth()
+  const { profiles, loading, error, servingCached, refetch } = useProfiles(
+    !authLoading,
+    session?.user.id,
+  )
   const { count, swap } = useSwapCounter()
   const [reporting, setReporting] = useState<Profile | null>(null)
   const [clicks, setClicks] = useState(getClickCount)
@@ -40,7 +45,6 @@ export function AppPage() {
   const clickNearLimit = !bypassLimits && !clickLimitReached && clicks >= appConfig.warning_swap_threshold
   const [searchParams] = useSearchParams()
 
-  const { session, loading: authLoading } = useAuth()
   const [ownProfile, setOwnProfile] = useState<Profile | null>(null)
   const [ownChecked, setOwnChecked] = useState(false)
 
@@ -76,12 +80,6 @@ export function AppPage() {
     return () => {
       cancelled = true
     }
-  }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // RLS ties the feed to the session; the initial fetch may fire before
-  // Supabase restores it from storage, so refetch once auth resolves.
-  useEffect(() => {
-    if (session) void refetch()
   }, [session?.user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Who is blocked from the full feed, and how to invite them in.
@@ -126,9 +124,11 @@ export function AppPage() {
     }
   }
 
-  // Shuffled + least-seen-first, recomputed only when a new list arrives.
+  // Restore the unswiped pile after a refresh; otherwise shuffle least-seen-first.
   const orderedProfiles = useMemo(() => {
-    const ordered = orderProfiles(profiles)
+    const saved = loadDeckSession('feed')
+    const ordered =
+      saved?.ids.length ? applySavedOrder(profiles, saved.ids) : orderProfiles(profiles)
     if (targetId) {
       const i = ordered.findIndex((p) => p.id === targetId)
       if (i > 0) ordered.unshift(...ordered.splice(i, 1))

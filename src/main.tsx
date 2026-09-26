@@ -1,6 +1,6 @@
-import { StrictMode, type ReactNode } from 'react'
+import { StrictMode, useState, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider, useMatch } from 'react-router-dom'
 import './i18n'
 import './index.css'
 import { Landing } from './pages/Landing'
@@ -23,6 +23,7 @@ import { ConfettiRoot } from './components/Confetti'
 import { ToastRoot } from './components/Toast'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { NavStateProvider } from './context/nav'
+import { KeepAliveHost } from './context/keepAlive'
 import { hasAcceptedTerms } from './lib/terms'
 import { isStandalone } from './lib/whatsapp'
 import { ADMIN_PATH, MODERATOR_PATH, CONFIG_PATH } from './lib/adminPath'
@@ -36,12 +37,21 @@ function RequireTerms({ children }: { children: ReactNode }) {
   return children
 }
 
+function LazyKeepAlive({ active, children }: { active: boolean; children: ReactNode }) {
+  const [mounted, setMounted] = useState(active)
+  if (active && !mounted) setMounted(true)
+  if (!mounted) return null
+  return <KeepAliveHost active={active}>{children}</KeepAliveHost>
+}
+
 // Persistent chrome for the signed-in-ish surface: the nav bar is mounted
 // ONCE here, so navigating between these pages (or flipping the admin view)
 // never remounts or re-fetches it. Landing/legal sit outside → no nav bar.
 function ChromeLayout() {
   const isOffline = useOffline()
   const { t } = useTranslation()
+  const matchApp = useMatch('/app')
+  const matchModerator = useMatch(MODERATOR_PATH)
 
   return (
     <>
@@ -50,6 +60,14 @@ function ChromeLayout() {
           <WarningBanner variant="warning" message={t('app.offline')} />
         </div>
       )}
+      <LazyKeepAlive active={!!matchApp}>
+        <RequireTerms>
+          <AppPage />
+        </RequireTerms>
+      </LazyKeepAlive>
+      <LazyKeepAlive active={!!matchModerator}>
+        <Moderator />
+      </LazyKeepAlive>
       <Outlet />
       <NavBar />
       <DevFlagsFab />
@@ -69,19 +87,12 @@ const router = createBrowserRouter([
       {
         element: <ChromeLayout />,
         children: [
-          {
-            path: '/app',
-            element: (
-              <RequireTerms>
-                <AppPage />
-              </RequireTerms>
-            ),
-          },
+          { path: '/app', element: null },
           { path: '/account', element: <Account /> },
           // Staff area: three independent routes under /admin (they used to be
           // one route split by ?view=).
           { path: ADMIN_PATH, element: <Admin /> },
-          { path: MODERATOR_PATH, element: <Moderator /> },
+          { path: MODERATOR_PATH, element: null },
           { path: CONFIG_PATH, element: <Config /> },
         ],
       },

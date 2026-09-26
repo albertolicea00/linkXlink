@@ -1,7 +1,8 @@
 /**
  * Minimal native IndexedDB wrapper — no dependency, just Promise-wrapped
  * primitives for the two stores this app needs:
- *   - `profiles-cache`: last successfully fetched feed, served when offline
+ *   - `profiles-cache`: last successfully fetched feed (stale-while-revalidate)
+ *   - `mod-profiles-cache`: last staff profiles list for the moderator deck
  *   - `pending-events`: profile view/click events that failed to send while
  *     offline, flushed on reconnect (see lib/metrics.ts)
  *
@@ -19,9 +20,9 @@
  */
 
 const DB_NAME = 'lxl-offline'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
-export type StoreName = 'profiles-cache' | 'pending-events'
+export type StoreName = 'profiles-cache' | 'pending-events' | 'mod-profiles-cache'
 
 function isSupported(): boolean {
   return typeof indexedDB !== 'undefined'
@@ -37,6 +38,9 @@ function openDB(): Promise<IDBDatabase> {
       }
       if (!db.objectStoreNames.contains('pending-events')) {
         db.createObjectStore('pending-events', { keyPath: 'localId', autoIncrement: true })
+      }
+      if (!db.objectStoreNames.contains('mod-profiles-cache')) {
+        db.createObjectStore('mod-profiles-cache', { keyPath: 'id' })
       }
     }
     req.onsuccess = () => resolve(req.result)

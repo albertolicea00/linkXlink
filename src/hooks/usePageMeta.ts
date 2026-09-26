@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useKeepAliveActive } from '../context/keepAlive'
 import appConfig from '../config/app-config.json'
 import appLinks from '../config/app-links.json'
 
@@ -59,8 +60,10 @@ function upsertCanonical(href: string): void {
 export function usePageMeta({ title, description, path, noindex, ogImage }: PageMeta): void {
   const { i18n } = useTranslation()
   const lang = i18n.resolvedLanguage ?? appConfig.default_language
+  const active = useKeepAliveActive()
 
   useEffect(() => {
+    if (!active) return
     const url = appLinks.site_url + path
 
     document.title = title
@@ -83,5 +86,5 @@ export function usePageMeta({ title, description, path, noindex, ogImage }: Page
 
     if (noindex) upsertMeta('robots', 'noindex, nofollow')
     else removeMeta('robots')
-  }, [title, description, path, noindex, ogImage, lang])
+  }, [title, description, path, noindex, ogImage, lang, active])
 }
