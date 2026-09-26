@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fallbackPhoto } from '../lib/fallbackPhoto'
+import { useKeepAliveActive } from '../context/keepAlive'
 
 interface Props {
   photos: string[]
@@ -12,6 +13,29 @@ interface Props {
 export function PhotoCarousel({ photos, name, profileId }: Props) {
   const { t } = useTranslation()
   const [index, setIndex] = useState(0)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const active = useKeepAliveActive()
+
+  const retryIfUnloaded = () => {
+    const img = imgRef.current
+    if (!img) return
+    if (img.complete && img.naturalWidth > 0) return
+    const src = img.getAttribute('src')
+    if (!src) return
+    img.src = src
+  }
+
+  useEffect(() => {
+    if (active) retryIfUnloaded()
+  }, [active, photos, index])
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') retryIfUnloaded()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [photos, index])
 
   if (photos.length === 0) {
     return (
@@ -26,6 +50,7 @@ export function PhotoCarousel({ photos, name, profileId }: Props) {
   return (
     <div className="photo-carousel">
       <img
+        ref={imgRef}
         src={photos[index]}
         alt={t('profile.photoOf', { current: index + 1, total: photos.length }) + ` — ${name}`}
         loading="eager"

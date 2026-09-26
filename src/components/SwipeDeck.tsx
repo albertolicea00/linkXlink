@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import appConfig from '../config/app-config.json'
+import { loadDeckSession, saveDeckSession } from '../lib/deckSession'
 import type { Profile } from '../types'
 
 const THRESHOLD_PX = appConfig.swipe_threshold_px
@@ -39,6 +40,8 @@ interface Props {
   showUndo?: boolean
   /** Hint text shown above the deck (e.g. "Swipe to next"). Hidden in empty state. */
   hint?: ReactNode
+  /** sessionStorage key so refresh restores this deck's position. */
+  persistKey?: string
 }
 
 export function SwipeDeck({
@@ -52,6 +55,7 @@ export function SwipeDeck({
   showCounter = false,
   showUndo = false,
   hint,
+  persistKey,
 }: Props) {
   const { t } = useTranslation()
   const [index, setIndex] = useState(0)
@@ -60,15 +64,62 @@ export function SwipeDeck({
   const pointerStart = useRef<{ x: number; y: number } | null>(null)
   const onTopChangeRef = useRef(onTopChange)
   onTopChangeRef.current = onTopChange
+  const didInit = useRef(false)
+  const currentIdRef = useRef<string | undefined>(undefined)
+  const suppressPersist = useRef(false)
 
   const profile = profiles[index] as Profile | undefined
+  currentIdRef.current = profile?.id
 
-  // New list → start over (also prevents stale index after a refetch).
+  // Restore the saved card on first list, then stay on that person if the
+  // parent refreshes the array (don't jump back to card 0).
   useEffect(() => {
-    setIndex(0)
-    setDrag(null)
-    setLeaving(null)
-  }, [profiles])
+    if (profiles.length === 0) {
+      didInit.current = false
+      setIndex(0)
+      return
+    }
+
+    if (!didInit.current) {
+      didInit.current = true
+      suppressPersist.current = true
+      if (persistKey) {
+        const saved = loadDeckSession(persistKey)
+        if (saved) {
+          const byId = saved.currentId
+            ? profiles.findIndex((p) => p.id === saved.currentId)
+            : -1
+          if (byId >= 0) {
+            setIndex(byId)
+            return
+          }
+          if (saved.index >= 0 && saved.index < profiles.length) {
+            setIndex(saved.index)
+            return
+          }
+        }
+      }
+      setIndex(0)
+      return
+    }
+
+    const currentId = currentIdRef.current
+    const next = currentId ? profiles.findIndex((p) => p.id === currentId) : -1
+    if (next >= 0) setIndex(next)
+  }, [profiles, persistKey])
+
+  useEffect(() => {
+    if (!persistKey || !didInit.current) return
+    if (suppressPersist.current) {
+      suppressPersist.current = false
+      return
+    }
+    saveDeckSession(persistKey, {
+      ids: profiles.map((p) => p.id),
+      index,
+      currentId: profiles[index]?.id ?? null,
+    })
+  }, [persistKey, profiles, index])
 
   // View tracking: exactly once per card reaching the top.
   useEffect(() => {
